@@ -65,10 +65,10 @@ for date in target_dates:
     else:
         days_after_change = (date - change_date).days
         if days_after_change < 7:
-            projected_oos = 12 - (3 * days_after_change / 7)  # Gradual decrease to 9%
+            projected_oos = 12 - (3 * days_after_change / 7) + np.random.normal(0, 1) - (total_supply / 200000) * 3, 7.5, 12) # Gradual decrease to 9%
         else:
             normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
-            projected_oos = daily_demand["Forecast"].sum()/22000  # Fluctuates around 9%
+            projected_oos = daily_demand["Forecast"].sum()/22000 + np.random.normal(0, 1) - (total_supply / 200000) * 3, 7.5, 12)  # Fluctuates around 9%
 
 
 
@@ -79,8 +79,8 @@ for date in target_dates:
     # Split final quantity into KOS and STL
     final_qty_kos_oos_0 = final_qty_oos_0 * (2/3) * 1.1
     final_qty_stl_oos_0 = final_qty_oos_0 * (1/3) * 1.1
-    final_qty_kos_target_oos = final_qty_target_oos * (2/3) *1.1
-    final_qty_stl_target_oos = final_qty_target_oos * (1/3) *1.1
+    final_qty_kos_target_oos = final_qty_target_oos * (2/3) * (1.275 + np.random.uniform(-0.05, 0.05))
+    final_qty_stl_target_oos = final_qty_target_oos * (1/3) * (1.275 + np.random.uniform(-0.05, 0.05))
 
 
     df_oos.append({
