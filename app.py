@@ -31,19 +31,21 @@ fixed_oos = {
     pd.to_datetime("2025-03-09"): 12.63
 }
 
-col1, col2 = st.columns(2)
+col1, col2 = st.columns([1,3])
 with col1:
-    st.markdown("Tweak STL Supply")
+    st.subheader("Tweak STL Supply")
     custom_stl_supply = st.number_input("STL Supply After Mar 9", min_value=0, value=40000, step=5000)
     #st.subheader("Supply Adjustments")
+    df_oos_target = []
 
 with col2:
     st.subheader("SO Qty for Target OOS%?")
     target_oos_percent = st.number_input("Target OOS Percentage", min_value=0.0, max_value=100.0, value=2.0) / 100
     #st.subheader("OOS Forecast")
+    df_oos_supply = []
 
-df_oos_target = []
-df_oos_supply = []
+
+
 start_date = pd.to_datetime("2025-02-28")
 target_dates = pd.date_range(start=start_date, periods=62, freq='D')
 
@@ -111,7 +113,7 @@ df_oos_target = pd.DataFrame(df_oos_target)
 df_oos_supply = pd.DataFrame(df_oos_supply)
 
 st.subheader("Target OOS Percentage Adjustments")
-st.dataframe(df_oos_target, use_container_width=True)
+st.dataframe(df_oos_target, use_container_width=False)
 
 st.subheader("Supply Adjustments")
 st.dataframe(df_oos_supply, use_container_width=True)
