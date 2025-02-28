@@ -89,16 +89,16 @@ for date in target_dates:
         #"Final Qty (OOS 0%)": round(final_qty_oos_0, 0),
         #"Final Qty KOS (OOS 0%)": round(final_qty_kos_oos_0, 0),
         #"Final Qty STL (OOS 0%)": round(final_qty_stl_oos_0, 0),
-        "Final Qty (Target OOS%)": round(final_qty_target_oos, 0),
-        "Final Qty KOS (Target OOS%)": round(final_qty_kos_target_oos, 0),
-        "Final Qty STL (Target OOS%)": round(final_qty_stl_target_oos, 0)
+        "Final Qty Needed": round(final_qty_target_oos, 0),
+        "Final Qty KOS Needed": round(final_qty_kos_target_oos, 0),
+        "Final Qty STL Needed": round(final_qty_stl_target_oos, 0)
     })
 
 
 df_oos_supply = pd.DataFrame(df_oos_supply)
 
 
-st.markdown("### <span style='color:blue'>Butuh SO Berapa utk OOS x%?Changes</span>", unsafe_allow_html=True)
+st.markdown("### <span style='color:maroon'>Butuh SO Berapa utk OOS x%?</span>", unsafe_allow_html=True)
 st.markdown("----")
 st.dataframe(df_oos_supply, use_container_width=True)
 st.download_button("Download CSV", df_oos_supply.to_csv(index=False), "oos_supply.csv", "text/csv")
