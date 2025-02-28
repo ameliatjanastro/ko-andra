@@ -87,13 +87,13 @@ for date in target_dates:
 
     df_oos_target.append({
         "Date": date.strftime("%d %b %Y"),
+        "KOS Supply": supply["KOS"],
+        "STL Supply": supply["STL"],
         "Projected OOS%": round(projected_oos, 2)
     })
     
     df_oos_supply.append({
         "Date": date.strftime("%d %b %Y"),
-        "KOS Supply": supply["KOS"],
-        "STL Supply": supply["STL"],
         "Final Qty (OOS 0%)": round(final_qty_oos_0, 0),
         "Final Qty KOS (OOS 0%)": round(final_qty_kos_oos_0, 0),
         "Final Qty STL (OOS 0%)": round(final_qty_stl_oos_0, 0),
