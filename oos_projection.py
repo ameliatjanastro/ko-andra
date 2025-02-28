@@ -91,7 +91,7 @@ for date in target_dates:
         "Date": date.strftime("%d %b %Y"),
         "KOS Supply": supply["KOS"],
         "STL Supply": supply["STL"],
-        "Projected OOS%": f"**{round(projected_oos, 2)}**
+        "Projected OOS%": f"**{round(projected_oos, 2)}**,
     })
     
 df_oos_target = pd.DataFrame(df_oos_target)
