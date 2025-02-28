@@ -33,7 +33,7 @@ fixed_oos = {
 
 
 st.sidebar.header("Adjustments")
-custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 9", min_value=400000, value=40000, step=5000)
+custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 9", min_value=40000, value=40000, step=5000)
 target_oos_percent = st.sidebar.number_input("Target OOS Percentage", min_value=2.0, max_value=15.0, value=2.0, step=1.0) / 100
 
 df_oos_target = []
