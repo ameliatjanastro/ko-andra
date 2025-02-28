@@ -91,11 +91,11 @@ for date in target_dates:
         "Date": date.strftime("%d %b %Y"),
         "KOS Supply": supply["KOS"],
         "STL Supply": supply["STL"],
-        "Projected OOS%": round(projected_oos, 2)
+        "Projected OOS%": f"**{round(projected_oos, 2)}**
     })
     
 df_oos_target = pd.DataFrame(df_oos_target)
 
 
 st.markdown("### <span style='color:blue'>OOS% Projection with STL SO Qty Changes</span>", unsafe_allow_html=True)
-st.dataframe(df_oos_target, use_container_width=True)
+st.dataframe(df_oos_target.style.applymap(lambda x: 'background-color: lightgreen' if isinstance(x, str) and '**' in x else '', subset=["Projected OOS%"]), use_container_width=True)
