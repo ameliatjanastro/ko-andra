@@ -32,7 +32,7 @@ fixed_oos = {
 }
 
 # Streamlit UI
-st.title("OOS Forecast Split")
+st.title("OOS Projection STL + SO :)")
 
 
 custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 9", min_value=40000, value=40000, step=5000,max_value=100000)
@@ -97,5 +97,5 @@ for date in target_dates:
 df_oos_target = pd.DataFrame(df_oos_target)
 
 
-st.subheader("Target OOS Percentage Adjustments")
+st.markdown("### <span style='color:blue'>OOS% Projection with STL SO Qty Changes</span>", unsafe_allow_html=True)
 st.dataframe(df_oos_target, use_container_width=True)
