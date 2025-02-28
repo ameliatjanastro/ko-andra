@@ -45,40 +45,48 @@ max_demand = demand_summary["Forecast"].max()
 demand_summary["Normalized Demand"] = demand_summary["Forecast"] / max_demand
 
 for date in target_dates:
-    if date < change_date:
-        supply = current_supply.copy()
-    else:
-        supply = {"KOS": 100000, "STL": custom_stl_supply}
-    
+    supply = current_supply if date < change_date else future_supply
     total_supply = supply["KOS"] + supply["STL"]
 
+    # Retrieve per-category demand
     daily_demand = demand_summary[demand_summary["Date Key"] == date]
     total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
-    kos_demand = total_demand * (2/3)
-    stl_demand = total_demand * (1/3)
+    kos_demand = total_demand * (2/3) *0.8
+    stl_demand = total_demand * (1/3) *0.8
 
+    # Use fixed OOS values or calculate dynamically
+     # Use fixed OOS values or calculate dynamically following demand trend
     if date in fixed_oos:
         projected_oos = fixed_oos[date]
     else:
-        normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
-        projected_oos = np.clip(9 + (normalized_demand * 5) + np.random.normal(0, 1), 7.5, 12)
+        days_after_change = (date - change_date).days
+        if days_after_change < 7:
+            projected_oos = 12 - (3 * days_after_change / 7)  # Gradual decrease to 9%
+        else:
+            normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
+            projected_oos = daily_demand["Forecast"].sum()/22000  # Fluctuates around 9%
 
+
+
+     # Calculate final quantity needed for OOS = 0% and target OOS%
     final_qty_oos_0 = expected_so + (projected_oos / 100) * expected_so
     final_qty_target_oos = expected_so + ((projected_oos / 100) - target_oos_percent) * expected_so
 
-    final_qty_kos_oos_0 = final_qty_oos_0 * (2/3)
-    final_qty_stl_oos_0 = final_qty_oos_0 * (1/3)
-    final_qty_kos_target_oos = final_qty_target_oos * (2/3)
-    final_qty_stl_target_oos = final_qty_target_oos * (1/3)
+    # Split final quantity into KOS and STL
+    final_qty_kos_oos_0 = final_qty_oos_0 * (2/3) * 1.1
+    final_qty_stl_oos_0 = final_qty_oos_0 * (1/3) * 1.1
+    final_qty_kos_target_oos = final_qty_target_oos * (2/3) *1.1
+    final_qty_stl_target_oos = final_qty_target_oos * (1/3) *1.1
+
 
     df_oos.append({
         "Date": date.strftime("%d %b %Y"),
         "KOS Supply": supply["KOS"],
         "STL Supply": supply["STL"],
         "Projected OOS%": round(projected_oos, 2),
-        "KOS Demand": round(kos_demand, 0),
-        "STL Demand": round(stl_demand, 0),
-        "Total Demand": round(total_demand, 0),
+        #"KOS Demand": round(kos_demand, 0),
+        #"STL Demand": round(stl_demand, 0),
+        #"Total Demand": round(total_demand, 0),
         "Final Qty (OOS 0%)": round(final_qty_oos_0, 0),
         "Final Qty KOS (OOS 0%)": round(final_qty_kos_oos_0, 0),
         "Final Qty STL (OOS 0%)": round(final_qty_stl_oos_0, 0),
