@@ -31,16 +31,19 @@ fixed_oos = {
     pd.to_datetime("2025-03-09"): 12.63
 }
 
-# Streamlit UI
-st.title("OOS Forecast Split")
+col1, col2 = st.columns(2)
+with col1:
+    st.subheader("STL Supply Adjustment")
+    stl_supply_input = st.number_input("STL Supply After Mar 9", min_value=0, value=40000, step=5000)
+    st.subheader("Supply Adjustments")
 
+with col2:
+    st.subheader("Target OOS Percentage Adjustment")
+    target_oos_percent = st.number_input("Target OOS Percentage", min_value=0.0, max_value=100.0, value=2.0) / 100
+    st.subheader("OOS Forecast")
 
-custom_stl_supply = st.number_input("STL Supply After Mar 9", min_value=40000, value=40000, step=5000)
 df_oos_target = []
-
-target_oos_percent = st.number_input("Target OOS Percentage", min_value=2.0, max_value=15.0, value=2.0, step=1.0) / 100
 df_oos_supply = []
-
 start_date = pd.to_datetime("2025-02-28")
 target_dates = pd.date_range(start=start_date, periods=62, freq='D')
 
@@ -68,11 +71,11 @@ for date in target_dates:
     else:
         days_after_change = (date - change_date).days
         if days_after_change < 7:
-            supply_factor = max(0, min(1, (supply["STL"]-40000) / 30000 * 0.5))
+            supply_factor = max(0, min(1, (supply["STL"]-40000) / 35000 * 0.5))
             projected_oos = 12 - (3 * days_after_change / 7) *(1-supply_factor) # Gradual decrease to 9%
         else:
             normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
-            supply_factor = max(0, min(1, (supply["STL"]-40000) / 30000 * 0.5))
+            supply_factor = max(0, min(1, (supply["STL"]-40000) / 35000 * 0.5))
             projected_oos = daily_demand["Forecast"].sum()/22000 * (1-supply_factor)  # Fluctuates around 9%
 
 
@@ -96,9 +99,9 @@ for date in target_dates:
     
     df_oos_supply.append({
         "Date": date.strftime("%d %b %Y"),
-        "Final Qty (OOS 0%)": round(final_qty_oos_0, 0),
-        "Final Qty KOS (OOS 0%)": round(final_qty_kos_oos_0, 0),
-        "Final Qty STL (OOS 0%)": round(final_qty_stl_oos_0, 0),
+        #"Final Qty (OOS 0%)": round(final_qty_oos_0, 0),
+        #"Final Qty KOS (OOS 0%)": round(final_qty_kos_oos_0, 0),
+        #"Final Qty STL (OOS 0%)": round(final_qty_stl_oos_0, 0),
         "Final Qty (Target OOS%)": round(final_qty_target_oos, 0),
         "Final Qty KOS (Target OOS%)": round(final_qty_kos_target_oos, 0),
         "Final Qty STL (Target OOS%)": round(final_qty_stl_target_oos, 0)
