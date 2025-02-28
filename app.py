@@ -45,7 +45,7 @@ max_demand = demand_summary["Forecast"].max()
 demand_summary["Normalized Demand"] = demand_summary["Forecast"] / max_demand
 
 for date in target_dates:
-    supply = current_supply if date < change_date else future_supply
+    supply = current_supply if date < change_date else custom_stl_supply
     total_supply = supply["KOS"] + supply["STL"]
 
     # Retrieve per-category demand
