@@ -20,15 +20,15 @@ demand_summary = demand_forecast.groupby("Date Key")["Forecast"].sum().reset_ind
 # Fixed OOS values from Feb 28 - Mar 9
 fixed_oos = {
     pd.to_datetime("2025-02-28"): 13.37,
-    pd.to_datetime("2025-02-29"): 13.43,
-    pd.to_datetime("2025-03-01"): 13.44,
-    pd.to_datetime("2025-03-02"): 13.51,
-    pd.to_datetime("2025-03-03"): 13.66,
-    pd.to_datetime("2025-03-04"): 13.71,
-    pd.to_datetime("2025-03-05"): 13.73,
-    pd.to_datetime("2025-03-06"): 13.83,
-    pd.to_datetime("2025-03-07"): 13.85,
-    pd.to_datetime("2025-03-08"): 12.63
+    pd.to_datetime("2025-03-01"): 13.43,
+    pd.to_datetime("2025-03-02"): 13.44,
+    pd.to_datetime("2025-03-03"): 13.51,
+    pd.to_datetime("2025-03-04"): 13.66,
+    pd.to_datetime("2025-03-05"): 13.71,
+    pd.to_datetime("2025-03-06"): 13.73,
+    pd.to_datetime("2025-03-07"): 13.83,
+    pd.to_datetime("2025-03-08"): 13.85,
+    pd.to_datetime("2025-03-09"): 12.63
 }
 
 # Streamlit UI
