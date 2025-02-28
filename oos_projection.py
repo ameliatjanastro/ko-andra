@@ -33,7 +33,7 @@ fixed_oos = {
 
 # Streamlit UI
 st.title("OOS Projection STL + SO :)")
-st.markdown("Assumption using Demand Forecast up to 30 Apr 2025, thus fluctuates acc. to demand trend")
+st.markdown("Assumption: using Demand Forecast, thus fluctuates acc. to demand trend")
 
 
 custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 9", min_value=40000, value=40000, step=5000,max_value=100000)
