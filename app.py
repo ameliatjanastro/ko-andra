@@ -34,7 +34,7 @@ fixed_oos = {
 # Streamlit UI
 st.title("OOS Forecast Split")
 
-target_oos_percent = st.number_input("Target OOS Percentage", min_value=2, max_value=15, value=2.0, step=1) / 100
+target_oos_percent = st.number_input("Target OOS Percentage", min_value=2, max_value=15, value=2.0, step=1.0) / 100
 custom_stl_supply = st.number_input("STL Supply After Mar 9", min_value=15000, value=40000, step=5000)
 
 df_oos = []
