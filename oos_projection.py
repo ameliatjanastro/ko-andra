@@ -73,7 +73,7 @@ for date in target_dates:
         else:
             normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
             supply_factor = max(0, min(1, (supply["STL"]-40000) / 35000 * 0.5))
-            projected_oos = daily_demand["Forecast"].sum()/22000 * (1-supply_factor)  # Fluctuates around 9%
+            projected_oos = daily_demand["Forecast"].sum()/20000 * (1-supply_factor)  # Fluctuates around 9%
 
 
 
