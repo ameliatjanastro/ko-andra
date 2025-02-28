@@ -98,5 +98,5 @@ for date in target_dates:
 df_oos_supply = pd.DataFrame(df_oos_supply)
 
 
-st.subheader("Supply Adjustments")
+st.markdown("### <span style='color:blue'>Butuh SO Berapa utk OOS x%?Changes</span>", unsafe_allow_html=True)
 st.dataframe(df_oos_supply, use_container_width=True)
