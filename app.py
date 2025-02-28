@@ -3,42 +3,89 @@ import pandas as pd
 import numpy as np
 
 # Load data
-demand_forecast = pd.read_excel("forecast.xlsx")
+demand_forecast = pd.read_excel("forecast dates.xlsx")
+stl_skus = set(pd.read_csv("dedicated from stl 2.csv")["Product ID"])
 
 # Define supply conditions
 current_supply = {"KOS": 100000, "STL": 15000}  # 28 Feb-8 Mar
-future_supply = {"KOS": 100000, "STL": 40000}  # 9 Mar onwards
-
-# Define change date
 change_date = pd.to_datetime("2025-03-09")
-
-# Load SKUs available at STL
-stl_skus = set(pd.read_csv("dedicated from stl 2.csv")["Product ID"])
 
 # Base OOS rate
 base_oos_rate = 13.85  # Fixed starting OOS percentage
+expected_so = 140000  # Expected SO
 
-# Forecast next 45 days
+demand_forecast["Date Key"] = pd.to_datetime(demand_forecast["Date Key"])
+demand_summary = demand_forecast.groupby("Date Key")["Forecast"].sum().reset_index()
+
+# Fixed OOS values from Feb 28 - Mar 9
+fixed_oos = {
+    pd.to_datetime("2025-02-28"): 13.37,
+    pd.to_datetime("2025-02-29"): 13.43,
+    pd.to_datetime("2025-03-01"): 13.44,
+    pd.to_datetime("2025-03-02"): 13.51,
+    pd.to_datetime("2025-03-03"): 13.66,
+    pd.to_datetime("2025-03-04"): 13.71,
+    pd.to_datetime("2025-03-05"): 13.73,
+    pd.to_datetime("2025-03-06"): 13.83,
+    pd.to_datetime("2025-03-07"): 13.85,
+    pd.to_datetime("2025-03-08"): 12.63
+}
+
+# Streamlit UI
+st.title("OOS Forecast Split")
+
+target_oos_percent = st.number_input("Target OOS Percentage", min_value=0.0, max_value=100.0, value=2.0) / 100
+custom_stl_supply = st.number_input("STL Supply After Mar 9", min_value=0, value=40000)
+
+df_oos = []
 start_date = pd.to_datetime("2025-02-28")
-target_dates = pd.date_range(start=start_date, periods=45, freq='D')
-future_oos = []
+target_dates = pd.date_range(start=start_date, periods=62, freq='D')
+
+max_demand = demand_summary["Forecast"].max()
+demand_summary["Normalized Demand"] = demand_summary["Forecast"] / max_demand
+
 for date in target_dates:
-    supply = current_supply if date < change_date else future_supply
-    temp_data = demand_forecast[demand_forecast["Date Key"] == date].copy()
-    temp_data["Supply"] = temp_data["Product ID"].apply(lambda x: supply["STL"] if x in stl_skus else supply["KOS"])
-    temp_data["Projected OOS%"] = base_oos_rate + np.maximum(0, (temp_data["Forecast"] - temp_data["Supply"]) / temp_data["Forecast"]) * 100
-    future_oos.append({
+    if date < change_date:
+        supply = current_supply.copy()
+    else:
+        supply = {"KOS": 100000, "STL": custom_stl_supply}
+    
+    total_supply = supply["KOS"] + supply["STL"]
+
+    daily_demand = demand_summary[demand_summary["Date Key"] == date]
+    total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
+    kos_demand = total_demand * (2/3)
+    stl_demand = total_demand * (1/3)
+
+    if date in fixed_oos:
+        projected_oos = fixed_oos[date]
+    else:
+        normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
+        projected_oos = np.clip(9 + (normalized_demand * 5) + np.random.normal(0, 1), 7.5, 12)
+
+    final_qty_oos_0 = expected_so + (projected_oos / 100) * expected_so
+    final_qty_target_oos = expected_so + ((projected_oos / 100) - target_oos_percent) * expected_so
+
+    final_qty_kos_oos_0 = final_qty_oos_0 * (2/3)
+    final_qty_stl_oos_0 = final_qty_oos_0 * (1/3)
+    final_qty_kos_target_oos = final_qty_target_oos * (2/3)
+    final_qty_stl_target_oos = final_qty_target_oos * (1/3)
+
+    df_oos.append({
         "Date": date.strftime("%d %b %Y"),
-        "Outbound": supply["KOS"] + supply["STL"],
-        "Projected OOS%": round(temp_data["Projected OOS%"].mean(), 2)
+        "KOS Supply": supply["KOS"],
+        "STL Supply": supply["STL"],
+        "Projected OOS%": round(projected_oos, 2),
+        "KOS Demand": round(kos_demand, 0),
+        "STL Demand": round(stl_demand, 0),
+        "Total Demand": round(total_demand, 0),
+        "Final Qty (OOS 0%)": round(final_qty_oos_0, 0),
+        "Final Qty KOS (OOS 0%)": round(final_qty_kos_oos_0, 0),
+        "Final Qty STL (OOS 0%)": round(final_qty_stl_oos_0, 0),
+        "Final Qty (Target OOS%)": round(final_qty_target_oos, 0),
+        "Final Qty KOS (Target OOS%)": round(final_qty_kos_target_oos, 0),
+        "Final Qty STL (Target OOS%)": round(final_qty_stl_target_oos, 0)
     })
 
-# Display OOS projection
-st.title("Out-of-Stock (OOS) Forecast")
-df_oos = pd.DataFrame(future_oos)
+df_oos = pd.DataFrame(df_oos)
 st.dataframe(df_oos)
-
-# Download button
-#csv = df_oos.to_csv(index=False)
-#st.download_button(label="Download Forecast CSV", data=csv, file_name="oos_forecast.csv", mime="text/csv")
-
