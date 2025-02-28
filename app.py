@@ -41,11 +41,11 @@ tab1, tab2 = st.tabs(["STL Supply Adjustment", "Target OOS Percentage Adjustment
 
 with tab2:
     #st.sidebar.header("STL Supply Adjustments")
-    custom_stl_supply = st.number_input("STL Supply After Mar 9", min_value=40000, max_value=100000, value=40000, step=5000)
+    custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 9", min_value=40000, max_value=100000, value=40000, step=5000)
 
 with tab1:
     #st.sidebar.header("Target OOS Adjustments")
-    target_oos_percent = st.number_input("Target OOS Percentage", min_value=2.0, max_value=15.0, value=2.0, step = 1.0) / 100
+    target_oos_percent = st.sidebar.number_input("Target OOS Percentage", min_value=2.0, max_value=15.0, value=2.0, step = 1.0) / 100
 
 df_oos_target = []
 df_oos_supply = []
@@ -89,8 +89,8 @@ for date in target_dates:
 
 
      # Calculate final quantity needed for OOS = 0% and target OOS%
-    final_qty_oos_0 = expected_so + (projected_oos / 100) * expected_so #* 1.1
-    final_qty_target_oos = expected_so + (projected_oos / 100) - (target_oos_percent) * expected_so #* (1.275 + np.random.uniform(-0.05, 0.05)))
+    final_qty_oos_0 = expected_so + (projected_oos / 100) * expected_so * 1.1
+    final_qty_target_oos = expected_so + ((projected_oos / 100) - (target_oos_percent) * expected_so * (1.275 + np.random.uniform(-0.05, 0.05)))
 
     # Split final quantity into KOS and STL
     final_qty_kos_oos_0 = final_qty_oos_0 * (2/3)
