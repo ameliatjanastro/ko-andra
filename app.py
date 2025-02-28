@@ -68,7 +68,7 @@ for date in target_dates:
             projected_oos = 12 - (3 * days_after_change / 7) + (np.random.normal(0, 1) - (total_supply / 200000) * 3) # Gradual decrease to 9%
         else:
             normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
-            projected_oos = np.clip(daily_demand["Forecast"].sum()/22000 + (np.random.normal(0, 1) - (total_supply / 200000) * 3, 7.5, 12)  # Fluctuates around 9%
+            projected_oos = daily_demand["Forecast"].sum()/22000 + (np.random.normal(0, 1) - (total_supply / 200000) * 3)  # Fluctuates around 9%
 
 
 
