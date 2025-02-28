@@ -48,7 +48,7 @@ max_demand = demand_summary["Forecast"].max()
 demand_summary["Normalized Demand"] = demand_summary["Forecast"] / max_demand
 
 for date in target_dates:
-    if date < change_date:
+    if date <= change_date:
         supply = current_supply.copy()
     else:
         supply = {"KOS": 100000, "STL": custom_stl_supply}
@@ -98,4 +98,4 @@ df_oos_target = pd.DataFrame(df_oos_target)
 
 
 st.markdown("### <span style='color:blue'>OOS% Projection with STL SO Qty Changes</span>", unsafe_allow_html=True)
-st.dataframe(df_oos_target.style.applymap(lambda x: 'background-color: lightgreen', subset=["Projected OOS%"]), use_container_width=True)
+st.dataframe(df_oos_target, use_container_width=True)
