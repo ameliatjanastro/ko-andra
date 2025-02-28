@@ -51,7 +51,7 @@ for date in target_dates:
     if date < change_date:
         supply = current_supply.copy()
     else:
-        supply = {"KOS": 100000, "STL": custom_stl_supply}
+        supply = {"KOS": 100000, "STL": 40000}
     
     total_supply = supply["KOS"] + supply["STL"]
 
