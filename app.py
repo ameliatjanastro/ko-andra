@@ -34,8 +34,8 @@ fixed_oos = {
 # Streamlit UI
 st.title("OOS Forecast Split")
 
-target_oos_percent = st.number_input("Target OOS Percentage", min_value=0.0, max_value=100.0, value=2.0) / 100
-custom_stl_supply = st.number_input("STL Supply After Mar 9", min_value=0, value=40000)
+target_oos_percent = st.number_input("Target OOS Percentage", min_value=2, max_value=15, value=2.0, step=1) / 100
+custom_stl_supply = st.number_input("STL Supply After Mar 9", min_value=15000, value=40000, step=5000)
 
 df_oos = []
 start_date = pd.to_datetime("2025-02-28")
@@ -65,10 +65,12 @@ for date in target_dates:
     else:
         days_after_change = (date - change_date).days
         if days_after_change < 7:
-            projected_oos = 12 - (3 * days_after_change / 7) + (np.random.normal(0, 1) - (total_supply / 200000) * 3) # Gradual decrease to 9%
+            supply_factor = max(0.5, min(1.5, 1 - (total_supply - 110000) / 100000))
+            projected_oos = 12 - (3 * days_after_change / 7) + * supply_factor # Gradual decrease to 9%
         else:
             normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
-            projected_oos = daily_demand["Forecast"].sum()/22000 + (np.random.normal(0, 1) - (total_supply / 200000) * 3)  # Fluctuates around 9%
+            supply_factor = max(0.5, min(1.5, 1 - (total_supply - 110000) / 100000))
+            projected_oos = daily_demand["Forecast"].sum()/22000 * supply_factor  # Fluctuates around 9%
 
 
 
