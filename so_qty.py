@@ -99,4 +99,6 @@ df_oos_supply = pd.DataFrame(df_oos_supply)
 
 
 st.markdown("### <span style='color:blue'>Butuh SO Berapa utk OOS x%?Changes</span>", unsafe_allow_html=True)
+st.markdown("----")
 st.dataframe(df_oos_supply, use_container_width=True)
+st.download_button("Download CSV", df_oos_supply.to_csv(index=False), "oos_supply.csv", "text/csv")
