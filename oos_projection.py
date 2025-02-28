@@ -33,7 +33,7 @@ fixed_oos = {
 
 # Streamlit UI
 st.title("OOS Projection STL + SO :)")
-st.markdown("Assumption: using Demand Forecast, thus fluctuates acc. to demand trend")
+
 
 
 custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 9", min_value=40000, value=40000, step=5000,max_value=100000)
@@ -99,5 +99,7 @@ df_oos_target = pd.DataFrame(df_oos_target)
 
 
 st.markdown("### <span style='color:blue'>OOS% Projection with STL SO Qty Changes</span>", unsafe_allow_html=True)
+st.markdown("*Assumption: using Demand Forecast, thus fluctuates acc. to demand trend. KOS di set di 100K*", unsafe_allow_html=True)
+st.markdown("----")
 st.dataframe(df_oos_target, use_container_width=True)
 st.download_button("Download CSV", df_oos_target.to_csv(index=False), "oos_target.csv", "text/csv")
