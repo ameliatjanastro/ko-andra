@@ -69,7 +69,7 @@ for date in target_dates:
         days_after_change = (date - change_date).days
         if days_after_change < 7:
             supply_factor = max(0, min(1, (supply["STL"]-40000) / 35000 * 0.5))
-            projected_oos = 12 - (3 * days_after_change / 7) *(1-supply_factor) # Gradual decrease to 9%
+            projected_oos = 12 - (3 * days_after_change / 7) *((supply_factor*1.2)+1) # Gradual decrease to 9%
         else:
             normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
             supply_factor = max(0, min(1, (supply["STL"]-40000) / 35000 * 0.5))
@@ -99,3 +99,4 @@ df_oos_target = pd.DataFrame(df_oos_target)
 
 st.markdown("### <span style='color:blue'>OOS% Projection with STL SO Qty Changes</span>", unsafe_allow_html=True)
 st.dataframe(df_oos_target, use_container_width=True)
+st.download_button("Download CSV", df_oos_target.to_csv(index=False), "oos_target.csv", "text/csv")
