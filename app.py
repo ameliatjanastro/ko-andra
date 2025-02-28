@@ -111,11 +111,11 @@ df_oos_target = pd.DataFrame(df_oos_target)
 df_oos_supply = pd.DataFrame(df_oos_supply)
 
 with tab1:
-    st.subheader("STL Supply Adjustment")
+    #st.subheader("STL Supply Adjustment")
     st.dataframe(df_oos_supply, use_container_width=True)
 
 with tab2:
-    st.subheader("Target OOS Percentage Adjustment")
+    #st.subheader("Target OOS Percentage Adjustment")
     st.dataframe(df_oos_target, use_container_width=True)
 
 
