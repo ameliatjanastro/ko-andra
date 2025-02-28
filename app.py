@@ -65,11 +65,11 @@ for date in target_dates:
     else:
         days_after_change = (date - change_date).days
         if days_after_change < 7:
-            supply_factor = max(0, min(1, (supply["STL"]-40000) / 20000 * 0.5))
+            supply_factor = max(0, min(1, (supply["STL"]-40000) / 30000 * 0.5))
             projected_oos = 12 - (3 * days_after_change / 7) *(1-supply_factor) # Gradual decrease to 9%
         else:
             normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
-            supply_factor = max(0, min(1, (supply["STL"]-40000) / 20000 * 0.5))
+            supply_factor = max(0, min(1, (supply["STL"]-40000) / 30000 * 0.5))
             projected_oos = daily_demand["Forecast"].sum()/22000 * (1-supply_factor)  # Fluctuates around 9%
 
 
@@ -84,15 +84,15 @@ for date in target_dates:
     final_qty_kos_target_oos = final_qty_target_oos * (2/3) * (1.275 + np.random.uniform(-0.05, 0.05))
     final_qty_stl_target_oos = final_qty_target_oos * (1/3) * (1.275 + np.random.uniform(-0.05, 0.05))
 
-
-    df_oos.append({
+    df_oos_target.append({
+        "Date": date.strftime("%d %b %Y"),
+        "Projected OOS%": round(projected_oos, 2)
+    })
+    
+    df_oos_supply.append({
         "Date": date.strftime("%d %b %Y"),
         "KOS Supply": supply["KOS"],
         "STL Supply": supply["STL"],
-        "Projected OOS%": round(projected_oos, 2),
-        #"KOS Demand": round(kos_demand, 0),
-        #"STL Demand": round(stl_demand, 0),
-        #"Total Demand": round(total_demand, 0),
         "Final Qty (OOS 0%)": round(final_qty_oos_0, 0),
         "Final Qty KOS (OOS 0%)": round(final_qty_kos_oos_0, 0),
         "Final Qty STL (OOS 0%)": round(final_qty_stl_oos_0, 0),
@@ -101,5 +101,13 @@ for date in target_dates:
         "Final Qty STL (Target OOS%)": round(final_qty_stl_target_oos, 0)
     })
 
-df_oos = pd.DataFrame(df_oos)
-st.dataframe(df_oos)
+df_oos_target = pd.DataFrame(df_oos_target)
+df_oos_supply = pd.DataFrame(df_oos_supply)
+
+st.subheader("Target OOS Percentage Adjustments")
+st.dataframe(df_oos_target)
+
+st.subheader("Supply Adjustments")
+st.dataframe(df_oos_supply)
+
+ 
