@@ -34,11 +34,13 @@ fixed_oos = {
 # Streamlit UI
 st.title("OOS Forecast Split")
 
-target_oos_percent = st.number_input("Target OOS Percentage", min_value=2.0, max_value=15.0, value=2.0, step=1.0) / 100
-custom_stl_supply = st.number_input("STL Supply After Mar 9", min_value=40000, value=40000, step=5000)
 
+custom_stl_supply = st.number_input("STL Supply After Mar 9", min_value=40000, value=40000, step=5000)
 df_oos_target = []
+
+target_oos_percent = st.number_input("Target OOS Percentage", min_value=2.0, max_value=15.0, value=2.0, step=1.0) / 100
 df_oos_supply = []
+
 start_date = pd.to_datetime("2025-02-28")
 target_dates = pd.date_range(start=start_date, periods=62, freq='D')
 
@@ -106,9 +108,9 @@ df_oos_target = pd.DataFrame(df_oos_target)
 df_oos_supply = pd.DataFrame(df_oos_supply)
 
 st.subheader("Target OOS Percentage Adjustments")
-st.dataframe(df_oos_target)
+st.dataframe(df_oos_target, use_container_width=True)
 
 st.subheader("Supply Adjustments")
-st.dataframe(df_oos_supply)
+st.dataframe(df_oos_supply, use_container_width=True)
 
  
