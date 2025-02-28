@@ -98,4 +98,4 @@ df_oos_target = pd.DataFrame(df_oos_target)
 
 
 st.markdown("### <span style='color:blue'>OOS% Projection with STL SO Qty Changes</span>", unsafe_allow_html=True)
-st.dataframe(df_oos_target.style.applymap(lambda x: 'background-color: lightgreen'), use_container_width=True)
+st.dataframe(df_oos_target, use_container_width=True)
