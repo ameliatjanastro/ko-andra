@@ -66,11 +66,11 @@ for date in target_dates:
         days_after_change = (date - change_date).days
         if days_after_change < 7:
             supply_factor = max(0, min(1, (supply["STL"]-40000) / 5000 * 0.5))
-            projected_oos = 12 - (3 * days_after_change / 7) *(1+ supply_factor) # Gradual decrease to 9%
+            projected_oos = 12 - (3 * days_after_change / 7) *(1-supply_factor) # Gradual decrease to 9%
         else:
             normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
             supply_factor = max(0, min(1, (supply["STL"]-40000) / 5000 * 0.5))
-            projected_oos = daily_demand["Forecast"].sum()/22000 * (1+supply_factor)  # Fluctuates around 9%
+            projected_oos = daily_demand["Forecast"].sum()/22000 * (1-supply_factor)  # Fluctuates around 9%
 
 
 
