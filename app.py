@@ -40,12 +40,12 @@ fixed_oos = {
 tab1, tab2 = st.tabs(["STL Supply Adjustment", "Target OOS Percentage Adjustment"])
 
 with tab1:
-    st.sidebar.header("STL Supply Adjustments")
-    custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 9", min_value=0, value=40000, step=5000)
+    #st.sidebar.header("STL Supply Adjustments")
+    custom_stl_supply = st.number_input("STL Supply After Mar 9", min_value=0, value=40000, step=5000)
 
 with tab2:
-    st.sidebar.header("Target OOS Adjustments")
-    target_oos_percent = st.sidebar.number_input("Target OOS Percentage", min_value=0.0, max_value=100.0, value=2.0) / 100
+    #st.sidebar.header("Target OOS Adjustments")
+    target_oos_percent = st.number_input("Target OOS Percentage", min_value=0.0, max_value=100.0, value=2.0) / 100
 
 df_oos_target = []
 df_oos_supply = []
