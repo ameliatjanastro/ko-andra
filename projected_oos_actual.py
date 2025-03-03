@@ -34,9 +34,8 @@ if supply_file and oos_file:
     # Filter for dates from March 4 onwards
     avg_supply = avg_supply[avg_supply["Date"] >= pd.to_datetime("2025-03-04")]
 
+    st.write("Rolling Supply for Mar 4-8:", avg_supply)
 
-    st.write("Rolling Supply for Mar 4-8:", avg_supply[avg_supply["Date"] <= "2025-03-08"])
-    
     # Prepare Demand Data
     demand_summary = demand_forecast.groupby("Date Key")["Forecast"].sum().reset_index()
     max_demand = demand_summary["Forecast"].max()
