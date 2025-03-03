@@ -146,6 +146,7 @@ if supply_file and oos_file:
             if days_after_change < 7:
                 entry["Projected OOS%"] = round(projected_oos_8mar - (3 * days_after_change / 7) * ((supply_factor * 1.2) + 1), 2)
             else:
+                st.write("Demand Forecast Date Range:", demand_summary["Date Key"].min(), "to", demand_summary["Date Key"].max())
                 entry["Projected OOS%"] = round(daily_demand["Forecast"].sum() / 22000 * (1 - supply_factor), 2)
 
 
