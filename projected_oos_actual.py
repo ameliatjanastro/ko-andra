@@ -48,11 +48,10 @@ if supply_file and oos_file:
             supply = supply_data.loc[supply_data["Date"] == date]
         else:
             supply = pd.DataFrame([{"KOS": 100000, "STL": custom_stl_supply}])  # Ensuring it's a DataFrame
-
-        if not supply.empty:
-            supply = supply.iloc[0]
-        else:
-            supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})  # Default values
+            if not supply.empty:
+                supply = supply.iloc[0]
+            else:
+                supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})  # Default values
     
         # Get OOS if available
         #if date in fixed_oos_data["Date Key"].values:
