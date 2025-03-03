@@ -21,7 +21,7 @@ if supply_file and oos_file:
     
     # Compute Rolling Supply for Mar 4-8
     avg_supply = supply_data.set_index("Date").rolling(3).mean().reset_index()
-    avg_supply = avg_supply[supply_data["Date"] >= "2025-03-04"]
+    #avg_supply = avg_supply[supply_data["Date"] >= "2025-03-04"]
     
     # Prepare Demand Data
     demand_summary = demand_forecast.groupby("Date Key")["Forecast"].sum().reset_index()
