@@ -84,7 +84,7 @@ if supply_file and oos_file:
             else:
                 entry["Projected OOS%"] = round(daily_demand["Forecast"].sum() / 22000 * (1 - supply_factor), 2)
 
-    df_oos_target = pd.DataFrame(df_oos_target)
+    df_oos_target = pd.DataFrame(oos_data)
 
     # Display Results
     st.markdown("### <span style='color:blue'>OOS% Projection with Updated Supply Data</span>", unsafe_allow_html=True)
