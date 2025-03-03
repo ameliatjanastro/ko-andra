@@ -144,7 +144,7 @@ if supply_file and oos_file:
     
     # Update projected OOS% for March 4-8 using L7 trend
     for i in range(len(oos_data)):
-        date = pd.to_datetime(oos_data[i]["Date Key"])
+        date = pd.to_datetime(oos_data[i]["Date"])
         if pd.to_datetime("2025-03-04") <= date <= pd.to_datetime("2025-03-08"):
             prev_oos = df_oos_target[df_oos_target["Date Key"] == (date - pd.Timedelta(days=1)).strftime("%d %b %Y")]["Projected OOS%"]
             
