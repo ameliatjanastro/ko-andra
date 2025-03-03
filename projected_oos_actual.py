@@ -46,7 +46,7 @@ if supply_file and oos_file:
                 supply = supply_data.loc[supply_data["Date"] == date]
             else:
                 supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
-            if not supply.empty:
+            if isinstance(supply, pd.DataFrame) and not supply.empty:
                 supply = supply.squeeze()
             else:
                 supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
