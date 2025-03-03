@@ -43,7 +43,7 @@ if supply_file and oos_file:
     # Ensure it's sorted correctly
     extended_supply = extended_supply.sort_values("Date")
     st.write("Rolling Supply Data (First 5 Rows):")
-    st.write(avg_supply.head())
+    st.write(extended_supply.head())
 
 
 
