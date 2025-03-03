@@ -45,6 +45,8 @@ if supply_file and oos_file:
                 projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
             elif pd.to_datetime("2025-03-04") <= date <= pd.to_datetime("2025-03-08"):
                 supply = avg_supply.loc[avg_supply["Date"] == date]
+                if supply.empty:  
+                    supply = avg_supply.iloc[-1]  # Use last available rolling supply
             elif date < change_date:
                 supply = supply_data.loc[supply_data["Date"] == date]
             
