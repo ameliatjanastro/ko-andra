@@ -71,8 +71,11 @@ if supply_file and oos_file:
             "Projected OOS%": projected_oos,
         })
         
-    # Get Projected OOS for March 8
-    projected_oos_8mar = np.mean([entry["Projected OOS%"] for entry in df_oos_target if pd.to_datetime(entry["Date"]) in pd.date_range("2025-03-04", "2025-03-07")])
+    valid_oos_values = [entry["Projected OOS%"] for entry in df_oos_target 
+                    if pd.to_datetime(entry["Date"]) in pd.date_range("2025-03-04", "2025-03-07") 
+                    and entry["Projected OOS%"] is not None]
+
+    projected_oos_8mar = np.mean(valid_oos_values) if valid_oos_values else 0  # Fallback to 0 if empty
         
     # Adjust projection for March 9 onwards
     for entry in df_oos_target:
