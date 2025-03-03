@@ -7,12 +7,12 @@ st.title("OOS Projection STL + SO New")
 
 # File Uploads
 supply_file = st.sidebar.file_uploader("Upload Supply CSV", type=["xlsx"])
-oos_file = st.sidebar.file_uploader("Upload Fixed OOS CSV (Until Mar 3)", type=["csv"])
+oos_file = st.sidebar.file_uploader("Upload Fixed OOS CSV (Until Mar 3)", type=["xlsx"])
 
 if supply_file and oos_file:
     # Load Data
     supply_data = pd.read_excel(supply_file)
-    fixed_oos_data = pd.read_csv(oos_file)
+    fixed_oos_data = pd.read_excel(oos_file)
     demand_forecast = pd.read_excel("forecast dates.xlsx")
     
     supply_data["Date"] = pd.to_datetime(supply_data["Date"])
