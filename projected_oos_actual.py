@@ -23,7 +23,7 @@ if supply_file and oos_file:
     supply_data = supply_data.sort_values("Date")  # Ensure sorting
     supply_data[["KOS", "STL"]] = supply_data[["KOS", "STL"]].apply(pd.to_numeric, errors="coerce")
 
-    filtered_supply = supply_data[supply_data["Date"] < "2025-03-04"]
+    filtered_supply = supply_data[supply_data["Date"] > "2025-02-28"]
 
     # Compute rolling mean for KOS & STL using the last 3 days before each date
     filtered_supply["Rolling KOS"] = filtered_supply["KOS"].rolling(window=3, min_periods=1).mean()
