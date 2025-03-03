@@ -38,71 +38,48 @@ if supply_file and oos_file:
     target_dates = pd.date_range(start=start_date, periods=62, freq='D')
     
     for date in target_dates:
-        projected_oos = None  # Default to None to check if it remains unset
-
-        if date in fixed_oos_data["Date Key"].values:
-            projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
-        elif "2025-03-04" <= str(date) <= "2025-03-08":
-            supply = avg_supply.loc[avg_supply["Date"] == date]
-        elif date < change_date:
-            supply = supply_data.loc[supply_data["Date"] == date]
-        else:
-            supply = pd.DataFrame([{"KOS": 100000, "STL": custom_stl_supply}])  # Ensuring it's a DataFrame
-        # Ensure supply is not empty before accessing its values
-        if not supply.empty:
-            supply = supply.iloc[0] if len(supply) > 0 else pd.Series({"KOS": 100000, "STL": custom_stl_supply})
-        else:
-            supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})  # Default values
-    
-        total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
-    
-        # Get OOS if available
-        #if date in fixed_oos_data["Date Key"].values:
-            #projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
-        
-        # Determine supply source
-        #if pd.to_datetime("2025-03-04") <= date <= pd.to_datetime("2025-03-08"):
-            #supply = avg_supply[avg_supply["Date"] == date]
-        #elif date < change_date:
-            #supply = supply_data[supply_data["Date"] == date]
-        #else:
-            #supply = pd.DataFrame([{"KOS": 100000, "STL": custom_stl_supply}])  # Use DataFrame for consistency
-    
-        # Ensure supply is valid
-        #if not supply.empty:
-            #supply = supply.iloc[0]  # Use first row
-        #else:
-            #supply = {"KOS": 100000, "STL": custom_stl_supply}  # Fallback values
-
-        #total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
-        daily_demand = demand_summary[demand_summary["Date Key"] == date]
-        total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
-        normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
-        projected_oos = (total_demand / total_supply) * 100 if total_supply > 0 else 100  # Estimate OOS%
+            projected_oos = None  # Default to None
+            supply = None  # Default supply
             
-        df_oos_target.append({
-            "Date": date.strftime("%d %b %Y"),
-            "KOS Supply": supply["KOS"] if isinstance(supply, pd.Series) else 100000,
-            "STL Supply": supply["STL"] if isinstance(supply, pd.Series) else custom_stl_supply,
-            "Projected OOS%": projected_oos,
-        })
-        
-    valid_oos_values = [entry["Projected OOS%"] for entry in df_oos_target 
-                    if pd.to_datetime(entry["Date"]) in pd.date_range("2025-03-04", "2025-03-07") 
-                    and entry["Projected OOS%"] is not None]
-
-    projected_oos_8mar = np.mean(valid_oos_values) if valid_oos_values else 0  # Fallback to 0 if empty
-        
-    # Adjust projection for March 9 onwards
-    for entry in df_oos_target:
-        date = pd.to_datetime(entry["Date"])
-        if date >= change_date:
-            days_after_change = (date - change_date).days
-            supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 35000 * 0.5))
-            if days_after_change < 7:
-                entry["Projected OOS%"] = round(projected_oos_8mar - (3 * days_after_change / 7) * ((supply_factor * 1.2) + 1), 2)
+            if date in fixed_oos_data["Date Key"].values:
+                projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
+            elif "2025-03-04" <= str(date) <= "2025-03-08":
+                supply = avg_supply.loc[avg_supply["Date"] == date]
+            elif date < change_date:
+                supply = supply_data.loc[supply_data["Date"] == date]
+            
+            # Ensure supply is a valid DataFrame or Series
+            if supply is not None and not supply.empty:
+                supply = supply.squeeze()
             else:
-                entry["Projected OOS%"] = round(daily_demand["Forecast"].sum() / 22000 * (1 - supply_factor), 2)
+                supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
+            
+            total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
+            daily_demand = demand_summary[demand_summary["Date Key"] == date]
+            total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
+            normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
+            
+            df_oos_target.append({
+                "Date": date.strftime("%d %b %Y"),
+                "KOS Supply": supply.get("KOS", 100000),
+                "STL Supply": supply.get("STL", custom_stl_supply),
+                "Projected OOS%": projected_oos if projected_oos is not None else np.nan,
+            })
+        
+        # Get Projected OOS for March 8
+        oos_values = [entry["Projected OOS%"] for entry in df_oos_target if pd.to_datetime(entry["Date"]) in pd.date_range("2025-03-04", "2025-03-07") and not pd.isna(entry["Projected OOS%"])]
+        projected_oos_8mar = np.mean(oos_values) if oos_values else 12  # Default to 12 if no valid values
+        
+        # Adjust projection for March 9 onwards
+        for entry in df_oos_target:
+            date = pd.to_datetime(entry["Date"])
+            if date >= change_date:
+                days_after_change = (date - change_date).days
+                supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 35000 * 0.5))
+                if days_after_change < 7:
+                    entry["Projected OOS%"] = round(projected_oos_8mar - (3 * days_after_change / 7) * ((supply_factor * 1.2) + 1), 2)
+                else:
+                    entry["Projected OOS%"] = round(daily_demand["Forecast"].sum() / 22000 * (1 - supply_factor), 2)
         
     df_oos_target = pd.DataFrame(df_oos_target)
 
