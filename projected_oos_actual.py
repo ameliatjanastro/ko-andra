@@ -131,7 +131,7 @@ if supply_file and oos_file:
 
         total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
         normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
-        st.write(f"{date.strftime('%d %b %Y')}: Demand -", daily_demand)
+        #st.write(f"{date.strftime('%d %b %Y')}: Demand -", daily_demand)
 
 
         oos_data.append({
@@ -154,7 +154,15 @@ if supply_file and oos_file:
             if days_after_change < 7:
                 entry["Projected OOS%"] = round(projected_oos_8mar - (3 * days_after_change / 7) * ((supply_factor * 1.2) + 1), 2)
             else:
-                entry["Projected OOS%"] = round(daily_demand["Forecast"].sum() / 22000 * (1 - supply_factor), 2)
+                forecast_value = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
+
+                if forecast_value == 0:
+                    # Use the last available forecast value if the date has no data
+                    last_available_date = demand_summary[demand_summary["Date Key"] <= date]["Date Key"].max()
+                    last_available_demand = demand_summary[demand_summary["Date Key"] == last_available_date]["Forecast"].sum()
+                    forecast_value = last_available_demand if not pd.isna(last_available_demand) else demand_summary["Forecast"].mean()
+                
+                entry["Projected OOS%"] = round(forecast_value / 22000 * (1 - supply_factor), 2)
 
 
     df_oos_target = pd.DataFrame(oos_data)
