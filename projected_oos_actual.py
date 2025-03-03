@@ -50,7 +50,7 @@ if supply_file and oos_file:
             supply = pd.DataFrame([{"KOS": 100000, "STL": custom_stl_supply}])  # Ensuring it's a DataFrame
 
         if not supply.empty:
-            supply = supply.squeeze()  # Convert DataFrame to Series
+            supply = supply.iloc[0]
         else:
             supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})  # Default values
     
