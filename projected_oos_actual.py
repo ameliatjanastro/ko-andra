@@ -28,7 +28,7 @@ if supply_file and oos_file:
 
     avg_supply = supply_data[["Date", "Rolling KOS", "Rolling STL"]].copy()
     avg_supply.rename(columns={"Rolling KOS": "KOS", "Rolling STL": "STL"}, inplace=True)
-    avg_supply = avg_supply[avg_supply["Date"] >= "2025-03-04"]
+    #avg_supply = avg_supply[avg_supply["Date"] >= "2025-03-04"]
     st.write("Rolling Supply Data (First 5 Rows):")
     st.write(avg_supply.head())
 
