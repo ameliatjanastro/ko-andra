@@ -40,8 +40,8 @@ if supply_file and oos_file:
     for date in target_dates:
         projected_oos = None  # Default to None to check if it remains unset
 
-        if date in fixed_oos_data["Date"].values:
-            projected_oos = fixed_oos_data.loc[fixed_oos_data["Date"] == date, "OOS%"].values[0]
+        if date in fixed_oos_data["Date Key"].values:
+            projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
         elif "2025-03-04" <= str(date) <= "2025-03-08":
             supply = avg_supply.loc[avg_supply["Date"] == date]
             if not supply.empty:
