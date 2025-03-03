@@ -38,6 +38,8 @@ if supply_file and oos_file:
     start_date = pd.to_datetime("2025-02-28")
     target_dates = pd.date_range(start=start_date, periods=62, freq='D')
 
+    oos_data = []
+
     for date in target_dates:
         projected_oos = None  # Default to None
         supply = None  # Default supply
@@ -60,7 +62,7 @@ if supply_file and oos_file:
         total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
         normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
 
-        df_oos_target.append({
+        oos_data.append({
             "Date": date.strftime("%d %b %Y"),
             "KOS Supply": supply.get("KOS", 100000),
             "STL Supply": supply.get("STL", custom_stl_supply),
@@ -76,7 +78,7 @@ if supply_file and oos_file:
     projected_oos_8mar = np.mean(oos_values) if oos_values else 12  # Default to 12 if no valid values
 
     # Adjust projection for March 9 onwards
-    for entry in df_oos_target:
+    for entry in oos_data:
         date = pd.to_datetime(entry["Date"])
         if date >= change_date:
             days_after_change = (date - change_date).days
