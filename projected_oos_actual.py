@@ -21,19 +21,20 @@ if supply_file and oos_file:
     
     # Compute Rolling Supply for Mar 4-8
     # Ensure the data is sorted before rolling calculation
+    # Ensure the data is sorted
     supply_data = supply_data.sort_values("Date")
     
-    # Convert columns to numeric for proper rolling calculation
+    # Convert supply columns to numeric
     supply_data[["KOS", "STL"]] = supply_data[["KOS", "STL"]].apply(pd.to_numeric, errors="coerce")
     
-    # Compute rolling mean using the last 3 available days before each date
-    rolling_supply = supply_data.copy()
-    rolling_supply[["KOS", "STL"]] = rolling_supply[["KOS", "STL"]].rolling(window=3, min_periods=1).mean()
-    
-    # Generate forecasted supply for March 4-8
+    # Initialize forecasted supply storage
     forecasted_supply = []
+    
+    # Compute rolling mean for March 4-8
     for target_date in pd.date_range("2025-03-04", "2025-03-08"):
-        prev_days = rolling_supply[rolling_supply["Date"] < target_date].tail(3)  # Take from rolling supply
+        # Get the last 3 days before the target date
+        prev_days = supply_data[supply_data["Date"] < target_date].tail(3)
+    
         if not prev_days.empty:
             avg_kos = prev_days["KOS"].mean()
             avg_stl = prev_days["STL"].mean()
@@ -42,18 +43,18 @@ if supply_file and oos_file:
         
         forecasted_supply.append({"Date": target_date, "KOS": avg_kos, "STL": avg_stl})
     
-    # Convert to DataFrame
+    # Convert forecasted supply to DataFrame
     forecasted_supply = pd.DataFrame(forecasted_supply)
     
     # Merge forecasted supply with actual supply data
     extended_supply = pd.concat([supply_data, forecasted_supply]).drop_duplicates(subset=["Date"], keep="last")
     
-    # Ensure data is sorted correctly
+    # Ensure proper sorting
     extended_supply = extended_supply.sort_values("Date")
     
-    # Debugging: Display the extended supply data
-    st.write("Rolling Supply Data (First 5 Rows):")
-    st.write(extended_supply.tail())
+    # Debugging: Display Rolling Supply Data
+    st.write("Rolling Supply Data for March 4-8:")
+    st.write(extended_supply[extended_supply["Date"].between("2025-03-04", "2025-03-08")])
 
 
 
