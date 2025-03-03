@@ -40,16 +40,19 @@ if supply_file and oos_file:
     for date in target_dates:
             if date in fixed_oos_data["Date Key"].values:
                 projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
-            elif "2025-03-04" <= str(date) <= "2025-03-08":
-                supply = avg_supply.loc[avg_supply["Date"] == date].squeeze()
+            elif date in pd.date_range("2025-03-04", "2025-03-08"):
+                supply = avg_supply.query("Date == @date")
             elif date < change_date:
-                supply = supply_data.loc[supply_data["Date"] == date]
-            #else:
-                #supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
-            if isinstance(supply, pd.DataFrame) and not supply.empty:
+                supply = supply_data.query("Date == @date")
+            else:
+                supply = pd.DataFrame([{"KOS": 100000, "STL": custom_stl_supply}])  # Default values
+
+            if not supply.empty:
                 supply = supply.squeeze()
             else:
-                supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
+                # Use last available supply data (rolling average for Mar 4-8)
+                recent_supply = supply_data.query("Date < @date").tail(3).mean(numeric_only=True)
+                supply = recent_supply if not recent_supply.empty else pd.Series({"KOS": 100000, "STL": custom_stl_supply})
         
             total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
             daily_demand = demand_summary[demand_summary["Date Key"] == date]
