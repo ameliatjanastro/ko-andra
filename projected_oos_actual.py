@@ -33,7 +33,7 @@ if supply_file and oos_file:
     # Generate forecasted supply for March 4-8
     forecasted_supply = []
     for target_date in pd.date_range("2025-03-04", "2025-03-08"):
-        prev_days = supply_data[supply_data["Date"] < target_date].tail(3)  # Get last 3 days before target date
+        prev_days = rolling_supply[rolling_supply["Date"] < target_date].tail(3)  # Take from rolling supply
         if not prev_days.empty:
             avg_kos = prev_days["KOS"].mean()
             avg_stl = prev_days["STL"].mean()
