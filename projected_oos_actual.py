@@ -38,33 +38,38 @@ if supply_file and oos_file:
     target_dates = pd.date_range(start=start_date, periods=62, freq='D')
     
     for date in target_dates:
-            if date in fixed_oos_data["Date Key"].values:
-                projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
-            elif date in pd.date_range("2025-03-04", "2025-03-08"):
-                supply = avg_supply.query("Date == @date")
-            elif date < change_date:
-                supply = supply_data.query("Date == @date")
-            else:
-                supply = pd.DataFrame([{"KOS": 100000, "STL": custom_stl_supply}])  # Default values
-
-            if isinstance(supply, pd.DataFrame) and not supply.empty:
-                supply = supply.squeeze()
-            else:
-                # Use last available supply data (rolling average for Mar 4-8)
-                recent_supply = supply_data.query("Date < @date").tail(3).mean(numeric_only=True)
-                supply = recent_supply if not recent_supply.empty else pd.Series({"KOS": 100000, "STL": custom_stl_supply})
+        projected_oos = None  # Default if not found
+    
+        # Get OOS if available
+        if date in fixed_oos_data["Date"].values:
+            projected_oos = fixed_oos_data.loc[fixed_oos_data["Date"] == date, "OOS%"].values[0]
         
-            total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
-            daily_demand = demand_summary[demand_summary["Date Key"] == date]
-            total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
-            normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
+        # Determine supply source
+        if pd.to_datetime("2025-03-04") <= date <= pd.to_datetime("2025-03-08"):
+            supply = avg_supply[avg_supply["Date"] == date]
+        elif date < change_date:
+            supply = supply_data[supply_data["Date"] == date]
+        else:
+            supply = pd.DataFrame([{"KOS": 100000, "STL": custom_stl_supply}])  # Use DataFrame for consistency
+    
+        # Ensure supply is valid
+        if not supply.empty:
+            supply = supply.iloc[0]  # Use first row
+        else:
+            supply = {"KOS": 100000, "STL": custom_stl_supply}  # Fallback values
+
+        
+        total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
+        daily_demand = demand_summary[demand_summary["Date Key"] == date]
+        total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
+        normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
             
-            df_oos_target.append({
-                "Date": date.strftime("%d %b %Y"),
-                "KOS Supply": supply["KOS"] if isinstance(supply, pd.Series) else 100000,
-                "STL Supply": supply["STL"] if isinstance(supply, pd.Series) else custom_stl_supply,
-                "Projected OOS%": projected_oos,
-            })
+        df_oos_target.append({
+            "Date": date.strftime("%d %b %Y"),
+            "KOS Supply": supply["KOS"] if isinstance(supply, pd.Series) else 100000,
+            "STL Supply": supply["STL"] if isinstance(supply, pd.Series) else custom_stl_supply,
+            "Projected OOS%": projected_oos,
+        })
         
     # Get Projected OOS for March 8
     projected_oos_8mar = np.mean([entry["Projected OOS%"] for entry in df_oos_target if pd.to_datetime(entry["Date"]) in pd.date_range("2025-03-04", "2025-03-07")])
