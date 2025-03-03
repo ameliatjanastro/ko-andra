@@ -131,6 +131,8 @@ if supply_file and oos_file:
 
         total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
         normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
+        st.write(f"{date.strftime('%d %b %Y')}: Demand -", daily_demand)
+
 
         oos_data.append({
             "Date": date.strftime("%d %b %Y"),
