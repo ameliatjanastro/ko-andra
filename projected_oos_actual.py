@@ -23,6 +23,7 @@ if supply_file and oos_file:
     # Ensure the data is sorted before rolling calculation
     # Ensure the data is sorted
    # Ensure the data is sorted
+    # Ensure data is sorted by Date
     supply_data = supply_data.sort_values("Date")
     
     # Convert supply columns to numeric
@@ -31,9 +32,12 @@ if supply_file and oos_file:
     # Initialize forecasted supply storage
     forecasted_supply = []
     
-    # Compute rolling mean for March 4-8 using the last 3 available days for each date
+    # Create a copy of supply_data to update with forecasted values dynamically
+    rolling_supply_data = supply_data.copy()
+    
+    # Compute rolling mean for March 4-8 using the last 3 available days (actual + forecasted)
     for target_date in pd.date_range("2025-03-04", "2025-03-08"):
-        prev_days = supply_data[supply_data["Date"] < target_date].tail(3)  # Get last 3 days before target date
+        prev_days = rolling_supply_data[rolling_supply_data["Date"] < target_date].tail(3)  # Get last 3 available days
         
         if not prev_days.empty:
             avg_kos = prev_days["KOS"].mean()
@@ -42,6 +46,9 @@ if supply_file and oos_file:
             avg_kos, avg_stl = 100000, custom_stl_supply  # Default values if no data
         
         forecasted_supply.append({"Date": target_date, "KOS": avg_kos, "STL": avg_stl})
+    
+        # Append forecasted supply to rolling data for the next iterations
+        rolling_supply_data = pd.concat([rolling_supply_data, pd.DataFrame(forecasted_supply[-1:], index=[0])])
     
     # Convert forecasted supply to DataFrame
     forecasted_supply = pd.DataFrame(forecasted_supply)
@@ -55,6 +62,7 @@ if supply_file and oos_file:
     # Debugging: Display Rolling Supply Data
     st.write("Rolling Supply Data for March 4-8:")
     st.write(extended_supply[extended_supply["Date"].between("2025-03-04", "2025-03-08")])
+
 
     
     # Ensure proper sorting
