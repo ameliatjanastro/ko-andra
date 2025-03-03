@@ -37,7 +37,7 @@ if supply_file and oos_file:
     
     # Compute rolling mean for March 4-8 using the last 3 available days (actual + forecasted)
     for target_date in pd.date_range("2025-03-04", "2025-03-08"):
-        prev_days = rolling_supply_data[rolling_supply_data["Date"] < target_date].tail(3)  # Get last 3 available days
+        prev_days = rolling_supply_data[rolling_supply_data["Date"] < target_date].tail(7)  # Get last 3 available days
         
         if not prev_days.empty:
             avg_kos = prev_days["KOS"].mean()
