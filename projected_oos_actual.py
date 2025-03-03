@@ -44,8 +44,8 @@ if supply_file and oos_file:
                 supply = avg_supply.loc[avg_supply["Date"] == date].squeeze()
             elif date < change_date:
                 supply = supply_data.loc[supply_data["Date"] == date]
-            else:
-                supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
+            #else:
+                #supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
             if isinstance(supply, pd.DataFrame) and not supply.empty:
                 supply = supply.squeeze()
             else:
