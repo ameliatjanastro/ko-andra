@@ -59,23 +59,23 @@ if supply_file and oos_file:
                 "Projected OOS%": projected_oos,
             })
         
-        # Get Projected OOS for March 8
-        projected_oos_8mar = np.mean([entry["Projected OOS%"] for entry in df_oos_target if pd.to_datetime(entry["Date"]) in pd.date_range("2025-03-04", "2025-03-07")])
+    # Get Projected OOS for March 8
+    projected_oos_8mar = np.mean([entry["Projected OOS%"] for entry in df_oos_target if pd.to_datetime(entry["Date"]) in pd.date_range("2025-03-04", "2025-03-07")])
         
-        # Adjust projection for March 9 onwards
-        for entry in df_oos_target:
-            date = pd.to_datetime(entry["Date"])
-            if date >= change_date:
-                days_after_change = (date - change_date).days
-                supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 35000 * 0.5))
-                if days_after_change < 7:
-                    entry["Projected OOS%"] = round(projected_oos_8mar - (3 * days_after_change / 7) * ((supply_factor * 1.2) + 1), 2)
-                else:
-                    entry["Projected OOS%"] = round(daily_demand["Forecast"].sum() / 22000 * (1 - supply_factor), 2)
+    # Adjust projection for March 9 onwards
+    for entry in df_oos_target:
+        date = pd.to_datetime(entry["Date"])
+        if date >= change_date:
+            days_after_change = (date - change_date).days
+            supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 35000 * 0.5))
+            if days_after_change < 7:
+                entry["Projected OOS%"] = round(projected_oos_8mar - (3 * days_after_change / 7) * ((supply_factor * 1.2) + 1), 2)
+            else:
+                entry["Projected OOS%"] = round(daily_demand["Forecast"].sum() / 22000 * (1 - supply_factor), 2)
         
-        df_oos_target = pd.DataFrame(df_oos_target)
+    df_oos_target = pd.DataFrame(df_oos_target)
 
-        # Display Results
-        st.markdown("### <span style='color:blue'>OOS% Projection with Updated Supply Data</span>", unsafe_allow_html=True)
-        st.dataframe(df_oos_target, use_container_width=True)
-        st.download_button("Download CSV", df_oos_target.to_csv(index=False), "oos_target_new.csv", "text/csv")
+    # Display Results
+    st.markdown("### <span style='color:blue'>OOS% Projection with Updated Supply Data</span>", unsafe_allow_html=True)
+    st.dataframe(df_oos_target, use_container_width=True)
+    st.download_button("Download CSV", df_oos_target.to_csv(index=False), "oos_target_new.csv", "text/csv")
