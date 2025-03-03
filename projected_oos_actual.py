@@ -121,10 +121,10 @@ if supply_file and oos_file:
         else:
             supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
 
-        total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
-        daily_demand = demand_summary[demand_summary["Date Key"] == date]
-        total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
-        normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
+    total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
+    daily_demand = demand_summary[demand_summary["Date Key"] == date]
+    total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
+    normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
 
         oos_data.append({
             "Date": date.strftime("%d %b %Y"),
@@ -146,7 +146,6 @@ if supply_file and oos_file:
             if days_after_change < 7:
                 entry["Projected OOS%"] = round(projected_oos_8mar - (3 * days_after_change / 7) * ((supply_factor * 1.2) + 1), 2)
             else:
-                st.write("Demand Forecast Date Range:", demand_summary["Date Key"].min(), "to", demand_summary["Date Key"].max())
                 entry["Projected OOS%"] = round(daily_demand["Forecast"].sum() / 22000 * (1 - supply_factor), 2)
 
 
