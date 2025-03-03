@@ -23,7 +23,7 @@ if supply_file and oos_file:
     numeric_cols = ["KOS", "STL"]
     supply_data = supply_data.sort_values("Date")  # Ensure chronological order
     avg_supply = supply_data.set_index("Date")[numeric_cols].rolling(window=3, min_periods=1).mean().reset_index()
-    avg_supply = avg_supply[avg_supply["Date"] >= pd.to_datetime("2025-03-04")]
+    #avg_supply = avg_supply[avg_supply["Date"] >= pd.to_datetime("2025-03-04")]
 
     # Prepare Demand Data
     demand_summary = demand_forecast.groupby("Date Key")["Forecast"].sum().reset_index()
