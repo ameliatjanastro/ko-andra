@@ -47,7 +47,7 @@ if supply_file and oos_file:
             else:
                 supply = pd.DataFrame([{"KOS": 100000, "STL": custom_stl_supply}])  # Default values
 
-            if not supply.empty:
+            if isinstance(supply, pd.DataFrame) and not supply.empty:
                 supply = supply.squeeze()
             else:
                 # Use last available supply data (rolling average for Mar 4-8)
