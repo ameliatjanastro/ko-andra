@@ -44,12 +44,15 @@ if supply_file and oos_file:
             projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
         elif "2025-03-04" <= str(date) <= "2025-03-08":
             supply = avg_supply.loc[avg_supply["Date"] == date]
-            if not supply.empty:
-                supply = supply.iloc[0]
-            else:
-                supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
-            
-        #projected_oos = None  # Default if not found
+        elif date < change_date:
+            supply = supply_data.loc[supply_data["Date"] == date]
+        else:
+            supply = pd.DataFrame([{"KOS": 100000, "STL": custom_stl_supply}])  # Ensuring it's a DataFrame
+
+        if not supply.empty:
+            supply = supply.squeeze()  # Convert DataFrame to Series
+        else:
+            supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})  # Default values
     
         # Get OOS if available
         #if date in fixed_oos_data["Date Key"].values:
@@ -69,7 +72,6 @@ if supply_file and oos_file:
         #else:
             #supply = {"KOS": 100000, "STL": custom_stl_supply}  # Fallback values
 
-        
         total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
         daily_demand = demand_summary[demand_summary["Date Key"] == date]
         total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
