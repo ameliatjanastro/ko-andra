@@ -70,11 +70,7 @@ if supply_file and oos_file:
         })
 
     # Get Projected OOS for March 8
-    oos_values = [
-        entry["Projected OOS%"]
-        for entry in df_oos_target
-        if pd.to_datetime(entry["Date"]) in pd.date_range("2025-03-04", "2025-03-07") and not pd.isna(entry["Projected OOS%"])
-    ]
+    oos_values = [entry["Projected OOS%"] for entry in oos_data if pd.to_datetime(entry["Date"]) in pd.date_range("2025-03-04", "2025-03-07") and not pd.isna(entry["Projected OOS%"])]
     projected_oos_8mar = np.mean(oos_values) if oos_values else 12  # Default to 12 if no valid values
 
     # Adjust projection for March 9 onwards
