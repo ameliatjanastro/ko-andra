@@ -20,71 +20,61 @@ if supply_file and oos_file:
     demand_forecast["Date Key"] = pd.to_datetime(demand_forecast["Date Key"])
     
     # Compute Rolling Supply for Mar 4-8
-    # Ensure Date is correctly set and filter before rolling calculation
-    # Ensure 'Date' is correctly formatted
-    supply_data["Date"] = pd.to_datetime(supply_data["Date"])
-    
-    # Compute rolling average for KOS and STL separately
-    numeric_cols = ["KOS", "STL"]  # Ensure only numeric columns are averaged
-    avg_supply = supply_data.sort_values("Date").set_index("Date")[numeric_cols].rolling(window=3, min_periods=1).mean()
-    
-    # Reset index to restore Date column
-    avg_supply = avg_supply.reset_index()
-    
-    # Filter for dates from March 4 onwards
+    numeric_cols = ["KOS", "STL"]
+    supply_data = supply_data.sort_values("Date")  # Ensure chronological order
+    avg_supply = supply_data.set_index("Date")[numeric_cols].rolling(window=3, min_periods=1).mean().reset_index()
     avg_supply = avg_supply[avg_supply["Date"] >= pd.to_datetime("2025-03-04")]
-
-    st.write("Rolling Supply for Mar 4-8:", avg_supply)
 
     # Prepare Demand Data
     demand_summary = demand_forecast.groupby("Date Key")["Forecast"].sum().reset_index()
     max_demand = demand_summary["Forecast"].max()
     demand_summary["Normalized Demand"] = demand_summary["Forecast"] / max_demand
-    
+
     # Set Custom STL Supply for Mar 9 Onwards
     custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 9", min_value=40000, value=40000, step=5000, max_value=100000)
     change_date = pd.to_datetime("2025-03-09")
-    
+
     # Generate OOS Projection
-    df_oos_target = []
     start_date = pd.to_datetime("2025-02-28")
     target_dates = pd.date_range(start=start_date, periods=62, freq='D')
-    
+
     for date in target_dates:
-            projected_oos = None  # Default to None
-            supply = None  # Default supply
-            
-            if date in fixed_oos_data["Date Key"].values:
-                projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
-            elif pd.to_datetime("2025-03-04") <= date <= pd.to_datetime("2025-03-08"):
-                supply = avg_supply.loc[avg_supply["Date"] == date]
-                if supply.empty:  
-                    supply = avg_supply.iloc[-1]  # Use last available rolling supply
-            elif date < change_date:
-                supply = supply_data.loc[supply_data["Date"] == date]
-            
-            # Ensure supply is a valid DataFrame or Series
-            if supply is not None and not supply.empty:
-                supply = supply.squeeze()
-            else:
-                supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
-            
-            total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
-            daily_demand = demand_summary[demand_summary["Date Key"] == date]
-            total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
-            normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
-            
-            df_oos_target.append({
-                "Date": date.strftime("%d %b %Y"),
-                "KOS Supply": supply.get("KOS", 100000),
-                "STL Supply": supply.get("STL", custom_stl_supply),
-                "Projected OOS%": projected_oos if projected_oos is not None else np.nan,
-            })
-        
+        projected_oos = None  # Default to None
+        supply = None  # Default supply
+
+        if date in fixed_oos_data["Date Key"].values:
+            projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
+        elif pd.to_datetime("2025-03-04") <= date <= pd.to_datetime("2025-03-08"):
+            supply = avg_supply.loc[avg_supply["Date"] == date]
+        elif date < change_date:
+            supply = supply_data.loc[supply_data["Date"] == date]
+
+        # Ensure supply is a valid DataFrame or Series
+        if supply is not None and not supply.empty:
+            supply = supply.squeeze()
+        else:
+            supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
+
+        total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
+        daily_demand = demand_summary[demand_summary["Date Key"] == date]
+        total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
+        normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
+
+        df_oos_target.append({
+            "Date": date.strftime("%d %b %Y"),
+            "KOS Supply": supply.get("KOS", 100000),
+            "STL Supply": supply.get("STL", custom_stl_supply),
+            "Projected OOS%": projected_oos if projected_oos is not None else np.nan,
+        })
+
     # Get Projected OOS for March 8
-    oos_values = [entry["Projected OOS%"] for entry in df_oos_target if pd.to_datetime(entry["Date"]) in pd.date_range("2025-03-04", "2025-03-07") and not pd.isna(entry["Projected OOS%"])]
+    oos_values = [
+        entry["Projected OOS%"]
+        for entry in df_oos_target
+        if pd.to_datetime(entry["Date"]) in pd.date_range("2025-03-04", "2025-03-07") and not pd.isna(entry["Projected OOS%"])
+    ]
     projected_oos_8mar = np.mean(oos_values) if oos_values else 12  # Default to 12 if no valid values
-        
+
     # Adjust projection for March 9 onwards
     for entry in df_oos_target:
         date = pd.to_datetime(entry["Date"])
@@ -95,10 +85,10 @@ if supply_file and oos_file:
                 entry["Projected OOS%"] = round(projected_oos_8mar - (3 * days_after_change / 7) * ((supply_factor * 1.2) + 1), 2)
             else:
                 entry["Projected OOS%"] = round(daily_demand["Forecast"].sum() / 22000 * (1 - supply_factor), 2)
-        
+
     df_oos_target = pd.DataFrame(df_oos_target)
 
     # Display Results
     st.markdown("### <span style='color:blue'>OOS% Projection with Updated Supply Data</span>", unsafe_allow_html=True)
     st.dataframe(df_oos_target, use_container_width=True)
-    st.download_button("Download CSV", df_oos_target.to_csv(index=False), "oos_target_new.csv", "text/csv")
+    st.download_button("Download CSV", df_oos_target.to_csv(index=False), "oos_targetnew.csv", "text/csv")
