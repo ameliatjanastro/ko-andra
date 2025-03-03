@@ -41,8 +41,8 @@ if supply_file and oos_file:
         projected_oos = None  # Default if not found
     
         # Get OOS if available
-        if date in fixed_oos_data["Date"].values:
-            projected_oos = fixed_oos_data.loc[fixed_oos_data["Date"] == date, "OOS%"].values[0]
+        if date in fixed_oos_data["Date Key"].values:
+            projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
         
         # Determine supply source
         if pd.to_datetime("2025-03-04") <= date <= pd.to_datetime("2025-03-08"):
