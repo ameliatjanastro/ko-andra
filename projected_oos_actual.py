@@ -45,7 +45,7 @@ if supply_file and oos_file:
         elif "2025-03-04" <= str(date) <= "2025-03-08":
             supply = avg_supply.loc[avg_supply["Date"] == date]
             if not supply.empty:
-                supply = supply.squeeze()
+                supply = supply.iloc[0]
             else:
                 supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
             
