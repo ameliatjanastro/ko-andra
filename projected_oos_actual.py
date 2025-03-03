@@ -20,31 +20,41 @@ if supply_file and oos_file:
     demand_forecast["Date Key"] = pd.to_datetime(demand_forecast["Date Key"])
     
     # Compute Rolling Supply for Mar 4-8
-    supply_data = supply_data.sort_values("Date")  # Ensure sorting
+    # Ensure the data is sorted before rolling calculation
+    supply_data = supply_data.sort_values("Date")
+    
+    # Convert columns to numeric for proper rolling calculation
     supply_data[["KOS", "STL"]] = supply_data[["KOS", "STL"]].apply(pd.to_numeric, errors="coerce")
-
-    relevant_start_date = pd.to_datetime("2025-03-04") - pd.Timedelta(days=2)
-    filtered_supply = supply_data[supply_data["Date"] >= relevant_start_date]
-
-    # Compute rolling mean for KOS & STL using the last 3 days before each date
-    filtered_supply["Rolling KOS"] = filtered_supply["KOS"].rolling(window=3, min_periods=1).mean()
-    filtered_supply["Rolling STL"] = filtered_supply["STL"].rolling(window=3, min_periods=1).mean()
     
-    # Create forecasted supply for March 4-8 using rolling averages
-    forecasted_supply = filtered_supply[["Date", "Rolling KOS", "Rolling STL"]].copy()
-    forecasted_supply.rename(columns={"Rolling KOS": "KOS", "Rolling STL": "STL"}, inplace=True)
-    forecasted_supply["Date"] = forecasted_supply["Date"] + pd.Timedelta(days=1)
+    # Compute rolling mean using the last 3 available days before each date
+    rolling_supply = supply_data.copy()
+    rolling_supply[["KOS", "STL"]] = rolling_supply[["KOS", "STL"]].rolling(window=3, min_periods=1).mean()
     
-    # Keep only March 4-8
-    forecasted_supply = forecasted_supply[forecasted_supply["Date"].between("2025-03-04", "2025-03-08")]
+    # Generate forecasted supply for March 4-8
+    forecasted_supply = []
+    for target_date in pd.date_range("2025-03-04", "2025-03-08"):
+        prev_days = supply_data[supply_data["Date"] < target_date].tail(3)  # Get last 3 days before target date
+        if not prev_days.empty:
+            avg_kos = prev_days["KOS"].mean()
+            avg_stl = prev_days["STL"].mean()
+        else:
+            avg_kos, avg_stl = 100000, custom_stl_supply  # Default values if no data
+        
+        forecasted_supply.append({"Date": target_date, "KOS": avg_kos, "STL": avg_stl})
     
-    # Merge forecasted supply with actual supply data to ensure we cover March 5-8
+    # Convert to DataFrame
+    forecasted_supply = pd.DataFrame(forecasted_supply)
+    
+    # Merge forecasted supply with actual supply data
     extended_supply = pd.concat([supply_data, forecasted_supply]).drop_duplicates(subset=["Date"], keep="last")
     
-    # Ensure it's sorted correctly
+    # Ensure data is sorted correctly
     extended_supply = extended_supply.sort_values("Date")
+    
+    # Debugging: Display the extended supply data
     st.write("Rolling Supply Data (First 5 Rows):")
     st.write(extended_supply.tail())
+
 
 
 
