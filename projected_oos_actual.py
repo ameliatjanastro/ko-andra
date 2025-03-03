@@ -48,10 +48,13 @@ if supply_file and oos_file:
             supply = supply_data.loc[supply_data["Date"] == date]
         else:
             supply = pd.DataFrame([{"KOS": 100000, "STL": custom_stl_supply}])  # Ensuring it's a DataFrame
-            if not supply.empty:
-                supply = supply.iloc[0]
-            else:
-                supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})  # Default values
+        # Ensure supply is not empty before accessing its values
+        if not supply.empty:
+            supply = supply.iloc[0] if len(supply) > 0 else pd.Series({"KOS": 100000, "STL": custom_stl_supply})
+        else:
+            supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})  # Default values
+    
+        total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
     
         # Get OOS if available
         #if date in fixed_oos_data["Date Key"].values:
@@ -71,7 +74,7 @@ if supply_file and oos_file:
         #else:
             #supply = {"KOS": 100000, "STL": custom_stl_supply}  # Fallback values
 
-        total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
+        #total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
         daily_demand = demand_summary[demand_summary["Date Key"] == date]
         total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
         normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
