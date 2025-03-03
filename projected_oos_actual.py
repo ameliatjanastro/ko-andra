@@ -20,10 +20,14 @@ if supply_file and oos_file:
     demand_forecast["Date Key"] = pd.to_datetime(demand_forecast["Date Key"])
     
     # Compute Rolling Supply for Mar 4-8
+    supply_data[["KOS", "STL"]] = supply_data[["KOS", "STL"]].apply(pd.to_numeric, errors="coerce")
     numeric_cols = ["KOS", "STL"]
     supply_data = supply_data.sort_values("Date")  # Ensure chronological order
     avg_supply = supply_data.set_index("Date")[numeric_cols].rolling(window=3, min_periods=1).mean().reset_index()
     #avg_supply = avg_supply[avg_supply["Date"] >= pd.to_datetime("2025-03-04")]
+    st.write("Rolling Supply Data (First 5 Rows):")
+    st.write(avg_supply.head())
+
 
     # Prepare Demand Data
     demand_summary = demand_forecast.groupby("Date Key")["Forecast"].sum().reset_index()
