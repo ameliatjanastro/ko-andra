@@ -29,15 +29,19 @@ if supply_file and oos_file:
     filtered_supply["Rolling KOS"] = filtered_supply["KOS"].rolling(window=3, min_periods=1).mean()
     filtered_supply["Rolling STL"] = filtered_supply["STL"].rolling(window=3, min_periods=1).mean()
     
-    # Extract rolling supply only for March 4-8
-    avg_supply = filtered_supply[["Date", "Rolling KOS", "Rolling STL"]].copy()
-    avg_supply.rename(columns={"Rolling KOS": "KOS", "Rolling STL": "STL"}, inplace=True)
+    # Create forecasted supply for March 4-8 using rolling averages
+    forecasted_supply = filtered_supply[["Date", "Rolling KOS", "Rolling STL"]].copy()
+    forecasted_supply.rename(columns={"Rolling KOS": "KOS", "Rolling STL": "STL"}, inplace=True)
+    forecasted_supply["Date"] = forecasted_supply["Date"] + pd.Timedelta(days=1)
     
-    # Shift dates forward to align rolling values correctly
-    avg_supply["Date"] = avg_supply["Date"] + pd.Timedelta(days=1)
+    # Keep only March 4-8
+    forecasted_supply = forecasted_supply[forecasted_supply["Date"].between("2025-03-04", "2025-03-08")]
     
-    # Keep only March 4-8 for projection
-    avg_supply = avg_supply[avg_supply["Date"].between("2025-03-04", "2025-03-08")]
+    # Merge forecasted supply with actual supply data to ensure we cover March 5-8
+    extended_supply = pd.concat([supply_data, forecasted_supply]).drop_duplicates(subset=["Date"], keep="last")
+    
+    # Ensure it's sorted correctly
+    extended_supply = extended_supply.sort_values("Date")
     st.write("Rolling Supply Data (First 5 Rows):")
     st.write(avg_supply.head())
 
@@ -66,7 +70,7 @@ if supply_file and oos_file:
             projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
             supply = supply_data.loc[supply_data["Date"] == date]
         elif pd.to_datetime("2025-03-04") <= date <= pd.to_datetime("2025-03-08"):
-            supply = avg_supply.loc[avg_supply["Date"] == date]
+            supply = extended_supply.loc[extended_supply["Date"] == date]
         elif date < change_date:
             supply = supply_data.loc[supply_data["Date"] == date]
 
