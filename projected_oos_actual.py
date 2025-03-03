@@ -90,6 +90,12 @@ if supply_file and oos_file:
 
     oos_data = []
 
+    last_7_days_oos = fixed_oos_data[fixed_oos_data["Date"] >= (pd.to_datetime("2025-03-03") - pd.Timedelta(days=7))]
+    if not last_7_days_oos.empty:
+        avg_oos_increase = last_7_days_oos["OOS%"].pct_change().mean()  # Compute average percentage change
+    else:
+        avg_oos_increase = 0  # 
+
     for date in target_dates:
         projected_oos = None  # Default to None
         supply = None  # Default supply
@@ -99,6 +105,13 @@ if supply_file and oos_file:
             supply = supply_data.loc[supply_data["Date"] == date]
         elif date >= pd.to_datetime("2025-03-04") and date <= pd.to_datetime("2025-03-08"):
             supply = extended_supply.loc[extended_supply["Date"] == date]
+            # Apply L7 trend to estimate OOS%
+            prev_date = date - pd.Timedelta(days=1)
+            prev_oos_values = [entry["Projected OOS%"] for entry in oos_data if entry["Date"] == prev_date.strftime("%d %b %Y")]
+            if prev_oos_values:
+                projected_oos = prev_oos_values[0] * (1 + avg_oos_increase)  # Apply trend
+            else:
+                projected_oos = last_7_days_oos["OOS%"].mean()  # Use L7 avg if no previous OOS
         elif date < change_date:
             supply = supply_data.loc[supply_data["Date"] == date]
 
@@ -134,26 +147,6 @@ if supply_file and oos_file:
                 entry["Projected OOS%"] = round(projected_oos_8mar - (3 * days_after_change / 7) * ((supply_factor * 1.2) + 1), 2)
             else:
                 entry["Projected OOS%"] = round(daily_demand["Forecast"].sum() / 22000 * (1 - supply_factor), 2)
-
-    # Compute the average increase in OOS% from the last 7 days
-    last_7_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.to_datetime("2025-03-03") - pd.Timedelta(days=7))]
-    if not last_7_days_oos.empty:
-        avg_oos_increase = last_7_days_oos["OOS%"].pct_change().mean()  # Compute average percentage change
-    else:
-        avg_oos_increase = 0  # Default to 0 if no data
-    
-    # Update projected OOS% for March 4-8 using L7 trend
-    for i in range(len(oos_data)):
-        date = pd.to_datetime(oos_data[i]["Date"])
-        if pd.to_datetime("2025-03-04") <= date <= pd.to_datetime("2025-03-08"):
-            prev_oos = df_oos_target[df_oos_target["Date"] == (date - pd.Timedelta(days=1)).strftime("%d %b %Y")]["Projected OOS%"]
-            
-            if not prev_oos.empty:
-                projected_oos = prev_oos.values[0] * (1 + avg_oos_increase)  # Apply L7 trend
-            else:
-                projected_oos = last_7_days_oos["OOS%"].mean()  # Use L7 average if no previous value
-            
-            oos_data[i]["Projected OOS%"] = round(projected_oos, 2)
 
 
     df_oos_target = pd.DataFrame(oos_data)
