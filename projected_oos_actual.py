@@ -3,11 +3,11 @@ import pandas as pd
 import numpy as np
 
 # Streamlit UI
-st.title("OOS Projection STL + SO New")
+st.title("OOS Projection STL + SO Realistic")
 
 # File Uploads
-supply_file = st.sidebar.file_uploader("Upload Supply CSV", type=["xlsx"])
-oos_file = st.sidebar.file_uploader("Upload Fixed OOS CSV (Until Mar 3)", type=["xlsx"])
+supply_file = st.sidebar.file_uploader("Upload Historical Supply SO", type=["xlsx"])
+oos_file = st.sidebar.file_uploader("Upload Historical OOS% (Until Today)", type=["xlsx"])
 
 if supply_file and oos_file:
     # Load Data
@@ -60,21 +60,9 @@ if supply_file and oos_file:
     extended_supply = extended_supply.sort_values("Date")
     
     # Debugging: Display Rolling Supply Data
-    st.write("Rolling Supply Data for March 4-8:")
-    st.write(extended_supply[extended_supply["Date"].between("2025-03-04", "2025-03-08")])
-
-
+    #st.write("Rolling Supply Data for March 4-8:")
+    #st.write(extended_supply[extended_supply["Date"].between("2025-03-04", "2025-03-08")])
     
-    # Ensure proper sorting
-    extended_supply = extended_supply.sort_values("Date")
-    
-    # Debugging: Display Rolling Supply Data
-    st.write("Rolling Supply Data for March 4-8:")
-    st.write(extended_supply[extended_supply["Date"].between("2025-03-04", "2025-03-08")])
-
-
-
-
     # Prepare Demand Data
     demand_summary = demand_forecast.groupby("Date Key")["Forecast"].sum().reset_index()
     max_demand = demand_summary["Forecast"].max()
@@ -164,6 +152,19 @@ if supply_file and oos_file:
     df_oos_target = pd.DataFrame(oos_data)
 
     # Display Results
-    st.markdown("### <span style='color:blue'>OOS% Projection with Updated Supply Data</span>", unsafe_allow_html=True)
-    st.dataframe(df_oos_target, use_container_width=True)
+    st.markdown("### <span style='color:blue'>OOS% Projection with REAL HISTORICAL DATA</span>", unsafe_allow_html=True)
+    st.markdown("""
+    ## Notes:
+    - **Next H+5 days (4-8 Mar)**: Based on L7 historical SO records & OOS records -> rolling mean projection
+    - **Set Changed Date (9 Mar)**: The starting date where we are optimistic to *ADHERE* to the specified SO numbers
+    - **H+7 days from changed date**: Recovery period, slow decrease of OOS%
+    - **H +>7 days**: OOS% starting to shift to normal, adapt to new SO qty
+    """)
+
+    
+    def highlight_row(s):
+        return ['background-color: yellow' if s["Date"] == "09 Mar 2025" else '' for _ in s]
+
+    styled_df = df_oos_target.style.apply(highlight_row, axis=1)
+    st.dataframe(styled_df, use_container_width=True)
     st.download_button("Download CSV", df_oos_target.to_csv(index=False), "oos_targetnew.csv", "text/csv")
