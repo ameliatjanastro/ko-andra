@@ -43,11 +43,16 @@ if supply_file and oos_file:
             elif "2025-03-04" <= str(date) <= "2025-03-08":
                 supply = avg_supply.loc[avg_supply["Date"] == date].squeeze()
             elif date < change_date:
-                supply = supply_data.loc[supply_data["Date"] == date].squeeze()
+                supply = supply_data.loc[supply_data["Date"] == date]
             else:
-                supply = {"KOS": 100000, "STL": custom_stl_supply}
-            
-            total_supply = supply["KOS"] + supply["STL"] if isinstance(supply, pd.Series) else 115000
+                supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
+        
+            if not supply.empty:
+                supply = supply.squeeze()
+            else:
+                supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
+        
+            total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
             daily_demand = demand_summary[demand_summary["Date Key"] == date]
             total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
             normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
