@@ -126,12 +126,12 @@ if supply_file and oos_file:
     total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
     normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
 
-        oos_data.append({
-            "Date": date.strftime("%d %b %Y"),
-            "KOS Supply": supply.get("KOS", 100000),
-            "STL Supply": supply.get("STL", custom_stl_supply),
-            "Projected OOS%": projected_oos if projected_oos is not None else np.nan,
-        })
+    oos_data.append({
+        "Date": date.strftime("%d %b %Y"),
+        "KOS Supply": supply.get("KOS", 100000),
+        "STL Supply": supply.get("STL", custom_stl_supply),
+        "Projected OOS%": projected_oos if projected_oos is not None else np.nan,
+    })
 
     # Get Projected OOS for March 8
     oos_values = [entry["Projected OOS%"] for entry in oos_data if pd.to_datetime(entry["Date"]) in pd.date_range("2025-03-04", "2025-03-07") and not pd.isna(entry["Projected OOS%"])]
