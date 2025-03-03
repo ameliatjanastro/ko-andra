@@ -20,8 +20,9 @@ if supply_file and oos_file:
     demand_forecast["Date Key"] = pd.to_datetime(demand_forecast["Date Key"])
     
     # Compute Rolling Supply for Mar 4-8
-    avg_supply = supply_data.set_index("Date").rolling(3).mean().reset_index()
-    #avg_supply = avg_supply[supply_data["Date"] >= "2025-03-04"]
+    avg_supply = supply_data.set_index("Date").rolling(3, min_periods=1).mean().reset_index()
+    avg_supply = avg_supply[avg_supply["Date"] >= pd.to_datetime("2025-03-04")]
+    st.write("Rolling Supply for Mar 4-8:", avg_supply[avg_supply["Date"] <= "2025-03-08"])
     
     # Prepare Demand Data
     demand_summary = demand_forecast.groupby("Date Key")["Forecast"].sum().reset_index()
