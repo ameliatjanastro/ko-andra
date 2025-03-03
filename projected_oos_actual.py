@@ -21,16 +21,19 @@ if supply_file and oos_file:
     
     # Compute Rolling Supply for Mar 4-8
     # Ensure Date is correctly set and filter before rolling calculation
+    # Ensure 'Date' is correctly formatted
     supply_data["Date"] = pd.to_datetime(supply_data["Date"])
     
     # Compute rolling average for KOS and STL separately
-    avg_supply = supply_data.sort_values("Date").set_index("Date").rolling(window=3, min_periods=1).mean().reset_index()
+    numeric_cols = ["KOS", "STL"]  # Ensure only numeric columns are averaged
+    avg_supply = supply_data.sort_values("Date").set_index("Date")[numeric_cols].rolling(window=3, min_periods=1).mean()
     
-    # Keep only Date, KOS, and STL columns
-    avg_supply = avg_supply[["Date", "KOS", "STL"]]
+    # Reset index to restore Date column
+    avg_supply = avg_supply.reset_index()
     
     # Filter for dates from March 4 onwards
     avg_supply = avg_supply[avg_supply["Date"] >= pd.to_datetime("2025-03-04")]
+
 
     st.write("Rolling Supply for Mar 4-8:", avg_supply[avg_supply["Date"] <= "2025-03-08"])
     
