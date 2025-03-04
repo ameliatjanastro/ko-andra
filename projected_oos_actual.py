@@ -186,7 +186,7 @@ if supply_file and oos_file:
     }
     
     # Create DataFrame
-    assump = pd.DataFrame(assume)
+    assump = pd.DataFrame(assume, index=False)
 
     with st.expander("View Assumptions"):
         # Apply styling to left-align text and reduce font size
