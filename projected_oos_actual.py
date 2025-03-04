@@ -169,13 +169,13 @@ if supply_file and oos_file:
     st.markdown("### <span style='color:maroon'>TAMBAHAN IF WE DON'T STOCK UP</span>", unsafe_allow_html=True)
     st.markdown("""
     **PERIODE 4 Mar - 7 Apr: 21 days Inbound (Mon-Sat)**
-    Avg Sales 120K/day, Beginning Stock: 2,196,739 (15% LDP: 329,511) = **1,867,228**
-    - **Current:** 
+    - Avg Sales 120K/day, Beginning Stock: 2,196,739 (15% LDP: 329,511) = **1,867,228**
+    **Current:** 
     - **Inb Qty: 5,288,927/21 -> 251,854 per day, assume 90K to STL, KOS 161,854**
-    - **Sales 120K/day -> Ending Stock: 1,811,155 | DOI: 15.5 days**
-    - **Projection No Stock Up:**
+    - **Ending Stock: 1,811,155 | DOI: 15.5 days**
+    **Projection No Stock Up:**
     - **Inb Qty: 4,652,188/21 -> 221,5323 per day, assume 80K to STL, KOS 141,532**
-    - **Sales 120K/day -> Ending Stock: 1,560,000 | Target DOI: 13 days**
+    - **Ending Stock: 1,560,000 | Target DOI: 13 days**
     """)
     
     def highlight_row(s):
