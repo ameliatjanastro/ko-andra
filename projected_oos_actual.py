@@ -155,27 +155,27 @@ if supply_file and oos_file:
     avg_inb_now = 141532
     inbound_reduction_factor = avg_inb_before / avg_inb_now
 
-    df_oos_target["Projected OOS% w/o STOCK UP"] = df_oos_target["Projected OOS%"].astype(float) * inbound_reduction_factor
+    df_oos_target["OOS% w/o STOCK UP"] = df_oos_target["Projected OOS%"].astype(float) * inbound_reduction_factor
 
     # Display Results
     st.markdown("### <span style='color:blue'>OOS% Projection with REAL HISTORICAL DATA</span>", unsafe_allow_html=True)
     st.markdown("""
-    ## Notes:
+    ### Notes:
     - **Next H+4 days (5-8 Mar)**: Based on D vs D-1 historical OOS records & L7 SO records-> rolling mean projections
     - **Set Changed Date (9 Mar)**: The starting date where we are optimistic to *ADHERE* to the specified SO numbers
     - **H+7 days from changed date**: Recovery period, slow decrease of OOS%
     - **H +>7 days**: OOS% starting to shift to normal, adapt to new SO qty following Demand Forecast
     """)
+    st.markdown("### <span style='color:maroon'>TAMBAHAN IF WE DON'T STOCK UP</span>", unsafe_allow_html=True)
     st.markdown("""
-    ## Tambahan Notes (Without STOCK UP):
-    - **PERIODE 4 Mar - 7 Apr: 21 days Inbound (Mon-Sat)
-    - **Avg Sales 120K/day, Beginning Stock: 2,196,739 (15% LDP: 329,511) = 1,867,228
-    - **Current: 
-    - **Inb Qty: 5,288,927/21 -> 251,854 per day, assume 90K to STL, KOS 161,854
-    - **Sales 120K/day -> Ending Stock: 1,811,155 | DOI: 15.5 days
-    - **Projection No Stock Up: 
-    - **Inb Qty: 4,652,188/21 -> 221,5323 per day, assume 80K to STL, KOS 141,532
-    - **Sales 120K/day -> Ending Stock: 1,560,000 | Target DOI: 13 days
+    **PERIODE 4 Mar - 7 Apr: 21 days Inbound (Mon-Sat)**
+    Avg Sales 120K/day, Beginning Stock: 2,196,739 (15% LDP: 329,511) = **1,867,228**
+    - **Current:** 
+    - **Inb Qty: 5,288,927/21 -> 251,854 per day, assume 90K to STL, KOS 161,854**
+    - **Sales 120K/day -> Ending Stock: 1,811,155 | DOI: 15.5 days**
+    - **Projection No Stock Up:**
+    - **Inb Qty: 4,652,188/21 -> 221,5323 per day, assume 80K to STL, KOS 141,532**
+    - **Sales 120K/day -> Ending Stock: 1,560,000 | Target DOI: 13 days**
     """)
     
     def highlight_row(s):
@@ -184,6 +184,7 @@ if supply_file and oos_file:
     df_oos_target["KOS Supply"] = df_oos_target["KOS Supply"].apply(lambda x: f"{x:,.0f}")  # Format as thousands
     df_oos_target["STL Supply"] = df_oos_target["STL Supply"].apply(lambda x: f"{x:,.0f}")  # Format as thousands
     df_oos_target["Projected OOS%"] = df_oos_target["Projected OOS%"].apply(lambda x: f"{x:.2f}%")  # Format as percentage
+    df_oos_target["OOS% w/o STOCK UP"] = df_oos_target["OOS% w/o STOCK UP"].apply(lambda x: f"{x:.2f}%")
 
     styled_df = df_oos_target.style.apply(highlight_row, axis=1)
     st.dataframe(styled_df, use_container_width=True)
