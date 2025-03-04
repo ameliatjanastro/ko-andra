@@ -39,9 +39,9 @@ if supply_file and oos_file:
     for target_date in pd.date_range("2025-03-05", "2025-03-09"):
         #prev_days = rolling_supply_data[rolling_supply_data["Date"] < target_date].tail(7)  # Get last 3 available days
         avg_kos, avg_stl = 100000, 40000  # Default hc
-        if not prev_days.empty:
-            avg_kos = prev_days["KOS"].mean()
-            avg_stl = prev_days["STL"].mean()
+        #if not prev_days.empty:
+            #avg_kos = prev_days["KOS"].mean()
+            #avg_stl = prev_days["STL"].mean()
         else:
             avg_kos, avg_stl = 100000, custom_stl_supply  # Default values if no data
         
