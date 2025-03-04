@@ -167,16 +167,27 @@ if supply_file and oos_file:
     - **H +>7 days**: OOS% starting to shift to normal, adapt to new SO qty following Demand Forecast
     """)
     st.markdown("### <span style='color:maroon'>TAMBAHAN IF WE DON'T STOCK UP</span>", unsafe_allow_html=True)
-    st.markdown("""
-    **PERIODE 4 Mar - 7 Apr: 21 days Inbound (Mon-Sat)**
-    - Avg Sales 120K/day, Beginning Stock: 2,196,739 (15% LDP: 329,511) = **1,867,228**
-    **Current:** 
-    - **Inb Qty: 5,288,927/21 -> 251,854 per day, assume 90K to STL, KOS 161,854**
-    - **Ending Stock: 1,811,155 | DOI: 15.5 days**
-    **Projection No Stock Up:**
-    - **Inb Qty: 4,652,188/21 -> 221,5323 per day, assume 80K to STL, KOS 141,532**
-    - **Ending Stock: 1,560,000 | Target DOI: 13 days**
-    """)
+    assume = {
+    "Category": [
+        "Avg Sales", "Beginning Stock", "Exclude LDP (15%)", "Beginning Stock Final", 
+        "Total Inbound Qty", "Daily Inbound Avg", "Inb STL Allocation", 
+        "Inb KOS Allocation", "Ending Stock", "Ending DOI"
+    ],
+    "Current": [
+        "120,000/day", "2,196,739", "(329,511)", "1,867,228", 
+        "5,288,927", "251,854", "90,000", 
+        "161,854", "1,811,155", "15.5 days"
+    ],
+    "Projection (No Stock Up)": [
+        "120,000/day", "2,196,739", "(329,511)", "1,867,228", 
+        "4,652,188", "221,532", "80,000", 
+        "141,532", "1,560,000", "13 days"
+    ]
+    }
+    
+    # Create DataFrame
+    assump = pd.DataFrame(assume)
+    st.table(assump)
     
     def highlight_row(s):
         return ['background-color: yellow' if s["Date"] == "09 Mar 2025" else '' for _ in s]
