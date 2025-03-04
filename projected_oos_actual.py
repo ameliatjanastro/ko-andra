@@ -191,7 +191,7 @@ if supply_file and oos_file:
     with st.expander("View Assumptions"):
         # Apply styling to left-align text and reduce font size
         st.dataframe(
-            assume.style.set_properties(**{
+            assump.style.set_properties(**{
                 "text-align": "left",
                 "font-size": "8px"
             }),
