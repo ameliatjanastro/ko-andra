@@ -6,7 +6,7 @@ import numpy as np
 st.title("OOS Projection STL + SO Realistic")
 
 # File Uploads
-supply_file = st.sidebar.file_uploader("Upload Historical Supply SO", type=["xlsx"])
+supply_file = st.sidebar.file_uploader("Upload Historical Supply SO (Exc. CANCELLED)", type=["xlsx"])
 oos_file = st.sidebar.file_uploader("Upload Historical OOS% (Until Today)", type=["xlsx"])
 
 if supply_file and oos_file:
