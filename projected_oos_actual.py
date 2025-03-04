@@ -42,9 +42,13 @@ if supply_file and oos_file:
         #if not prev_days.empty:
             #avg_kos = prev_days["KOS"].mean()
             #avg_stl = prev_days["STL"].mean()
-        else:
-            avg_kos, avg_stl = 100000, custom_stl_supply  # Default values if no data
+        #else:
+            #avg_kos, avg_stl = 100000, custom_stl_supply  # Default values if no data
         
+        forecasted_supply.append({"Date": target_date, "KOS": avg_kos, "STL": avg_stl})
+
+    for target_date in pd.date_range("2025-03-10", "2025-04-30"):  # Adjust end date as needed
+        avg_kos, avg_stl = 100000, custom_stl_supply  # Uses custom STL for Mar 10 onwards
         forecasted_supply.append({"Date": target_date, "KOS": avg_kos, "STL": avg_stl})
     
         # Append forecasted supply to rolling data for the next iterations
