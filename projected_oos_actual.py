@@ -36,7 +36,7 @@ if supply_file and oos_file:
     rolling_supply_data = supply_data.copy()
     
     # Compute rolling mean for March 4-8 using the last 3 available days (actual + forecasted)
-    for target_date in pd.date_range("2025-03-04", "2025-03-08"):
+    for target_date in pd.date_range("2025-03-05", "2025-03-08"):
         prev_days = rolling_supply_data[rolling_supply_data["Date"] < target_date].tail(7)  # Get last 3 available days
         
         if not prev_days.empty:
@@ -78,7 +78,7 @@ if supply_file and oos_file:
 
     oos_data = []
 
-    last_7_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.to_datetime("2025-03-03") - pd.Timedelta(days=7))]
+    last_7_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.to_datetime("2025-03-04") - pd.Timedelta(days=3))]
     if not last_7_days_oos.empty:
         avg_oos_increase = last_7_days_oos["OOS%"].pct_change().mean()  # Compute average percentage change
     else:
@@ -91,7 +91,7 @@ if supply_file and oos_file:
         if date in fixed_oos_data["Date Key"].values:
             projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
             supply = supply_data.loc[supply_data["Date"] == date]
-        elif date >= pd.to_datetime("2025-03-04") and date <= pd.to_datetime("2025-03-08"):
+        elif date >= pd.to_datetime("2025-03-05") and date <= pd.to_datetime("2025-03-08"):
             supply = extended_supply.loc[extended_supply["Date"] == date]
             # Apply L7 trend to estimate OOS%
             prev_date = date - pd.Timedelta(days=1)
