@@ -158,13 +158,13 @@ if supply_file and oos_file:
     inbound_reduction_factor = avg_inb_before / avg_inb_now
 
     df_oos_target["OOS% w/o STOCK UP"] = df_oos_target["Projected OOS%"].astype(float) * inbound_reduction_factor
-
+    #Based on D vs D-1 historical OOS records & L7 SO records-> rolling mean projections
     # Display Results
     st.markdown("### <span style='color:blue'>OOS% Projection with REAL HISTORICAL DATA</span>", unsafe_allow_html=True)
     st.markdown("""
     ### Notes:
-    - **Next H+4 days (5-8 Mar)**: Based on D vs D-1 historical OOS records & L7 SO records-> rolling mean projections
-    - **Set Changed Date (9 Mar)**: The starting date where we are optimistic to *ADHERE* to the specified SO numbers
+    - **Next H+5 days (5-9 Mar)**: HC KOS 100K STL 40K, OOS fluctuates
+    - **Set Changed Date (10 Mar)**: The starting date where we are optimistic to *ADHERE* to the specified SO numbers
     - **H+7 days from changed date**: Recovery period, slow decrease of OOS%
     - **H +>7 days**: OOS% starting to shift to normal, adapt to new SO qty following Demand Forecast
     """)
