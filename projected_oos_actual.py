@@ -187,7 +187,9 @@ if supply_file and oos_file:
     
     # Create DataFrame
     assump = pd.DataFrame(assume)
-    st.table(assump)
+    styled_table = assump.to_html(index=False, escape=False)
+    with st.expander("View Assumption"):
+        st.markdown(styled_table, unsafe_allow_html=True)
     
     def highlight_row(s):
         return ['background-color: yellow' if s["Date"] == "09 Mar 2025" else '' for _ in s]
