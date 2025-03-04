@@ -188,8 +188,30 @@ if supply_file and oos_file:
     # Create DataFrame
     assump = pd.DataFrame(assume)
     styled_table = assump.to_html(index=False, escape=False)
+
+    table_style = """
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {background-color: #f5f5f5;}
+    </style>
+    """
+    
     with st.expander("View Assumption"):
-        st.markdown(styled_table, unsafe_allow_html=True)
+        st.markdown(table_style + styled_table, unsafe_allow_html=True)
     
     def highlight_row(s):
         return ['background-color: yellow' if s["Date"] == "09 Mar 2025" else '' for _ in s]
