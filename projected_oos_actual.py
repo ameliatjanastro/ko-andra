@@ -187,10 +187,17 @@ if supply_file and oos_file:
     
     # Create DataFrame
     assump = pd.DataFrame(assume)
-    styled_table = assump.to_html(index=False, escape=False)
-    
-    with st.expander("View Assumption"):
-        st.markdown(styled_table, unsafe_allow_html=True)
+
+    with st.expander("View Assumptions"):
+        # Apply styling to left-align text and reduce font size
+        st.dataframe(
+            assume.style.set_properties(**{
+                "text-align": "left",
+                "font-size": "8px"
+            }),
+            use_container_width=True
+        )
+    #styled_table = assump.to_html(index=False, escape=False)
     
     def highlight_row(s):
         return ['background-color: yellow' if s["Date"] == "09 Mar 2025" else '' for _ in s]
