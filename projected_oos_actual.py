@@ -36,9 +36,9 @@ if supply_file and oos_file:
     rolling_supply_data = supply_data.copy()
     
     # Compute rolling mean for March 4-8 using the last 3 available days (actual + forecasted)
-    for target_date in pd.date_range("2025-03-05", "2025-03-08"):
-        prev_days = rolling_supply_data[rolling_supply_data["Date"] < target_date].tail(3)  # Get last 3 available days
-        
+    for target_date in pd.date_range("2025-03-05", "2025-03-09"):
+        #prev_days = rolling_supply_data[rolling_supply_data["Date"] < target_date].tail(7)  # Get last 3 available days
+        avg_kos, avg_stl = 100000, 40000  # Default hc
         if not prev_days.empty:
             avg_kos = prev_days["KOS"].mean()
             avg_stl = prev_days["STL"].mean()
@@ -70,7 +70,7 @@ if supply_file and oos_file:
 
     # Set Custom STL Supply for Mar 9 Onwards
     custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 9", min_value=40000, value=40000, step=5000, max_value=100000)
-    change_date = pd.to_datetime("2025-03-09")
+    change_date = pd.to_datetime("2025-03-10")
 
     # Generate OOS Projection
     start_date = pd.to_datetime("2025-02-28")
@@ -91,7 +91,7 @@ if supply_file and oos_file:
         if date in fixed_oos_data["Date Key"].values:
             projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
             supply = supply_data.loc[supply_data["Date"] == date]
-        elif date >= pd.to_datetime("2025-03-05") and date <= pd.to_datetime("2025-03-08"):
+        elif date >= pd.to_datetime("2025-03-05") and date <= pd.to_datetime("2025-03-09"):
             supply = extended_supply.loc[extended_supply["Date"] == date]
             # Apply L7 trend to estimate OOS%
             prev_date = date - pd.Timedelta(days=1)
