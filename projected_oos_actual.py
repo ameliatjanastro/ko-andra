@@ -74,7 +74,7 @@ if supply_file and oos_file:
 
     # Generate OOS Projection
     start_date = pd.to_datetime("2025-02-28")
-    target_dates = pd.date_range(start=start_date, periods=62, freq='D')
+    target_dates = pd.date_range(start=start_date, periods=39, freq='D')
 
     oos_data = []
 
@@ -151,6 +151,12 @@ if supply_file and oos_file:
 
     df_oos_target = pd.DataFrame(oos_data)
 
+    avg_inb_before = 161854
+    avg_inb_now = 141532
+    inbound_reduction_factor = avg_inb_before / avg_inb_now
+
+    df_oos_target["Projected OOS% w/o STOCK UP"] = df_oos_target["Projected OOS%"].astype(float) * inbound_reduction_factor
+
     # Display Results
     st.markdown("### <span style='color:blue'>OOS% Projection with REAL HISTORICAL DATA</span>", unsafe_allow_html=True)
     st.markdown("""
@@ -160,7 +166,17 @@ if supply_file and oos_file:
     - **H+7 days from changed date**: Recovery period, slow decrease of OOS%
     - **H +>7 days**: OOS% starting to shift to normal, adapt to new SO qty following Demand Forecast
     """)
-
+    st.markdown("""
+    ## Tambahan Notes (Without STOCK UP):
+    - **PERIODE 4 Mar - 7 Apr: 21 days Inbound (Mon-Sat)
+    - **Avg Sales 120K/day, Beginning Stock: 2,196,739 (15% LDP: 329,511) = 1,867,228
+    - **Current: 
+    - **Inb Qty: 5,288,927/21 -> 251,854 per day, assume 90K to STL, KOS 161,854
+    - **Sales 120K/day -> Ending Stock: 1,811,155 | DOI: 15.5 days
+    - **Projection No Stock Up: 
+    - **Inb Qty: 4,652,188/21 -> 221,5323 per day, assume 80K to STL, KOS 141,532
+    - **Sales 120K/day -> Ending Stock: 1,560,000 | Target DOI: 13 days
+    """)
     
     def highlight_row(s):
         return ['background-color: yellow' if s["Date"] == "09 Mar 2025" else '' for _ in s]
