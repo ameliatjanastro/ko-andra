@@ -158,7 +158,7 @@ if supply_file and oos_file:
     - **Next H+4 days (5-8 Mar)**: Based on D vs D-1 historical OOS records & L7 SO records-> rolling mean projections
     - **Set Changed Date (9 Mar)**: The starting date where we are optimistic to *ADHERE* to the specified SO numbers
     - **H+7 days from changed date**: Recovery period, slow decrease of OOS%
-    - **H +>7 days**: OOS% starting to shift to normal, adapt to new SO qty
+    - **H +>7 days**: OOS% starting to shift to normal, adapt to new SO qty following Demand Forecast
     """)
 
     
