@@ -78,7 +78,7 @@ if supply_file and oos_file:
 
     oos_data = []
 
-    last_7_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.to_datetime("2025-03-04") - pd.Timedelta(days=3))]
+    last_7_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.to_datetime("2025-03-04") - pd.Timedelta(days=7))]
     if not last_7_days_oos.empty:
         avg_oos_increase = last_7_days_oos["OOS%"].pct_change().mean()  # Compute average percentage change
     else:
@@ -155,7 +155,7 @@ if supply_file and oos_file:
     st.markdown("### <span style='color:blue'>OOS% Projection with REAL HISTORICAL DATA</span>", unsafe_allow_html=True)
     st.markdown("""
     ## Notes:
-    - **Next H+5 days (4-8 Mar)**: Based on L7 historical SO records & OOS records -> rolling mean projection
+    - **Next H+4 days (5-8 Mar)**: Based on L7 historical SO records & OOS records -> rolling mean projection
     - **Set Changed Date (9 Mar)**: The starting date where we are optimistic to *ADHERE* to the specified SO numbers
     - **H+7 days from changed date**: Recovery period, slow decrease of OOS%
     - **H +>7 days**: OOS% starting to shift to normal, adapt to new SO qty
