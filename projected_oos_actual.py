@@ -78,7 +78,7 @@ if supply_file and oos_file:
 
     oos_data = []
 
-    last_7_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.to_datetime("2025-03-04") - pd.Timedelta(days=7))]
+    last_7_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.to_datetime("2025-03-04") - pd.Timedelta(days=2))]
     if not last_7_days_oos.empty:
         avg_oos_increase = last_7_days_oos["OOS%"].pct_change().mean()  # Compute average percentage change
     else:
