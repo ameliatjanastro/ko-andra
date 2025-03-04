@@ -141,7 +141,7 @@ if supply_file and oos_file:
             supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 35000 * 0.5))
             if days_after_change > 0 and days_after_change < 7:
                 entry["Projected OOS%"] = round(projected_oos_8mar - (3 * days_after_change / 7) * ((supply_factor * 1.2) + 1), 2)
-            elif days_after_change = 0 :
+            elif days_after_change == 0 :
                 entry["Projected OOS%"] = round(projected_oos_8mar - (2.5 / 7) * ((supply_factor * 1.2) + 1), 2)
             else:
                 last_available_date = demand_summary[demand_summary["Date Key"] <= date]["Date Key"].max()
