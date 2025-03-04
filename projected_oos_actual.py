@@ -46,10 +46,6 @@ if supply_file and oos_file:
             #avg_kos, avg_stl = 100000, custom_stl_supply  # Default values if no data
         
         forecasted_supply.append({"Date": target_date, "KOS": avg_kos, "STL": avg_stl})
-
-    for target_date in pd.date_range("2025-03-10", "2025-04-30"):  # Adjust end date as needed
-        avg_kos, avg_stl = 100000, custom_stl_supply  # Uses custom STL for Mar 10 onwards
-        forecasted_supply.append({"Date": target_date, "KOS": avg_kos, "STL": avg_stl})
     
         # Append forecasted supply to rolling data for the next iterations
         rolling_supply_data = pd.concat([rolling_supply_data, pd.DataFrame(forecasted_supply[-1:], index=[0])])
@@ -73,7 +69,7 @@ if supply_file and oos_file:
     demand_summary["Normalized Demand"] = demand_summary["Forecast"] / max_demand
 
     # Set Custom STL Supply for Mar 9 Onwards
-    custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 9", min_value=40000, value=40000, step=5000, max_value=100000)
+    custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 10", min_value=40000, value=40000, step=5000, max_value=100000)
     change_date = pd.to_datetime("2025-03-10")
 
     # Generate OOS Projection
