@@ -138,7 +138,7 @@ if supply_file and oos_file:
         date = pd.to_datetime(entry["Date"])
         if date >= change_date:
             days_after_change = (date - change_date).days
-            supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 35000 * 0.5))
+            supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 25000 * 0.5))
             if days_after_change > 0 and days_after_change < 7:
                 entry["Projected OOS%"] = round(projected_oos_8mar - (3 * days_after_change / 7) * ((supply_factor * 1.2) + 1), 2)
             elif days_after_change == 0 :
