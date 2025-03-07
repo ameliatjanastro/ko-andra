@@ -142,13 +142,13 @@ if supply_file and oos_file:
             #if days_after_change > 0 and days_after_change < 7:
                 #entry["Projected OOS%"] = round(projected_oos_8mar - (7 * days_after_change / 7) * ((supply_factor * 5) + 1), 2)
             if days_after_change == 0 :
-                entry["Projected OOS%"] = round(projected_oos_8mar - (5 / 7) * ((supply_factor * 3) + 1), 2)
+                entry["Projected OOS%"] = round(projected_oos_8mar - (7 / 7) * ((supply_factor * 3) + 1), 2)
             else:
                 last_available_date = demand_summary[demand_summary["Date Key"] <= date]["Date Key"].max()
                 last_available_demand = demand_summary[demand_summary["Date Key"] == last_available_date]["Forecast"].sum()
                 forecast_value = last_available_demand if not pd.isna(last_available_demand) else demand_summary["Forecast"].mean()
                 
-                entry["Projected OOS%"] = round(forecast_value / 35000 * (1 - (supply_factor*3)), 2)
+                entry["Projected OOS%"] = round(forecast_value / 30000 * (1 - (supply_factor*2.2)), 2)
 
 
     df_oos_target = pd.DataFrame(oos_data)
