@@ -131,7 +131,7 @@ if supply_file and oos_file:
 
     # Get Projected OOS for March 8
     oos_values = [entry["Projected OOS%"] for entry in oos_data if pd.to_datetime(entry["Date"]) in pd.date_range("2025-03-04", "2025-03-07") and not pd.isna(entry["Projected OOS%"])]
-    projected_oos_8mar = np.mean(oos_values)*0.65 if oos_values else 7  # Default to 12 if no valid values
+    projected_oos_8mar = np.mean(oos_values)*0.85 if oos_values else 7  # Default to 12 if no valid values
 
     # Adjust projection for March 9 onwards
     for entry in oos_data:
@@ -142,7 +142,7 @@ if supply_file and oos_file:
             #if days_after_change > 0 and days_after_change < 7:
                 #entry["Projected OOS%"] = round(projected_oos_8mar - (7 * days_after_change / 7) * ((supply_factor * 5) + 1), 2)
             if days_after_change == 0:
-                entry["Projected OOS%"] = round(projected_oos_8mar - (2 / 7) * ((supply_factor * 1.1) + 1), 2)
+                entry["Projected OOS%"] = round(projected_oos_8mar - (2 / 7) * ((supply_factor * 1.2) + 1), 2)
             else:
                 last_available_date = demand_summary[demand_summary["Date Key"] <= date]["Date Key"].max()
                 last_available_demand = demand_summary[demand_summary["Date Key"] == last_available_date]["Forecast"].sum()
