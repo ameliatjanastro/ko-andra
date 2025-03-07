@@ -38,7 +38,7 @@ if supply_file and oos_file:
     # Compute rolling mean for March 4-8 using the last 3 available days (actual + forecasted)
     for target_date in pd.date_range("2025-03-05", "2025-03-09"):
         #prev_days = rolling_supply_data[rolling_supply_data["Date"] < target_date].tail(7)  # Get last 3 available days
-        avg_kos, avg_stl = 100000, 40000  # Default hc
+        avg_kos, avg_stl = 100000, 60000  # Default hc
         #if not prev_days.empty:
             #avg_kos = prev_days["KOS"].mean()
             #avg_stl = prev_days["STL"].mean()
@@ -97,7 +97,7 @@ if supply_file and oos_file:
             prev_date = date - pd.Timedelta(days=1)
             prev_oos_values = [entry["Projected OOS%"] for entry in oos_data if entry["Date"] == prev_date.strftime("%d %b %Y")]
             if prev_oos_values:
-                projected_oos = prev_oos_values[0] * (1 + avg_oos_increase)  # Apply trend
+                projected_oos = prev_oos_values[0] * (1 + avg_oos_increase)*0.95  # Apply trend
             else:
                 projected_oos = last_7_days_oos["OOS%"].mean()  # Use L7 avg if no previous OOS
         elif date < change_date:
