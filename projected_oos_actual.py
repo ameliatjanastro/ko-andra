@@ -202,7 +202,7 @@ if supply_file and oos_file:
     #styled_table = assump.to_html(index=False, escape=False)
     
     def highlight_row(s):
-        return ['background-color: yellow' if s["Date"] == "09 Mar 2025" else '' for _ in s]
+        return ['background-color: yellow' if s["Date"] == "10 Mar 2025" else '' for _ in s]
 
     df_oos_target["KOS Supply"] = df_oos_target["KOS Supply"].apply(lambda x: f"{x:,.0f}")  # Format as thousands
     df_oos_target["STL Supply"] = df_oos_target["STL Supply"].apply(lambda x: f"{x:,.0f}")  # Format as thousands
