@@ -97,7 +97,7 @@ if supply_file and oos_file:
             prev_date = date - pd.Timedelta(days=1)
             prev_oos_values = [entry["Projected OOS%"] for entry in oos_data if entry["Date"] == prev_date.strftime("%d %b %Y")]
             if prev_oos_values:
-                projected_oos = prev_oos_values[0] * (1 + avg_oos_increase)*1.1 + 1  # Apply trend
+                projected_oos = prev_oos_values[0] * (1 + avg_oos_increase)*1.1 + 1.6  # Apply trend
             else:
                 projected_oos = last_7_days_oos["OOS%"].mean()  # Use L7 avg if no previous OOS
         elif date < change_date:
@@ -138,7 +138,7 @@ if supply_file and oos_file:
         date = pd.to_datetime(entry["Date"])
         if date >= change_date:
             days_after_change = (date - change_date).days
-            supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 25000 *0.75 ))
+            supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 25000 *0.5 ))
             #if days_after_change > 0 and days_after_change < 7:
                 #entry["Projected OOS%"] = round(projected_oos_8mar - (7 * days_after_change / 7) * ((supply_factor * 5) + 1), 2)
             if days_after_change == 0:
