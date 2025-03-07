@@ -94,8 +94,8 @@ if supply_file and oos_file:
         elif date >= pd.to_datetime("2025-03-05") and date <= pd.to_datetime("2025-03-09"):
             supply = extended_supply.loc[extended_supply["Date"] == date]
             # Apply L7 trend to estimate OOS%
-            prev_date = date - pd.Timedelta(days=2)
-            prev_oos_values = [entry["Projected OOS%"] for entry in oos_data if entry["Date"] == prev_date.strftime("%d %b %Y")]
+            prev_date = date - pd.Timedelta(days=1)
+            prev_oos_values = [entry["Projected OOS%"] for entry in oos_data if entry["Date"] == prev_date.strftime("%d %b %Y")]*1.25
             if prev_oos_values:
                 projected_oos = prev_oos_values[0] * (1 + avg_oos_increase)  # Apply trend
             else:
