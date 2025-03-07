@@ -150,10 +150,10 @@ if supply_file and oos_file:
 
                 entry["Projected OOS%"] = max(0, round(forecast_value * 1.1 / 22000 * (1 - supply_factor), 2))
 
-        if 60000 <= supply_factor < 80000:
-            entry["Projected OOS%"] = max(0, round(forecast_value / 22000 * (1 - supply_factor*1.2), 2) *0.5) 
-        else:
-            entry["Projected OOS%"] = max(0, round(forecast_value * 1.1 / 22000 * (1 - supply_factor), 2))
+            if 60000 <= supply_factor < 80000:
+                entry["Projected OOS%"] = max(0, round(forecast_value / 22000 * (1 - supply_factor*1.2), 2) *0.5) 
+            else:
+                entry["Projected OOS%"] = max(0, round(forecast_value * 1.1 / 22000 * (1 - supply_factor), 2))
 
                 #entry["Projected OOS%"] = max(0, round(forecast_value * 1.1 / 22000 * (1 - supply_factor), 2))
 
