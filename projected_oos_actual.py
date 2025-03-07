@@ -139,8 +139,8 @@ if supply_file and oos_file:
         if date >= change_date:
             days_after_change = (date - change_date).days
             supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 35000 *0.75 ))
-            if days_after_change > 0 and days_after_change < 7:
-                entry["Projected OOS%"] = round(projected_oos_8mar - (7 * days_after_change / 7) * ((supply_factor * 5) + 1), 2)
+            #if days_after_change > 0 and days_after_change < 7:
+                #entry["Projected OOS%"] = round(projected_oos_8mar - (7 * days_after_change / 7) * ((supply_factor * 5) + 1), 2)
             elif days_after_change == 0:
                 entry["Projected OOS%"] = round(projected_oos_8mar - (7 / 7) * ((supply_factor * 3) + 1), 2)
             else:
