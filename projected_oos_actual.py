@@ -151,7 +151,7 @@ if supply_file and oos_file:
                 entry["Projected OOS%"] = max(0, round(forecast_value * 1.1 / 22000 * (1 - supply_factor), 2))
 
                 if 60000 <= custom_stl_supply < 80000:
-                    entry["Projected OOS%"] = max(0, round(forecast_value*1.2 / 20000 * (1 - supply_factor), 2)) 
+                    entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 20000 * (1 - supply_factor), 2)) 
                 else:
                     entry["Projected OOS%"] = max(0, round(forecast_value*1.125 / 22000 * (1 - supply_factor), 2))
 
