@@ -61,11 +61,36 @@ if supply_file and oos_file:
         # Calculate OOS percentage
         total_supply = supply.get("KOS", 100000) + supply.get("STL", 80000)
         oos_percentage = (oos_wh_qty / total_supply) * 100 if total_supply > 0 else 0
-        last_available_date = demand_summary[demand_summary["Date Key"] <= date]["Date Key"].max()
-        last_available_demand = demand_summary[demand_summary["Date Key"] == last_available_date]["Forecast"].sum()
-        forecast_value = last_available_demand if not pd.isna(last_available_demand) else demand_summary["Forecast"].mean()
-
-        projected_oos = max(0, round(forecast_value * 1.1 / 22000))
+        oos_percentage_data = {
+        "12-Mar-25": 11.08,
+        "13-Mar-25": 11.30,
+        "14-Mar-25": 10.65,
+        "15-Mar-25": 11.69,
+        "16-Mar-25": 13.30,
+        "17-Mar-25": 12.03,
+        "18-Mar-25": 11.16,
+        "19-Mar-25": 10.59,
+        "20-Mar-25": 10.86,
+        "21-Mar-25": 10.21,
+        "22-Mar-25": 11.50,
+        "23-Mar-25": 13.20,
+        "24-Mar-25": 11.96,
+        "25-Mar-25": 12.01,
+        "26-Mar-25": 11.28,
+        "27-Mar-25": 11.56,
+        "28-Mar-25": 10.89,
+        "29-Mar-25": 12.36,
+        "30-Mar-25": 14.04,
+        "31-Mar-25": 7.10,
+        "01-Apr-25": 8.82,
+        "02-Apr-25": 8.45,
+        "03-Apr-25": 8.67,
+        "04-Apr-25": 8.28,
+        "05-Apr-25": 9.39,
+        "06-Apr-25": 10.60,
+        "07-Apr-25": 10.52,
+        }
+        projected_oos = oos_percentage_data.get(date.strftime("%d-%b-%y"), 0)
 
         oos_data.append({
             "Date": date.strftime("%d %b %Y"),
@@ -73,7 +98,7 @@ if supply_file and oos_file:
             "STL Supply": supply.get("STL", 80000),
             "OOS Qty gake SO": oos_wh_qty,
             "OOS % tambah": f"{oos_percentage:.2f}%",
-            "OOS Final":f"{projected_oos+oos_percentage:.2f}%"
+            "OOS Final": f"{projected_oos + oos_percentage:.2f}%"
         })
         
     df_oos_target = pd.DataFrame(oos_data)
