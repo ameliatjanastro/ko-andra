@@ -8,14 +8,16 @@ st.title("OOS 100K 80K - consider Avail stock KOS -> ga ke SO")
 
 st.markdown("""
     <style>
+    body {
+        zoom: 0.9; /* Adjust zoom level */
+        transform: scale(0.9); /* Fallback for browsers not supporting zoom */
+        transform-origin: top left;
+    }
     .css-1d391kg p {
         font-size: 10px;
     }
     .dataframe tbody tr th, .dataframe tbody tr td {
         font-size: 8px;
-    }
-    .css-12oz5g7 {
-        zoom: 0.7;
     }
     </style>
     """, unsafe_allow_html=True)
