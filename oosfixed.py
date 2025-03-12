@@ -30,6 +30,7 @@ st.markdown("""
 - OOS Fresh is assumed based on the average contribution towards overall OOS trend, with fluctuations following the expected demand pattern.
 # File Upload for OOS WH
 oos_wh_file = st.sidebar.file_uploader("Select OOS WH File", type=["xlsx"])
+""")
     
 # Fixed supply values
 KOS_SUPPLY = 100000
