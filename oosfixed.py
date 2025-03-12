@@ -8,6 +8,7 @@ st.title("OOS 100K 80K - consider OOS WH")
 # File Uploads
 supply_file = st.sidebar.file_uploader("Upload Historical Supply SO (Exc. CANCELLED)", type=["xlsx"])
 oos_file = st.sidebar.file_uploader("Upload Historical OOS% (Until Today)", type=["xlsx"])
+oos_wh_file = st.sidebar.file_uploader("Upload OOS WH CSV", type=["csv"])  # New input for OOS WH
 
 # Fixed supply values
 KOS_SUPPLY = 100000
