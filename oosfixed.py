@@ -61,13 +61,20 @@ if supply_file and oos_file:
         # Calculate OOS percentage
         total_supply = supply.get("KOS", 100000) + supply.get("STL", 80000)
         oos_percentage = (oos_wh_qty / total_supply) * 100 if total_supply > 0 else 0
+        last_available_date = demand_summary[demand_summary["Date Key"] <= date]["Date Key"].max()
+        last_available_demand = demand_summary[demand_summary["Date Key"] == last_available_date]["Forecast"].sum()
+        forecast_value = last_available_demand if not pd.isna(last_available_demand) else demand_summary["Forecast"].mean()
+
+        projected_oos = max(0, round(forecast_value * 1.1 / 22000))
 
         oos_data.append({
             "Date": date.strftime("%d %b %Y"),
             "KOS Supply": supply.get("KOS", 100000),
             "STL Supply": supply.get("STL", 80000),
-            "OOS Qty": oos_wh_qty,
-            "OOS %": f"{oos_percentage:.2f}%"
+            "OOS Qty gake SO": oos_wh_qty,
+            "OOS % tambah": f"{oos_percentage:.2f}%",
+            "OOS Final":f"{projected_oos+oos_percentage:.2f}%"
         })
+        
     df_oos_target = pd.DataFrame(oos_data)
     st.dataframe(df_oos_target, use_container_width=True)
