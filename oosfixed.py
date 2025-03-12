@@ -8,7 +8,7 @@ st.title("OOS 100K 80K - consider OOS WH")
 # File Uploads
 supply_file = st.sidebar.file_uploader("Upload Historical Supply SO (Exc. CANCELLED)", type=["xlsx"])
 oos_file = st.sidebar.file_uploader("Upload Historical OOS% (Until Today)", type=["xlsx"])
-oos_wh_file = st.sidebar.file_uploader("Upload OOS WH CSV", type=["csv"])  # New input for OOS WH
+oos_wh_file = st.sidebar.file_uploader("Upload OOS WH CSV", type=["xlsx"])  # New input for OOS WH
 
 # Fixed supply values
 KOS_SUPPLY = 100000
@@ -19,7 +19,7 @@ if supply_file and oos_file:
     supply_data = pd.read_excel(supply_file)
     fixed_oos_data = pd.read_excel(oos_file)
     demand_forecast = pd.read_excel("forecast dates.xlsx")
-    oos_wh_data = pd.read_csv(oos_wh_file)
+    oos_wh_data = pd.read_excel(oos_wh_file)
     
     supply_data["Date"] = pd.to_datetime(supply_data["Date"])
     fixed_oos_data["Date Key"] = pd.to_datetime(fixed_oos_data["Date Key"])
