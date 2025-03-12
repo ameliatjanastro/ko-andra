@@ -24,8 +24,7 @@ st.markdown("""
 
 
 # File Upload for OOS WH
-if st.button("Upload OOS WH"):
-    oos_wh_file = st.file_uploader("Select OOS WH File", type=["xlsx"])
+oos_wh_file = st.sidebar.file_uploader("Select OOS WH File", type=["xlsx"])
     
 # Fixed supply values
 KOS_SUPPLY = 100000
