@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # Streamlit UI
-st.title("OOS 100K 80K - consider Avail stock KOS -> ga ke SO")
+st.subheader("OOS 100K 80K - consider Avail stock KOS -> ga ke SO")
 
 
 st.markdown("""
