@@ -23,6 +23,11 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 
+st.markdown("""
+**Notes:**
+- OOS Dry projection based on SO assumption of 100K and 80K daily from KOS and STL, with good FR for incoming PO coming next weeks. Thus, FR rate is safe.
+- Some SKUs might have OOS WH in the coming days, based on Avg Sales and incoming PO Qty assumption -> translated into 'Qty ga ke SO'.
+- OOS Fresh is assumed based on the average contribution towards overall OOS trend, with fluctuations following the expected demand pattern.
 # File Upload for OOS WH
 oos_wh_file = st.sidebar.file_uploader("Select OOS WH File", type=["xlsx"])
     
@@ -72,12 +77,12 @@ if oos_wh_file:
 
         oos_data.append({
             "Date": date.strftime("%d %b %Y"),
-            "KOS Supply": kos_supply,
-            "STL Supply": STL_SUPPLY,
+            "KOS SO": kos_supply,
+            "STL SO": STL_SUPPLY,
             "Projected OOS Dry": f"{projected_oos:.2f}%",
             "Potential Qty gake SO WH OOS": oos_wh_qty,
             "add. OOS % impact": f"{oos_percentage:.2f}%",
-            "OOS Fresh": f"{scaled_oos_fresh:.2f}%",
+            "Assump. OOS Fresh": f"{scaled_oos_fresh:.2f}%",
             "OOS Final": f"{oos_final:.2f}%"
         })
 
