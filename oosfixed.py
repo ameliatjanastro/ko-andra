@@ -23,6 +23,12 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 
+    
+# Fixed supply values
+KOS_SUPPLY = 100000
+STL_SUPPLY = 80000
+
+
 st.markdown("""
 **Notes:**
 - OOS Dry projection based on SO assumption of 100K and 80K daily from KOS and STL, with good FR for incoming PO coming next weeks. Thus, FR rate is safe.
@@ -31,10 +37,8 @@ st.markdown("""
 # File Upload for OOS WH
 oos_wh_file = st.sidebar.file_uploader("Select OOS WH File", type=["xlsx"])
 """)
-    
-# Fixed supply values
-KOS_SUPPLY = 100000
-STL_SUPPLY = 80000
+
+
 
 if oos_wh_file:
     # Load Data
