@@ -10,10 +10,10 @@ st.markdown("""
     <style>
     
     .css-1d391kg p {
-        font-size: 8px;
+        font-size: 6px;
     }
     .dataframe tbody tr th, .dataframe tbody tr td {
-        font-size: 8px;
+        font-size: 6px;
     }
     </style>
     """, unsafe_allow_html=True)
