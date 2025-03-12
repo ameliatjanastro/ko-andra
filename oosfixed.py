@@ -24,6 +24,8 @@ if supply_file and oos_file:
     supply_data["Date"] = pd.to_datetime(supply_data["Date"])
     fixed_oos_data["Date Key"] = pd.to_datetime(fixed_oos_data["Date Key"])
     demand_forecast["Date Key"] = pd.to_datetime(demand_forecast["Date Key"])
+    oos_wh_data["Date"] = pd.to_datetime(oos_wh_data["Date"])  # Convert OOS WH dates
+
 
     # Sort supply data by date
     supply_data = supply_data.sort_values("Date")
