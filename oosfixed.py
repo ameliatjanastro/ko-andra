@@ -58,11 +58,16 @@ if supply_file and oos_file:
         oos_wh_qty = oos_wh_data.loc[oos_wh_data["Date"] == date, "OOS Qty"].sum()
         supply["KOS"] = max(0, supply["KOS"] - oos_wh_qty)
 
+        # Calculate OOS percentage
+        total_supply = supply.get("KOS", 100000) + supply.get("STL", 80000)
+        oos_percentage = (oos_wh_qty / total_supply) * 100 if total_supply > 0 else 0
+
         oos_data.append({
             "Date": date.strftime("%d %b %Y"),
             "KOS Supply": supply.get("KOS", 100000),
             "STL Supply": supply.get("STL", 80000),
+            "OOS Qty": oos_wh_qty,
+            "OOS %": f"{oos_percentage:.2f}%"
         })
-
     df_oos_target = pd.DataFrame(oos_data)
     st.dataframe(df_oos_target, use_container_width=True)
