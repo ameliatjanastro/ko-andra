@@ -32,7 +32,7 @@ STL_SUPPLY = 80000
 st.markdown("""
 **Notes:**
 - OOS Dry projection based on SO assumption of 100K and 80K daily from KOS and STL, with good FR for incoming PO coming next weeks. Thus, FR rate is safe.
-- Some SKUs might have OOS WH in the coming days, based on Avg Sales and incoming PO Qty assumption -> translated into 'Qty ga ke SO'.
+- Some SKUs might have OOS WH in the coming days, based on Avg Sales and incoming PO Qty assumption -> translated into *'Qty ga ke SO'.*
 - OOS Fresh is assumed based on the average contribution towards overall OOS trend, with fluctuations following the expected demand pattern.
 """)
 # File Upload for OOS WH
