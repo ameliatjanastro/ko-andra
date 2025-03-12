@@ -24,8 +24,9 @@ st.markdown("""
 
 
 # File Upload for OOS WH
-oos_wh_file = st.file_uploader("Upload OOS WH", type=["xlsx"])  # New input for OOS WH
-
+if st.button("Upload OOS WH"):
+    oos_wh_file = st.file_uploader("Select OOS WH File", type=["xlsx"])
+    
 # Fixed supply values
 KOS_SUPPLY = 100000
 STL_SUPPLY = 80000
@@ -46,7 +47,7 @@ if oos_wh_file:
 
         # Calculate OOS percentage
         total_supply = kos_supply + STL_SUPPLY
-        oos_percentage = (oos_wh_qty / total_supply) * 100 if total_supply > 0 else 0
+        oos_percentage = (oos_wh_qty / total_supply) * 70 if total_supply > 0 else 0
 
         # OOS Dry percentage data
         oos_percentage_data = {
@@ -68,7 +69,7 @@ if oos_wh_file:
         scaled_oos_fresh = min_fresh + (projected_oos / max(oos_percentage_data.values())) * (max_fresh - min_fresh)
 
         # Calculate final OOS percentage (Dry + Fresh + OOS Qty ga ke SO)
-        oos_final = projected_oos + scaled_oos_fresh + (oos_percentage*0.7)
+        oos_final = projected_oos + scaled_oos_fresh + oos_percentage
 
         oos_data.append({
             "Date": date.strftime("%d %b %Y"),
