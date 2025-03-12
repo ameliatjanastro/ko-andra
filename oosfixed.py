@@ -7,7 +7,7 @@ st.set_page_config(layout="wide")
 
 
 # Streamlit UI
-st.subheader("OOS 100K 80K - consider Avail stock KOS -> ga ke SO")
+st.subheader("OOS Projection March - consider Unavailable stock KOS -> ga ke SO")
 
 
 st.markdown("""
