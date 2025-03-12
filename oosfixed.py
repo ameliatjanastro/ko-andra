@@ -68,7 +68,7 @@ if oos_wh_file:
         }
 
         # Projected OOS Dry percentage
-        projected_oos = oos_percentage_data.get(date.strftime("%d-%b-%y"), 0)
+        projected_oos = (oos_percentage_data.get(date.strftime("%d-%b-%y"), 0))*0.95
 
         # Generate OOS Fresh percentage with similar fluctuation (scaled down to 1.2–2%)
         min_fresh = 1.2
