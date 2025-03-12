@@ -55,51 +55,45 @@ if supply_file and oos_file:
             supply = supply.squeeze()
 
         # Adjust KOS supply based on OOS WH data
-        oos_wh_qty = oos_wh_data.loc[oos_wh_data["Date"] == date, "OOS Qty"].sum()
-        supply["KOS"] = max(0, supply["KOS"] - oos_wh_qty)
+        oos_wh_qty = oos_wh_data.loc[oos_wh_data["Date"] == date, "OOS Qty"].sum().astype(int)
+        supply["KOS"] = np.floor(max(0, supply["KOS"] - oos_wh_qty))
 
         # Calculate OOS percentage
         total_supply = supply.get("KOS", 100000) + supply.get("STL", 80000)
         oos_percentage = (oos_wh_qty / total_supply) * 100 if total_supply > 0 else 0
+        
+        # OOS Dry percentage data
         oos_percentage_data = {
-        "12-Mar-25": 11.08,
-        "13-Mar-25": 11.30,
-        "14-Mar-25": 10.65,
-        "15-Mar-25": 11.69,
-        "16-Mar-25": 13.30,
-        "17-Mar-25": 12.03,
-        "18-Mar-25": 11.16,
-        "19-Mar-25": 10.59,
-        "20-Mar-25": 10.86,
-        "21-Mar-25": 10.21,
-        "22-Mar-25": 11.50,
-        "23-Mar-25": 13.20,
-        "24-Mar-25": 11.96,
-        "25-Mar-25": 12.01,
-        "26-Mar-25": 11.28,
-        "27-Mar-25": 11.56,
-        "28-Mar-25": 10.89,
-        "29-Mar-25": 12.36,
-        "30-Mar-25": 14.04,
-        "31-Mar-25": 7.10,
-        "01-Apr-25": 8.82,
-        "02-Apr-25": 8.45,
-        "03-Apr-25": 8.67,
-        "04-Apr-25": 8.28,
-        "05-Apr-25": 9.39,
-        "06-Apr-25": 10.60,
-        "07-Apr-25": 10.52,
+            "12-Mar-25": 11.08, "13-Mar-25": 11.30, "14-Mar-25": 10.65, "15-Mar-25": 11.69,
+            "16-Mar-25": 13.30, "17-Mar-25": 12.03, "18-Mar-25": 11.16, "19-Mar-25": 10.59,
+            "20-Mar-25": 10.86, "21-Mar-25": 10.21, "22-Mar-25": 11.50, "23-Mar-25": 13.20,
+            "24-Mar-25": 11.96, "25-Mar-25": 12.01, "26-Mar-25": 11.28, "27-Mar-25": 11.56,
+            "28-Mar-25": 10.89, "29-Mar-25": 12.36, "30-Mar-25": 14.04, "31-Mar-25": 7.10,
+            "01-Apr-25": 8.82, "02-Apr-25": 8.45, "03-Apr-25": 8.67, "04-Apr-25": 8.28,
+            "05-Apr-25": 9.39, "06-Apr-25": 10.60, "07-Apr-25": 10.52,
         }
+        
+        # Projected OOS Dry percentage
         projected_oos = oos_percentage_data.get(date.strftime("%d-%b-%y"), 0)
-
+        
+        # Generate OOS Fresh percentage with similar fluctuation (scaled down to 1.2–2%)
+        min_fresh = 1.2
+        max_fresh = 2.0
+        scaled_oos_fresh = min_fresh + (projected_oos / max(oos_percentage_data.values())) * (max_fresh - min_fresh)
+        
+        # Calculate final OOS percentage (Dry + Fresh + OOS Qty ga ke SO)
+        oos_final = projected_oos + scaled_oos_fresh + oos_percentage
+        
         oos_data.append({
             "Date": date.strftime("%d %b %Y"),
             "KOS Supply": supply.get("KOS", 100000),
             "STL Supply": supply.get("STL", 80000),
-            "OOS Qty gake SO": oos_wh_qty,
+            "Projected OOS Dry": f"{projected_oos:.2f}%",
+            "Potential Qty gake SO WH OOS": oos_wh_qty,
             "OOS % tambah": f"{oos_percentage:.2f}%",
-            "OOS Final": f"{projected_oos + oos_percentage:.2f}%"
+            "OOS Fresh": f"{scaled_oos_fresh:.2f}%",
+            "OOS Final": f"{oos_final:.2f}%"
         })
-        
+                
     df_oos_target = pd.DataFrame(oos_data)
     st.dataframe(df_oos_target, use_container_width=True)
