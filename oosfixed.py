@@ -2,6 +2,10 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
+
+st.set_page_config(layout="wide")
+
+
 # Streamlit UI
 st.subheader("OOS 100K 80K - consider Avail stock KOS -> ga ke SO")
 
@@ -20,7 +24,7 @@ st.markdown("""
 
 
 # File Upload for OOS WH
-oos_wh_file = st.sidebar.file_uploader("Upload OOS WH", type=["xlsx"])  # New input for OOS WH
+oos_wh_file = st.file_uploader("Upload OOS WH", type=["xlsx"])  # New input for OOS WH
 
 # Fixed supply values
 KOS_SUPPLY = 100000
@@ -64,7 +68,7 @@ if oos_wh_file:
         scaled_oos_fresh = min_fresh + (projected_oos / max(oos_percentage_data.values())) * (max_fresh - min_fresh)
 
         # Calculate final OOS percentage (Dry + Fresh + OOS Qty ga ke SO)
-        oos_final = projected_oos + scaled_oos_fresh + oos_percentage
+        oos_final = projected_oos + scaled_oos_fresh + (oos_percentage*0.7)
 
         oos_data.append({
             "Date": date.strftime("%d %b %Y"),
@@ -72,7 +76,7 @@ if oos_wh_file:
             "STL Supply": STL_SUPPLY,
             "Projected OOS Dry": f"{projected_oos:.2f}%",
             "Potential Qty gake SO WH OOS": oos_wh_qty,
-            "OOS % tambah": f"{oos_percentage:.2f}%",
+            "add. OOS % impact": f"{oos_percentage:.2f}%",
             "OOS Fresh": f"{scaled_oos_fresh:.2f}%",
             "OOS Final": f"{oos_final:.2f}%"
         })
