@@ -80,7 +80,7 @@ if supply_file and oos_file:
 
     last_3_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.Timestamp.today() - pd.Timedelta(days=3))]
     if not last_3_days_oos.empty:
-        avg_oos_increase = last_7_days_oos["OOS%"].pct_change().mean()  # Compute average percentage change
+        avg_oos_increase = last_3_days_oos["OOS%"].pct_change().mean()  # Compute average percentage change
     else:
         avg_oos_increase = 0  # 
 
@@ -99,7 +99,7 @@ if supply_file and oos_file:
             if prev_oos_values:
                 projected_oos = prev_oos_values[0] * (1 + avg_oos_increase)*0.95  # Apply trend
             else:
-                projected_oos = last_7_days_oos["OOS%"].mean()  # Use L7 avg if no previous OOS
+                projected_oos = last_3_days_oos["OOS%"].mean()  # Use L7 avg if no previous OOS
         elif date <= change_date:
             supply = supply_data.loc[supply_data["Date"] == date]
 
