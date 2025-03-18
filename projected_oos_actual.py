@@ -70,7 +70,7 @@ if supply_file and oos_file:
 
     # Set Custom STL Supply for Mar 9 Onwards
     custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 10", min_value=40000, value=40000, step=5000, max_value=100000)
-    change_date = pd.Timestamp.today() - pd.Timedelta(days=1)
+    change_date = pd.Timestamp.today()
 
 
     # Generate OOS Projection
@@ -143,7 +143,7 @@ if supply_file and oos_file:
             #if days_after_change > 0 and days_after_change < 7:
                 #entry["Projected OOS%"] = round(projected_oos_8mar - (7 * days_after_change / 7) * ((supply_factor * 5) + 1), 2)
             if days_after_change == 0:
-                entry["Projected OOS%"] = round(projected_oos_8mar - (5 / 7) * ((supply_factor * 3) + 1), 2)
+                entry["Projected OOS%"] = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
             else:
                 last_available_date = demand_summary[demand_summary["Date Key"] <= date]["Date Key"].max()
                 last_available_demand = demand_summary[demand_summary["Date Key"] == last_available_date]["Forecast"].sum()
