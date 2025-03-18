@@ -70,7 +70,7 @@ if supply_file and oos_file:
 
     # Set Custom STL Supply for Mar 9 Onwards
     custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 10", min_value=40000, value=40000, step=5000, max_value=100000)
-    change_date = pd.to_datetime("2025-03-10")
+    change_date = pd.to_datetime("2025-03-18")
 
     # Generate OOS Projection
     start_date = pd.to_datetime("2025-02-28")
