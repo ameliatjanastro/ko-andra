@@ -70,7 +70,7 @@ if supply_file and oos_file:
 
     # Set Custom STL Supply for Mar 9 Onwards
     custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 10", min_value=40000, value=40000, step=5000, max_value=100000)
-    change_date = pd.to_datetime("2025-03-18")
+    change_date = pd.Timestamp.today()
 
     # Generate OOS Projection
     start_date = pd.to_datetime("2025-02-28")
@@ -91,7 +91,7 @@ if supply_file and oos_file:
         if date in fixed_oos_data["Date Key"].values:
             projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
             supply = supply_data.loc[supply_data["Date"] == date]
-        elif date >= pd.to_datetime("2025-03-05") and date <= pd.to_datetime("2025-03-18"):
+        elif date >= pd.Timestamp.today()+1 and date <= pd.to_datetime("2025-03-24"):
             supply = extended_supply.loc[extended_supply["Date"] == date]
             # Apply L7 trend to estimate OOS%
             prev_date = date - pd.Timedelta(days=1)
@@ -100,7 +100,7 @@ if supply_file and oos_file:
                 projected_oos = prev_oos_values[0] * (1 + avg_oos_increase)*0.95  # Apply trend
             else:
                 projected_oos = last_7_days_oos["OOS%"].mean()  # Use L7 avg if no previous OOS
-        elif date < change_date:
+        elif date <= change_date:
             supply = supply_data.loc[supply_data["Date"] == date]
 
         # Ensure supply is a valid DataFrame or Series
@@ -151,7 +151,7 @@ if supply_file and oos_file:
                 entry["Projected OOS%"] = max(0, round(forecast_value * 1.1 / 22000 * (1 - supply_factor), 2))
 
                 if 60000 <= custom_stl_supply < 80000:
-                    entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 22000 * (1 - supply_factor), 2)) 
+                    entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 19000 * (1 - supply_factor), 2)) 
                 else:
                     entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 21000 * (1 - supply_factor), 2))#1.125#22000
 
