@@ -97,5 +97,5 @@ if oos_wh_file:
         return [color] * len(row)
 
     df_oos_target = pd.DataFrame(oos_data)
-    df_oos_target.style.apply(highlight_oos, axis=1)
-    st.dataframe(df_oos_target, use_container_width=True)
+    styled_df = df_oos_target.style.apply(highlight_oos, axis=1)
+    st.dataframe(styled_df, use_container_width=True)
