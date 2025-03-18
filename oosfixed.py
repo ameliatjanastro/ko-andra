@@ -69,8 +69,8 @@ if oos_wh_file:
         }
 
         # Projected OOS Dry percentage
-        projected_oos = (oos_percentage_data.get(date.strftime("%d-%b-%y"), 0))*0.95
-
+        projected_oos = (oos_percentage_data.get(date.strftime("%d-%b-%y"), 0))#*0.95
+        oos_dry_final = projected_oos + oos_percentage
         # Generate OOS Fresh percentage with similar fluctuation (scaled down to 1.2–2%)
         min_fresh = 1.2
         max_fresh = 2.0
@@ -83,13 +83,19 @@ if oos_wh_file:
             "Date": date.strftime("%d %b %Y"),
             "KOS SO": kos_supply,
             "STL SO": STL_SUPPLY,
-            "Projected OOS Dry": f"{projected_oos:.2f}%",
             "Potential Qty gake SO WH OOS": oos_wh_qty,
             "add. OOS % impact": f"{oos_percentage:.2f}%",
+            "Projected OOS Dry": f"{projected_oos:.2f}%",
+            "Final OOS Dry": f"{oos_dry_final:.2f}%",
             "Assump. OOS Fresh": f"{scaled_oos_fresh:.2f}%",
             "OOS Final": f"{oos_final:.2f}%"
         })
 
     # Display the DataFrame
+    def highlight_oos(row):
+        color = 'background-color: #FFCCCC;' if row['oos_dry_final'] > 0.10 else ''
+        return [color] * len(row)
+
     df_oos_target = pd.DataFrame(oos_data)
+    df_oos_target.style.apply(highlight_oos, axis=1)
     st.dataframe(df_oos_target, use_container_width=True)
