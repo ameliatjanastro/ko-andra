@@ -78,8 +78,8 @@ if supply_file and oos_file:
 
     oos_data = []
 
-    last_7_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.to_datetime("2025-03-04") - pd.Timedelta(days=2))]
-    if not last_7_days_oos.empty:
+    last_3_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.Timestamp.today() - pd.Timedelta(days=3))]
+    if not last_3_days_oos.empty:
         avg_oos_increase = last_7_days_oos["OOS%"].pct_change().mean()  # Compute average percentage change
     else:
         avg_oos_increase = 0  # 
@@ -150,12 +150,10 @@ if supply_file and oos_file:
 
                 entry["Projected OOS%"] = max(0, round(forecast_value * 1.1 / 22000 * (1 - supply_factor), 2))
 
-                if 60000 <= custom_stl_supply < 80000:
-                    entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 19000 * (1 - supply_factor), 2)) 
+                if 55000 <= custom_stl_supply < 80000:
+                    entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 21000 * (1 - supply_factor), 2)) 
                 else:
                     entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 21000 * (1 - supply_factor), 2))#1.125#22000
-
-                #entry["Projected OOS%"] = max(0, round(forecast_value * 1.1 / 22000 * (1 - supply_factor), 2))
 
 
     df_oos_target = pd.DataFrame(oos_data)
