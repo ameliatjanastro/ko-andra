@@ -70,7 +70,7 @@ if supply_file and oos_file:
 
     # Set Custom STL Supply for Mar 9 Onwards
     custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 10", min_value=40000, value=40000, step=5000, max_value=100000)
-    change_date = pd.Timestamp.today()
+    change_date = pd.Timestamp.today()-1
 
     # Generate OOS Projection
     start_date = pd.to_datetime("2025-02-28")
@@ -151,7 +151,7 @@ if supply_file and oos_file:
                 entry["Projected OOS%"] = max(0, round(forecast_value * 1.1 / 22000 * (1 - supply_factor), 2))
 
                 if 55000 <= custom_stl_supply < 80000:
-                    entry["Projected OOS%"] = max(0, round(forecast_value*1.2 / 22000 * (1 - supply_factor), 2)) 
+                    entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 21500 * (1 - supply_factor), 2)) 
                 else:
                     entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 21000 * (1 - supply_factor), 2))#1.125#22000
 
