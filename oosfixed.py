@@ -55,7 +55,8 @@ if oos_wh_file:
         # Calculate OOS percentage
         total_supply = kos_supply + STL_SUPPLY
         oos_percentage = (oos_wh_qty / total_supply) * 70 if total_supply > 0 else 0
-
+        if oos_percentage > 0.02:
+            oos_percentage *= 0.5
         # OOS Dry percentage data
         oos_percentage_data = {
             "12-Mar-25": 10.97, "13-Mar-25": 10.10, "14-Mar-25": 9.68, "15-Mar-25": 9.44,
