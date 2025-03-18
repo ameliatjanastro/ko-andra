@@ -93,7 +93,7 @@ if oos_wh_file:
 
     # Display the DataFrame
     def highlight_oos(row):
-        color = 'background-color: #FFCCCC;' if row['oos_dry_final'] > 0.10 else ''
+        color = 'background-color: #FFCCCC;' if float(row['Final OOS Dry'].replace('%', '')) > 0.10 else ''
         return [color] * len(row)
 
     df_oos_target = pd.DataFrame(oos_data)
