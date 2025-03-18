@@ -91,7 +91,7 @@ if supply_file and oos_file:
         if date in fixed_oos_data["Date Key"].values:
             projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
             supply = supply_data.loc[supply_data["Date"] == date]
-        elif date >= pd.Timestamp.today()+1 and date <= pd.to_datetime("2025-03-24"):
+        elif date >= pd.Timestamp.today() + pd.Timedelta(days=1) and date <= pd.to_datetime("2025-03-24"):
             supply = extended_supply.loc[extended_supply["Date"] == date]
             # Apply L7 trend to estimate OOS%
             prev_date = date - pd.Timedelta(days=1)
