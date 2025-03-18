@@ -143,7 +143,6 @@ if supply_file and oos_file:
             last_available_date = demand_summary[demand_summary["Date Key"] <= date]["Date Key"].max()
             last_available_demand = demand_summary[demand_summary["Date Key"] == last_available_date]["Forecast"].sum()
             forecast_value = last_available_demand if not pd.isna(last_available_demand) else demand_summary["Forecast"].mean()
-
             entry["Projected OOS%"] = max(0, round(forecast_value * 1.1 / 22000 * (1 - supply_factor), 2))
 
             if 55000 <= custom_stl_supply < 80000:
