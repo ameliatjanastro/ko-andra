@@ -140,21 +140,16 @@ if supply_file and oos_file:
         if date >= change_date:
             days_after_change = (date - change_date).days
             supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 25000 *0.4 )) #ganti pengali ini paling gampang
-            #if days_after_change > 0 and days_after_change < 7:
-                #entry["Projected OOS%"] = round(projected_oos_8mar - (7 * days_after_change / 7) * ((supply_factor * 5) + 1), 2)
-            if days_after_change == 0:
-                entry["Projected OOS%"] = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
+            last_available_date = demand_summary[demand_summary["Date Key"] <= date]["Date Key"].max()
+            last_available_demand = demand_summary[demand_summary["Date Key"] == last_available_date]["Forecast"].sum()
+            forecast_value = last_available_demand if not pd.isna(last_available_demand) else demand_summary["Forecast"].mean()
+
+            entry["Projected OOS%"] = max(0, round(forecast_value * 1.1 / 22000 * (1 - supply_factor), 2))
+
+            if 55000 <= custom_stl_supply < 80000:
+                entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 21500 * (1 - supply_factor), 2)) 
             else:
-                last_available_date = demand_summary[demand_summary["Date Key"] <= date]["Date Key"].max()
-                last_available_demand = demand_summary[demand_summary["Date Key"] == last_available_date]["Forecast"].sum()
-                forecast_value = last_available_demand if not pd.isna(last_available_demand) else demand_summary["Forecast"].mean()
-
-                entry["Projected OOS%"] = max(0, round(forecast_value * 1.1 / 22000 * (1 - supply_factor), 2))
-
-                if 55000 <= custom_stl_supply < 80000:
-                    entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 21500 * (1 - supply_factor), 2)) 
-                else:
-                    entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 21000 * (1 - supply_factor), 2))#1.125#22000
+                entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 21000 * (1 - supply_factor), 2))#1.125#22000
 
 
     df_oos_target = pd.DataFrame(oos_data)
