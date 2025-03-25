@@ -107,7 +107,7 @@ if supply_file and oos_file:
         else:
             supply = supply.squeeze()
 
-        if np.isnan(projected_oos):
+        if projected_oos.empty:
             projected_oos = 0.0
         
         oos_data.append({
