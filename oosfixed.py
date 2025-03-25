@@ -44,7 +44,7 @@ if oos_wh_file:
     oos_wh_data["Date"] = pd.to_datetime(oos_wh_data["Date"])  # Convert OOS WH dates
 
     # OOS Projection
-    target_dates = pd.date_range(start=pd.to_datetime("2025-03-18"), periods=21, freq='D')
+    target_dates = pd.date_range(start=pd.to_datetime("2025-03-26"), periods=13, freq='D')
     oos_data = []
 
     for date in target_dates:
