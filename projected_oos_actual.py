@@ -94,7 +94,7 @@ if supply_file and oos_file:
         
         if date in fixed_oos_data["Date Key"].values:
             projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
-        elif date >= pd.Timestamp.today() + pd.Timedelta(days=1):
+        elif date >= pd.Timestamp.today() - pd.Timedelta(days=1):
             daily_demand = demand_summary[demand_summary["Date Key"] == date]
             total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else demand_summary["Forecast"].mean()
             
