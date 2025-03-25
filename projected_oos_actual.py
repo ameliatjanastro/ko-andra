@@ -71,124 +71,42 @@ if supply_file and oos_file:
     # Set Custom STL Supply for Mar 9 Onwards
     custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 10", min_value=40000, value=40000, step=5000, max_value=100000)
     change_date = pd.Timestamp.today()
-
-
+    
     # Generate OOS Projection
     start_date = pd.to_datetime("2025-02-28")
     target_dates = pd.date_range(start=start_date, periods=39, freq='D')
-
+    
     oos_data = []
-
+    
     last_3_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.Timestamp.today() - pd.Timedelta(days=3))]
-    if not last_3_days_oos.empty:
-        avg_oos_increase = last_3_days_oos["OOS%"].pct_change().mean()  # Compute average percentage change
-    else:
-        avg_oos_increase = 0  # 
-
-    for date in target_dates:
-        projected_oos = None  # Default to None
-        supply = None  # Default supply
-
+    avg_oos_last_3 = last_3_days_oos["OOS%"].mean() if not last_3_days_oos.empty else 7
+    
+    daily_decrease = 0.003  # 0.3% decrease per day
+    
+    for i, date in enumerate(target_dates):
+        projected_oos = None
+        supply = None
+    
         if date in fixed_oos_data["Date Key"].values:
             projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
-            supply = supply_data.loc[supply_data["Date"] == date]
-        elif date >= pd.Timestamp.today() + pd.Timedelta(days=1) and date <= pd.to_datetime("2025-03-24"):
-            supply = extended_supply.loc[extended_supply["Date"] == date]
-            # Apply L7 trend to estimate OOS%
-            prev_date = date - pd.Timedelta(days=1)
-            prev_oos_values = [entry["Projected OOS%"] for entry in oos_data if entry["Date"] == prev_date.strftime("%d %b %Y")]
-            if prev_oos_values:
-                projected_oos = prev_oos_values[0] * (1 - avg_oos_increase)*0.95  # Apply trend
-            else:
-                projected_oos = last_3_days_oos["OOS%"].mean()  # Use L7 avg if no previous OOS
-        elif date <= change_date:
-            supply = supply_data.loc[supply_data["Date"] == date]
-
-        # Ensure supply is a valid DataFrame or Series
-        if supply is not None and not supply.empty:
-            supply = supply.squeeze()
-        else:
-            supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
-
-        total_supply = supply.get("KOS", 100000) + supply.get("STL", custom_stl_supply)
-        daily_demand = demand_summary[demand_summary["Date Key"] == date]
-
-        # If demand for the exact date does not exist, use the last available demand
-        if daily_demand.empty:
-            last_available_date = demand_summary[demand_summary["Date Key"] <= date]["Date Key"].max()
-            daily_demand = demand_summary[demand_summary["Date Key"] == last_available_date]
-
-        total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else 0
-        normalized_demand = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 0
-        #st.write(f"{date.strftime('%d %b %Y')}: Demand -", daily_demand)
-
-
+        elif date >= pd.Timestamp.today() + pd.Timedelta(days=1):
+            daily_demand = demand_summary[demand_summary["Date Key"] == date]
+            total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else demand_summary["Forecast"].mean()
+            projected_oos = max(0, (avg_oos_last_3 * (1 - i * daily_decrease)) * (total_demand / demand_summary["Forecast"].mean()))
+        
         oos_data.append({
             "Date": date.strftime("%d %b %Y"),
-            "KOS Supply": supply.get("KOS", 100000),
-            "STL Supply": supply.get("STL", custom_stl_supply),
             "Projected OOS%": projected_oos if projected_oos is not None else np.nan,
         })
-
-    # Get Projected OOS for March 8
-    oos_values = [entry["Projected OOS%"] for entry in oos_data if pd.to_datetime(entry["Date"]) in pd.date_range("2025-03-04", "2025-03-07") and not pd.isna(entry["Projected OOS%"])]
-    projected_oos_8mar = np.mean(oos_values)*0.85 if oos_values else 7  # Default to 12 if no valid values
-
-    # Adjust projection for March 9 onwards
-    for entry in oos_data:
-        date = pd.to_datetime(entry["Date"])
-        if date >= change_date:
-            days_after_change = (date - change_date).days
-            supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 25000 *0.4 )) #ganti pengali ini paling gampang
-            last_available_date = demand_summary[demand_summary["Date Key"] <= date]["Date Key"].max()
-            last_available_demand = demand_summary[demand_summary["Date Key"] == last_available_date]["Forecast"].sum()
-            forecast_value = last_available_demand if not pd.isna(last_available_demand) else demand_summary["Forecast"].mean()
-            entry["Projected OOS%"] = max(0, round(forecast_value * 1.1 / 22000 * (1 - supply_factor), 2))
-
-            if 55000 <= custom_stl_supply < 80000:
-                entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 21500 * (1 - supply_factor), 2)) 
-            else:
-                entry["Projected OOS%"] = max(0, round(forecast_value*1.3 / 21000 * (1 - supply_factor), 2))#1.125#22000
-
-
-    df_oos_target = pd.DataFrame(oos_data)
-
-    avg_inb_before = 161854
-    avg_inb_now = 141532
-    inbound_reduction_factor = avg_inb_before / avg_inb_now
-
-    df_oos_target["OOS% w/o STOCK UP"] = df_oos_target["Projected OOS%"].astype(float) * inbound_reduction_factor
-    #Based on D vs D-1 historical OOS records & L7 SO records-> rolling mean projections
-    # Display Results
-    st.markdown("### <span style='color:blue'>OOS% Projection with REAL HISTORICAL DATA</span>", unsafe_allow_html=True)
-    st.markdown("""
-    ### Notes:
-    - **Next H+5 days (5-9 Mar)**: HC KOS 100K STL 40K, OOS fluctuates
-    - **Set Changed Date (10 Mar)**: The starting date where we are optimistic to *ADHERE* to the specified SO numbers
-    - **H+7 days from changed date**: Recovery period, slow decrease of OOS%
-    - **H +>7 days**: OOS% starting to shift to normal, adapt to new SO qty following Demand Forecast
-    """)
-    st.markdown("### <span style='color:maroon'>TAMBAHAN IF WE DON'T STOCK UP</span>", unsafe_allow_html=True)
-    assume = {
-    "Category": [
-        "Avg Sales", "Beginning Stock", "Exclude LDP (15%)", "Beginning Stock Final", 
-        "Total Inbound Qty", "Daily Inbound Avg", "Inb STL Allocation", 
-        "Inb KOS Allocation", "Ending Stock", "Ending DOI"
-    ],
-    "Current": [
-        "120,000/day", "2,196,739", "(329,511)", "1,867,228", 
-        "5,288,927", "251,854", "90,000", 
-        "161,854", "1,811,155", "15.5 days"
-    ],
-    "Projection (No Stock Up)": [
-        "120,000/day", "2,196,739", "(329,511)", "1,867,228", 
-        "4,652,188", "221,532", "80,000", 
-        "141,532", "1,560,000", "13 days"
-    ]
-    }
     
-    # Create DataFrame
-    assump = pd.DataFrame(assume)
+    # Convert to DataFrame
+    df_oos_target = pd.DataFrame(oos_data)
+    
+    # Display Results
+    #st.markdown("### OOS% Projection with Demand Pattern")
+    #st.dataframe(df_oos_target, use_container_width=True)
+    #st.download_button("Download CSV", df_oos_target.to_csv(index=False), "oos_target.csv", "text/csv")
+
 
     with st.expander("View Assumptions"):
         # Apply styling to left-align text and reduce font size
@@ -207,7 +125,6 @@ if supply_file and oos_file:
     df_oos_target["KOS Supply"] = df_oos_target["KOS Supply"].apply(lambda x: f"{x:,.0f}")  # Format as thousands
     df_oos_target["STL Supply"] = df_oos_target["STL Supply"].apply(lambda x: f"{x:,.0f}")  # Format as thousands
     df_oos_target["Projected OOS%"] = df_oos_target["Projected OOS%"].apply(lambda x: f"{x:.2f}%")  # Format as percentage
-    df_oos_target["OOS% w/o STOCK UP"] = df_oos_target["OOS% w/o STOCK UP"].apply(lambda x: f"{x:.2f}%")
 
     styled_df = df_oos_target.style.apply(highlight_row, axis=1)
     st.dataframe(styled_df, use_container_width=True)
