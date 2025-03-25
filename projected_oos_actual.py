@@ -82,6 +82,7 @@ if supply_file and oos_file:
     avg_oos_last_3 = last_3_days_oos["OOS%"].mean() if not last_3_days_oos.empty else 7
     
     daily_decrease = 0.003  # 0.3% decrease per day
+    supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 25000 * 0.4))
     
     for i, date in enumerate(target_dates):
         projected_oos = None
@@ -92,7 +93,13 @@ if supply_file and oos_file:
         elif date >= pd.Timestamp.today() + pd.Timedelta(days=1):
             daily_demand = demand_summary[demand_summary["Date Key"] == date]
             total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else demand_summary["Forecast"].mean()
-            projected_oos = max(0, (avg_oos_last_3 * (1 - i * daily_decrease)) * (total_demand / demand_summary["Forecast"].mean()))
+            
+            if demand_summary["Forecast"].mean() == 0 or np.isnan(demand_summary["Forecast"].mean()):
+                demand_mean = 1  # Prevent division by zero
+            else:
+                demand_mean = demand_summary["Forecast"].mean()
+            
+            projected_oos = max(0, (avg_oos_last_3 * (1 - i * daily_decrease * (1 - supply_factor))) * (total_demand / demand_mean))
         
         if supply.empty:
             supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
@@ -103,8 +110,9 @@ if supply_file and oos_file:
             "Date": date.strftime("%d %b %Y"),
             "KOS Supply": supply.get("KOS", 100000),
             "STL Supply": supply.get("STL", custom_stl_supply),
-            "Projected OOS%": projected_oos if projected_oos is not None else np.nan,
+            "Projected OOS%": projected_oos if projected_oos is not None else 0.0,
         })
+
         
     # Convert to DataFrame
     df_oos_target = pd.DataFrame(oos_data)
