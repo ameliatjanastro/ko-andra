@@ -110,7 +110,7 @@ if supply_file and oos_file:
             "Date": date.strftime("%d %b %Y"),
             "KOS Supply": supply.get("KOS", 100000),
             "STL Supply": supply.get("STL", custom_stl_supply),
-            "Projected OOS%": projected_oos if projected_oos is not None else 0.0,
+            "Projected OOS%": projected_oos if projected_oos is not None else projected_oos.mean(),
         })
 
         
