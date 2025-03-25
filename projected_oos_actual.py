@@ -100,7 +100,7 @@ if supply_file and oos_file:
             
             demand_mean = demand_summary["Forecast"].mean() if demand_summary["Forecast"].mean() > 0 else 1  # Prevent division by zero
             
-            projected_oos = max(0, (avg_oos * (1 - i * daily_decrease * (1 - supply_factor))) * (total_demand / demand_mean))
+            projected_oos = max(0, (avg_oos * (1 - i * daily_decrease * (1 + supply_factor))) * (total_demand / demand_mean))
         
         if supply.empty:
             supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
