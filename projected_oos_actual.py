@@ -106,9 +106,6 @@ if supply_file and oos_file:
             supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
         else:
             supply = supply.squeeze()
-
-        if projected_oos.empty:
-            projected_oos = 0.0
         
         oos_data.append({
             "Date": date.strftime("%d %b %Y"),
