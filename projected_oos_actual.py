@@ -78,8 +78,12 @@ if supply_file and oos_file:
     
     oos_data = []
     
-    last_3_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.Timestamp.today() - pd.Timedelta(days=3))]
-    avg_oos_last_3 = last_3_days_oos["OOS%"].mean() if not last_3_days_oos.empty else 7
+    # Use all available OOS data if projected OOS is 0%
+    if fixed_oos_data["OOS%"].mean() == 0:
+        avg_oos = fixed_oos_data["OOS%"].mean()
+    else:
+        last_3_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.Timestamp.today() - pd.Timedelta(days=3))]
+        avg_oos = last_3_days_oos["OOS%"].mean() if not last_3_days_oos.empty else fixed_oos_data["OOS%"].mean()
     
     daily_decrease = 0.003  # 0.3% decrease per day
     supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 25000 * 0.4))
@@ -94,12 +98,9 @@ if supply_file and oos_file:
             daily_demand = demand_summary[demand_summary["Date Key"] == date]
             total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else demand_summary["Forecast"].mean()
             
-            if demand_summary["Forecast"].mean() == 0 or np.isnan(demand_summary["Forecast"].mean()):
-                demand_mean = 1  # Prevent division by zero
-            else:
-                demand_mean = demand_summary["Forecast"].mean()
+            demand_mean = demand_summary["Forecast"].mean() if demand_summary["Forecast"].mean() > 0 else 1  # Prevent division by zero
             
-            projected_oos = max(0, (avg_oos_last_3 * (1 - i * daily_decrease * (1 - supply_factor))) * (total_demand / demand_mean))
+            projected_oos = max(0, (avg_oos * (1 - i * daily_decrease * (1 - supply_factor))) * (total_demand / demand_mean))
         
         if supply.empty:
             supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
@@ -110,7 +111,7 @@ if supply_file and oos_file:
             "Date": date.strftime("%d %b %Y"),
             "KOS Supply": supply.get("KOS", 100000),
             "STL Supply": supply.get("STL", custom_stl_supply),
-            "Projected OOS%": projected_oos if projected_oos is not None else projected_oos.mean(),
+            "Projected OOS%": projected_oos if not np.isnan(projected_oos) else 0.0,
         })
 
         
