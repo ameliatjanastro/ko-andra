@@ -91,8 +91,8 @@ if supply_file and oos_file:
             else:
                 kos_stock = custom_kos_supply if outbound_kos > 0 else 0
                 stl_stock = custom_stl_supply if outbound_stl > 0 else 0
-                stock_factor = max(0, min(1, ((kos_stock + stl_stock) - 100000) / 50000))
-                projected_oos = max(0, projected_oos - (stock_factor * 0.03))  # Reduced from 0.04
+                stock_factor = max(0, min(1, ((kos_stock + stl_stock) - 100000) / 20000))
+                projected_oos = max(0, projected_oos - (stock_factor * 0.04))  # Reduced from 0.04
             
             # Demand factor influence
             daily_demand = demand_forecast[demand_forecast["Date Key"] == date]
