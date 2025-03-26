@@ -92,7 +92,7 @@ if supply_file and oos_file:
             # ✅ Now based on **custom stock values**, not fixed numbers
             stock_factor = max(0, min(1, (total_stock - 40000) / 25000))
             oos_adjustment = -daily_decrease
-            projected_oos = max(0, base_oos + oos_adjustment)* (1 - i * stock_factor))
+            projected_oos = max(0, base_oos + oos_adjustment)* (1 - i * stock_factor)
 
             # Stock buildup impact (April 16 +10K, April 22 +30K)
             if date_str == "2025-04-17":
