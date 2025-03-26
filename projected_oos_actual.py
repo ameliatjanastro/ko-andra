@@ -111,13 +111,30 @@ if supply_file and oos_file:
 
             # Zero outbound adjustments
             if date_str in fixed_kos_zero_outbound_days:
-                prev_kos_supply = supply_data[supply_data["Date"].isin(pd.date_range(date - pd.Timedelta(days=3), date - pd.Timedelta(days=1)))]["KOS"].sum()
+                prev_kos_supply = supply_data[
+                    (supply_data["Date"] >= date - pd.Timedelta(days=3)) & 
+                    (supply_data["Date"] < date)
+                ]["KOS"].sum()
+                
+                expected_kos_supply = (
+                    prev_kos_supply if prev_kos_supply > 0 else custom_kos_supply * 3
+                )
+            
                 kos_stock = 0
-                projected_oos += 0.025* (1 - prev_kos_supply / (custom_kos_supply * 3))
+                projected_oos += 0.025 * (1 - prev_kos_supply / expected_kos_supply)
+            
             elif date_str in fixed_stl_zero_outbound_days:
-                prev_stl_supply = supply_data[supply_data["Date"].isin(pd.date_range(date - pd.Timedelta(days=3), date - pd.Timedelta(days=1)))]["STL"].sum()
+                prev_stl_supply = supply_data[
+                    (supply_data["Date"] >= date - pd.Timedelta(days=3)) & 
+                    (supply_data["Date"] < date)
+                ]["STL"].sum()
+                
+                expected_stl_supply = (
+                    prev_stl_supply if prev_stl_supply > 0 else custom_stl_supply * 3
+                )
+            
                 stl_stock = 0
-                projected_oos += 0.02* (1 - prev_stl_supply / (custom_stl_supply * 3))
+                projected_oos += 0.02 * (1 - prev_stl_supply / expected_stl_supply)
 
             # **🔹 DYNAMIC STOCK FACTOR ADJUSTMENT**
             total_stock = kos_stock + stl_stock
