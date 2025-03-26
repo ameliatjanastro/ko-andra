@@ -24,45 +24,49 @@ if supply_file and oos_file:
     
     # Convert Date Columns
     supply_data["Date"] = pd.to_datetime(supply_data["Date"])
-    fixed_oos_data["Date Key"] = pd.to_datetime(fixed_oos_data["Date Key"])
+    oos_data["Date Key"] = pd.to_datetime(oos_data["Date Key"])
     inbound_data["Date"] = pd.to_datetime(inbound_data["Date"])
     outbound_data["Date"] = pd.to_datetime(outbound_data["Date"])
     demand_forecast["Date Key"] = pd.to_datetime(demand_forecast["Date Key"])
     
-    # Sort supply data
+    # Sort data
     supply_data = supply_data.sort_values("Date")
-    supply_data[["KOS", "STL"]] = supply_data[["KOS", "STL"]].apply(pd.to_numeric, errors="coerce")
     
-    # Define fixed supply days
+    # Define Fixed Dates for 0 Outbound Days
     fixed_kos_zero_outbound_days = ["2025-04-19", "2025-04-20"]
-    fixed_stl_zero_outbound_days = ["2025-04-25", "2025-04-26", "2025-04-27"]
+    fixed_stl_zero_outbound_days = ["2025-04-21"]
     
-    # Ensure KOS still has outbound on April 18 (45000)
-    outbound_data.loc[outbound_data["Date"] == "2025-04-18", "KOS"] = 45000
-    
-    # Demand Summary
-    demand_summary = demand_forecast.groupby("Date Key")["Forecast"].sum().reset_index()
-    max_demand = demand_summary["Forecast"].max()
-    demand_summary["Normalized Demand"] = demand_summary["Forecast"] / max_demand
-    
-    # OOS Projection Adjustments
+    # OOS Projection Parameters
+    projection_start = pd.to_datetime("2025-03-01")
     oos_final_adjustments = []
-    base_oos = 0.12  # Base OOS percentage
-    daily_decrease = 0.003  # Daily decrease in OOS%
+    base_oos = 0.12
+    daily_decrease = 0.003
+    max_oos_increase = 0.02  # Limit OOS% increase to max 2%
 
-    for date in pd.date_range("2025-03-25", "2025-04-30"):
+    for date in pd.date_range("2025-03-01", "2025-04-30"):
         date_str = date.strftime("%Y-%m-%d")
-        
-        # Historical Data (from uploaded OOS file)
-        if date in fixed_oos_data["Date Key"].values:
-            projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
+
+        # Get historical supply & OOS if available
+        historical_supply = supply_data[supply_data["Date"] == date]
+        historical_oos = oos_data[oos_data["Date Key"] == date]
+
+        if not historical_oos.empty:
+            # Use historical OOS data
+            projected_oos = historical_oos["OOS%"].values[0]
+            kos_stock = historical_supply["KOS"].values[0] if not historical_supply.empty else custom_kos_supply
+            stl_stock = historical_supply["STL"].values[0] if not historical_supply.empty else custom_stl_supply
         else:
-            # Calculate inbound/outbound
+            # Fetch inbound and outbound data
             inbound_kos = inbound_data.loc[inbound_data["Date"] == date, "KOS"].sum()
             inbound_stl = inbound_data.loc[inbound_data["Date"] == date, "STL"].sum()
             outbound_kos = outbound_data.loc[outbound_data["Date"] == date, "KOS"].sum()
             outbound_stl = outbound_data.loc[outbound_data["Date"] == date, "STL"].sum()
-            
+
+            if date_str == "2025-04-18":
+                kos_stock = 45000
+            else:
+                kos_stock = outbound_kos if outbound_kos > 0 else custom_kos_supply
+
             # Base OOS calculation
             oos_adjustment = -daily_decrease
             projected_oos = max(0, base_oos + oos_adjustment)
@@ -87,10 +91,10 @@ if supply_file and oos_file:
                 projected_oos = max(0, projected_oos - (stock_factor * 0.03))  # Reduced from 0.04
             
             # Demand factor influence
-            daily_demand = demand_summary[demand_summary["Date Key"] == date]
+            daily_demand = demand_forecast[demand_forecast["Date Key"] == date]
             demand_factor = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 1
             projected_oos *= demand_factor
-        
+
         # Append results
         oos_final_adjustments.append({
             "Date": date.strftime("%d %b %Y"),
