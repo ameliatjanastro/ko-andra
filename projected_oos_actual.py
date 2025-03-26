@@ -84,8 +84,11 @@ if supply_file and oos_file:
                 stl_stock = custom_stl_supply
 
             # Base OOS calculation
-            projected_oos = max(0, base_oos - daily_decrease)
-
+            if date < pd.Timestamp("2025-04-09"):
+                projected_oos = base_oos  # Use the most recent 3-day average
+            else:
+                projected_oos = max(0, base_oos - daily_decrease)
+            
             # Stock buildup impact
             if date_str == "2025-04-17":
                 projected_oos *= 0.95
