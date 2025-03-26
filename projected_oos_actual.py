@@ -118,7 +118,8 @@ if supply_file and oos_file:
                 projected_oos *= min(1.25, 1 + (1 - supply_factor) * 0.50)  # Increase OOS% if supply is lower
 
             # Demand factor influence
-            daily_demand = demand_forecast[demand_forecast["Date Key"] == date]+ pd.Timedelta(days=1)
+            next_day = date + pd.Timedelta(days=1)
+            daily_demand = demand_forecast[demand_forecast["Date Key"] == next_day]+ pd.Timedelta(days=1)
             total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else demand_forecast["Forecast"].mean()
             demand_factor = total_demand / demand_forecast["Forecast"].max() if total_demand > 0 else 1
             projected_oos *= demand_factor* 1.15
