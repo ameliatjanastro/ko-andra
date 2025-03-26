@@ -9,6 +9,9 @@ st.title("OOS Projection STL + SO Realistic")
 supply_file = st.sidebar.file_uploader("Upload Historical Supply SO (Exc. CANCELLED)", type=["xlsx"])
 oos_file = st.sidebar.file_uploader("Upload Historical OOS% (Until Today)", type=["xlsx"])
 
+custom_kos_supply = st.sidebar.number_input("KOS Supply After Mar 10", min_value=90000, value=100000, step=5000)
+custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 10", min_value=40000, value=40000, step=5000, max_value=100000)
+
 if supply_file and oos_file:
     # Load Data
     supply_data = pd.read_excel(supply_file)
@@ -19,93 +22,64 @@ if supply_file and oos_file:
     fixed_oos_data["Date Key"] = pd.to_datetime(fixed_oos_data["Date Key"])
     demand_forecast["Date Key"] = pd.to_datetime(demand_forecast["Date Key"])
     
-    # Compute Rolling Supply for Mar 4-8
-    # Ensure the data is sorted before rolling calculation
-    # Ensure the data is sorted
-   # Ensure the data is sorted
-    # Ensure data is sorted by Date
+    # Sort supply data
     supply_data = supply_data.sort_values("Date")
-    
-    # Convert supply columns to numeric
     supply_data[["KOS", "STL"]] = supply_data[["KOS", "STL"]].apply(pd.to_numeric, errors="coerce")
     
-    # Initialize forecasted supply storage
-    forecasted_supply = []
+    # Define inbound and outbound schedules
+    zero_inbound_kos_days = ["2025-04-18", "2025-04-19", "2025-04-20"]
+    zero_inbound_stl_days = ["2025-04-18", "2025-04-20"]
+    large_inbound_stl_day = "2025-04-19"
     
-    # Create a copy of supply_data to update with forecasted values dynamically
-    rolling_supply_data = supply_data.copy()
+    zero_outbound_kos_days = ["2025-04-19", "2025-04-20"]
+    partial_outbound_kos_day = "2025-04-18"
+    full_outbound_kos_day = "2025-04-16"
     
-    # Compute rolling mean for March 4-8 using the last 3 available days (actual + forecasted)
-    for target_date in pd.date_range("2025-03-05", "2025-03-09"):
-        #prev_days = rolling_supply_data[rolling_supply_data["Date"] < target_date].tail(7)  # Get last 3 available days
-        avg_kos, avg_stl = 100000, 60000  # Default hc
-        #if not prev_days.empty:
-            #avg_kos = prev_days["KOS"].mean()
-            #avg_stl = prev_days["STL"].mean()
-        #else:
-            #avg_kos, avg_stl = 100000, custom_stl_supply  # Default values if no data
-        
-        forecasted_supply.append({"Date": target_date, "KOS": avg_kos, "STL": avg_stl})
-    
-        # Append forecasted supply to rolling data for the next iterations
-        rolling_supply_data = pd.concat([rolling_supply_data, pd.DataFrame(forecasted_supply[-1:], index=[0])])
-    
-    # Convert forecasted supply to DataFrame
-    forecasted_supply = pd.DataFrame(forecasted_supply)
-    
-    # Merge forecasted supply with actual supply data
-    extended_supply = pd.concat([supply_data, forecasted_supply]).drop_duplicates(subset=["Date"], keep="last")
-    
-    # Ensure proper sorting
-    extended_supply = extended_supply.sort_values("Date")
-    
-    # Debugging: Display Rolling Supply Data
-    #st.write("Rolling Supply Data for March 4-8:")
-    #st.write(extended_supply[extended_supply["Date"].between("2025-03-04", "2025-03-08")])
-    
-    # Prepare Demand Data
+    # Demand Summary
     demand_summary = demand_forecast.groupby("Date Key")["Forecast"].sum().reset_index()
     max_demand = demand_summary["Forecast"].max()
     demand_summary["Normalized Demand"] = demand_summary["Forecast"] / max_demand
-
-    # Set Custom STL Supply for Mar 9 Onwards
-    custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 10", min_value=40000, value=40000, step=5000, max_value=100000)
-    change_date = pd.Timestamp.today()
     
-    # Generate OOS Projection
-    start_date = pd.to_datetime("2025-02-28")
-    target_dates = pd.date_range(start=start_date, periods=39, freq='D')
-    
-    oos_data = []
-    
-    # Use all available OOS data if projected OOS is 0%
-    if fixed_oos_data["OOS%"].mean() == 0:
-        avg_oos = fixed_oos_data["OOS%"].mean()
-    else:
-        last_3_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.Timestamp.today() - pd.Timedelta(days=3))]
-        avg_oos = last_3_days_oos["OOS%"].mean() if not last_3_days_oos.empty else fixed_oos_data["OOS%"].mean()
-    
-    daily_decrease = 0.003  # 0.3% decrease per day
+    # OOS Projection Adjustments
+    oos_final_adjustments = []
+    base_oos = 0.12  # Base OOS percentage
+    daily_decrease = 0.003  # Daily decrease in OOS%
     supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 25000 * 0.4))
     
-    for i, date in enumerate(target_dates):
-        projected_oos = None
-        supply = supply_data.loc[supply_data["Date"] == date]
+    for date in pd.date_range("2025-04-09", "2025-04-30"):
+        date_str = date.strftime("%Y-%m-%d")
         
-        if date in fixed_oos_data["Date Key"].values:
-            projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
-        elif date >= pd.Timestamp.today() - pd.Timedelta(days=1):
-            daily_demand = demand_summary[demand_summary["Date Key"] == date]
-            total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else demand_summary["Forecast"].mean()
-            
-            demand_mean = demand_summary["Forecast"].mean() if demand_summary["Forecast"].mean() > 0 else 1  # Prevent division by zero
-            
-            projected_oos = max(0, (avg_oos * (1 - i * daily_decrease * (1 + supply_factor))) * (total_demand / demand_mean))
-        
-        if supply.empty:
-            supply = pd.Series({"KOS": 100000, "STL": custom_stl_supply})
+        if date_str in zero_outbound_kos_days:
+            oos_adjustment = 0.07  # 7% increase on zero-outbound days for KOS
+        elif date_str in zero_inbound_kos_days or date_str in zero_inbound_stl_days:
+            oos_adjustment = 0.05  # 5% increase due to no inbound
+        elif date_str == large_inbound_stl_day:
+            oos_adjustment = -0.05  # 5% decrease due to large inbound
+        elif date_str == partial_outbound_kos_day:
+            oos_adjustment = 0.03  # 3% increase on partial outbound days
+        elif date_str == full_outbound_kos_day:
+            oos_adjustment = -0.02  # 2% decrease on full outbound days
         else:
-            supply = supply.squeeze()
+            oos_adjustment = -daily_decrease * (1 + supply_factor)  # Normal daily decrease with supply factor
+        
+        # Get stock levels
+        supply = supply_data[supply_data["Date"] == date]
+        if supply.empty:
+            kos_stock, stl_stock = custom_kos_supply, custom_stl_supply
+        else:
+            kos_stock = supply["KOS"].sum()
+            stl_stock = supply["STL"].sum()
+        
+        # Normalize stock impact
+        stock_factor = max(0, min(1, ((kos_stock + stl_stock) - 100000) / 50000))  
+        
+        # Adjust OOS%
+        projected_oos = max(0, base_oos + oos_adjustment - (stock_factor * 0.04))
+        
+        # Apply demand trend factor
+        daily_demand = demand_summary[demand_summary["Date Key"] == date]
+        demand_factor = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 1
+        projected_oos *= demand_factor
         
         oos_data.append({
             "Date": date.strftime("%d %b %Y"),
