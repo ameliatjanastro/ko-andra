@@ -112,7 +112,7 @@ if supply_file and oos_file:
             # Zero outbound adjustments
             if date_str in fixed_kos_zero_outbound_days:
                 prev_kos_supply = supply_data[
-                    (supply_data["Date"] >= date - pd.Timedelta(days=3)) & 
+                    (supply_data["Date"] >= date - pd.Timedelta(days=5)) & 
                     (supply_data["Date"] < date)
                 ]["KOS"].sum()
                 
@@ -125,7 +125,7 @@ if supply_file and oos_file:
             
             elif date_str in fixed_stl_zero_outbound_days:
                 prev_stl_supply = supply_data[
-                    (supply_data["Date"] >= date - pd.Timedelta(days=3)) & 
+                    (supply_data["Date"] >= date - pd.Timedelta(days=5)) & 
                     (supply_data["Date"] < date)
                 ]["STL"].sum()
                 
