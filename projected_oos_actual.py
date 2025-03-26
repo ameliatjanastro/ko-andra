@@ -34,7 +34,10 @@ if supply_file and oos_file:
     
     # Define Fixed Dates for 0 Outbound Days
     fixed_kos_zero_outbound_days = ["2025-04-19", "2025-04-20"]
-    fixed_stl_zero_outbound_days = ["2025-04-21"]
+    fixed_stl_zero_outbound_days = ["2025-04-25", "2025-04-26", "2025-04-27"]
+    
+    # Ensure KOS still has outbound on April 18 (45000)
+    outbound_data.loc[outbound_data["Date"] == "2025-04-18", "KOS"] = 45000
     
     # OOS Projection Parameters
     projection_start = pd.to_datetime("2025-03-01")
@@ -61,11 +64,6 @@ if supply_file and oos_file:
             inbound_stl = inbound_data.loc[inbound_data["Date"] == date, "STL"].sum()
             outbound_kos = outbound_data.loc[outbound_data["Date"] == date, "KOS"].sum()
             outbound_stl = outbound_data.loc[outbound_data["Date"] == date, "STL"].sum()
-
-            if date_str == "2025-04-18":
-                kos_stock = 45000
-            else:
-                kos_stock = outbound_kos if outbound_kos > 0 else custom_kos_supply
 
             # Base OOS calculation
             oos_adjustment = -daily_decrease
