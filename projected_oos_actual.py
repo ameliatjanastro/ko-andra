@@ -119,12 +119,12 @@ if supply_file and oos_file:
             if date_str in fixed_kos_zero_outbound_days:
                 prev_kos_supply = custom_kos_supply * 3
                 kos_stock = 0
-                projected_oos += 0.025 * ((5 - supply_factor)*0.00001)
+                projected_oos += 0.025 * ((1 - supply_factor)*0.0000001)
             
             elif date_str in fixed_stl_zero_outbound_days:
                 prev_stl_supply = custom_stl_supply * 3  # Use custom supply instead of historical data
                 stl_stock = 0
-                projected_oos += 0.02 * ((5 - supply_factor)*0.00001)
+                projected_oos += 0.02 * ((1 - supply_factor)*0.0000001)
 
             # Dynamic OOS% adjustment based on supply changes
             if supply_factor > 1:
