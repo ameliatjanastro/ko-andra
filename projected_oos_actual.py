@@ -125,7 +125,7 @@ if supply_file and oos_file:
             demand_mean = demand_summary["Forecast"].mean() if demand_summary["Forecast"].mean() > 0 else 1  # Prevent division by zero
             demand_factor = daily_demand["Forecast"].values[0] / demand_forecast["Forecast"].max() if not daily_demand.empty else 1
             projected_oos *= demand_factor
-            projected_oos = max(0, (projected_oos * (1 - i * daily_decrease * (1 + stock_factor))) * (total_demand / demand_mean)*1.1)
+            projected_oos = max(0, (projected_oos * (1 - i * daily_decrease * (1 + stock_factor))) * (total_demand / demand_mean)*1.15)
 
         # Append results
         oos_final_adjustments.append({
