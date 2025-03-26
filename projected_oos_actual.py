@@ -76,6 +76,7 @@ if supply_file and oos_file:
             # ✅ LOCK KOS = 45,000 on April 18
             if date_str in locked_kos_days:
                 kos_stock = locked_kos_days[date_str]
+                projected_oos += 0.05
             
             # ✅ USE FILE DATA ONLY for 16-20 Apr & 22-27 Apr
             elif date_str in file_only_dates:
