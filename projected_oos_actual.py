@@ -19,8 +19,8 @@ if supply_file and oos_file and inbound_file and outbound_file:
     # Load Data
     supply_data = pd.read_excel(supply_file)
     fixed_oos_data = pd.read_excel(oos_file)
-    inbound_data = pd.read_excel(inbound_file)
-    outbound_data = pd.read_excel(outbound_file)
+    inbound_data = pd.read_csv(inbound_file)
+    outbound_data = pd.read_csv(outbound_file)
     demand_forecast = pd.read_excel("forecast dates.xlsx")  # Ensure this file exists
     
     # Convert Date Columns
