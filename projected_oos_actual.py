@@ -51,7 +51,7 @@ if supply_file and oos_file:
     projection_start = pd.to_datetime("2025-03-01")
     oos_final_adjustments = []
     base_oos = 0.11
-    daily_decrease = 0.002
+    daily_decrease = 0.0015
     max_oos_increase = 0.02  # Limit OOS% increase to max 2%
 
     for i, date in enumerate(pd.date_range("2025-03-25", "2025-04-30"), start=1):
@@ -103,7 +103,7 @@ if supply_file and oos_file:
                 projected_oos += 0.04  # Reduced impact (was +0.05)
             elif date_str in fixed_stl_zero_outbound_days:
                 stl_stock = 0
-                projected_oos += 0.04  # Reduced impact (was +0.08)
+                projected_oos += 0.03  # Reduced impact (was +0.08)
 
             # **🔹 DYNAMIC STOCK FACTOR ADJUSTMENT**
             total_stock = kos_stock + stl_stock
