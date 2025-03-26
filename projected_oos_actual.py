@@ -76,7 +76,7 @@ if supply_file and oos_file:
             # ✅ LOCK KOS = 45,000 on April 18
             if date_str in locked_kos_days:
                 kos_stock = locked_kos_days[date_str]
-                projected_oos += 0.05
+                
             
             # ✅ USE FILE DATA ONLY for 16-20 Apr & 22-27 Apr
             elif date_str in file_only_dates:
@@ -95,6 +95,8 @@ if supply_file and oos_file:
             # Stock buildup impact (April 16 +10K, April 22 +30K)
             if date_str == "2025-04-17":
                 projected_oos *= 0.95
+            elif date_str == "2025-04-18":
+                if date_str *= 0.105
             elif date_str in ["2025-04-23", "2025-04-24"]:
                 projected_oos *= 0.90
 
