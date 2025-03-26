@@ -67,10 +67,11 @@ if supply_file and oos_file:
         reference_date = date - pd.Timedelta(days=3)
         recent_oos_data = oos_data[oos_data["Date Key"] < reference_date].sort_values("Date Key", ascending=False).head(3)
         base_oos = recent_oos_data["OOS%"].mean() * 0.01
+        prev_date = date - pd.Timedelta(days=1)
         date_str = date.strftime("%Y-%m-%d")
 
         # Get historical supply & OOS if available
-        historical_supply = supply_data[supply_data["Date"] == date]
+        historical_supply = supply_data[supply_data["Date"] == prev_date]
         historical_oos = oos_data[oos_data["Date Key"] == date]
 
         if not historical_oos.empty:
