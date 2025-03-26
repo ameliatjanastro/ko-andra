@@ -81,7 +81,7 @@ if supply_file and oos_file:
         demand_factor = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 1
         projected_oos *= demand_factor
         
-        ooos_final_adjustments.append({
+        oos_final_adjustments.append({
             "Date": date.strftime("%d %b %Y"),
             "KOS Supply": f"{kos_stock:,.0f}",
             "STL Supply": f"{stl_stock:,.0f}",
