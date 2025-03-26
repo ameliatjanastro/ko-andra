@@ -37,21 +37,21 @@ if supply_file and oos_file:
     fixed_stl_zero_outbound_days = ["2025-04-25", "2025-04-26", "2025-04-27"]
     
     # Ensure KOS still has outbound on April 18 (45000)
-    outbound_data.loc[outbound_data["Date"] == "2025-04-18", "KOS"] = 45000
-    
+    locked_kos_days = {"2025-04-18": 45000}
+
     # OOS Projection Parameters
     projection_start = pd.to_datetime("2025-03-01")
     oos_final_adjustments = []
     base_oos = 0.12
     daily_decrease = 0.003
-    max_oos_increase = 0.03  # Limit OOS% increase to max 2%
+    max_oos_increase = 0.02  # Limit OOS% increase to max 2%
 
     for date in pd.date_range("2025-03-01", "2025-04-30"):
         date_str = date.strftime("%Y-%m-%d")
 
         # Get historical supply & OOS if available
         historical_supply = supply_data[supply_data["Date"] == date]
-        historical_oos = fixed_oos_data[fixed_oos_data["Date Key"] == date]
+        historical_oos = oos_data[oos_data["Date Key"] == date]
 
         if not historical_oos.empty:
             # Use historical OOS data
@@ -65,11 +65,13 @@ if supply_file and oos_file:
             outbound_kos = outbound_data.loc[outbound_data["Date"] == date, "KOS"].sum()
             outbound_stl = outbound_data.loc[outbound_data["Date"] == date, "STL"].sum()
 
-            if date_str == "2025-04-18":
-                kos_stock = 45000
+            # ✅ LOCK KOS = 45,000 on April 18
+            if date_str in locked_kos_days:
+                kos_stock = locked_kos_days[date_str]
             else:
                 kos_stock = outbound_kos if outbound_kos > 0 else custom_kos_supply
-                stl_stock = outbound_stl if outbound_stl > 0 else custom_stl_supply
+
+            stl_stock = outbound_stl if outbound_stl > 0 else custom_stl_supply
 
             # Base OOS calculation
             oos_adjustment = -daily_decrease
@@ -88,15 +90,14 @@ if supply_file and oos_file:
             elif date_str in fixed_stl_zero_outbound_days:
                 stl_stock = 0
                 projected_oos += 0.06  # Reduced impact (was +0.08)
-            else:
-                kos_stock = custom_kos_supply if outbound_kos > 0 else 0
-                stl_stock = custom_stl_supply if outbound_stl > 0 else 0
-                stock_factor = max(0, min(1, ((kos_stock + stl_stock) - 100000) / 20000))
-                projected_oos = max(0, projected_oos - (stock_factor * 0.04))  # Reduced from 0.04
-            
+
+            # ✅ FIX: Supply Factor should correctly adjust OOS%
+            stock_factor = max(0, min(1, ((kos_stock + stl_stock) - 100000) / 20000))
+            projected_oos = max(0, projected_oos - (stock_factor * 0.04))  # Reduced from 0.03
+
             # Demand factor influence
             daily_demand = demand_forecast[demand_forecast["Date Key"] == date]
-            demand_factor = daily_demand["Forecast"].values[0] / demand_forecast["Forecast"].max() if not daily_demand.empty else 1
+            demand_factor = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 1
             projected_oos *= demand_factor
 
         # Append results
