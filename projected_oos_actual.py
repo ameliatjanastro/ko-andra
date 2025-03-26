@@ -47,7 +47,7 @@ if supply_file and oos_file:
     projection_start = pd.to_datetime("2025-03-01")
     oos_final_adjustments = []
     #base_oos = recent_oos_data["OOS%"].mean() * 0.01
-    daily_decrease = 0.002
+    daily_decrease = 0.0015
 
     # Compute Historical Average Supply
     historical_avg_supply = (supply_data["KOS"].mean() + supply_data["STL"].mean()) if not supply_data.empty else 180000
@@ -113,7 +113,7 @@ if supply_file and oos_file:
 
             # Dynamic OOS% adjustment based on supply changes
             if supply_factor > 1:
-                projected_oos *= max(0.85, 1 - (supply_factor - 1) * 0.15)  # Reduce OOS% if supply is higher
+                projected_oos *= max(0.95, 1 - (supply_factor - 1) * 0.15)  # Reduce OOS% if supply is higher
             elif supply_factor < 1:
                 projected_oos *= min(1.25, 1 + (1 - supply_factor) * 0.20)  # Increase OOS% if supply is lower
 
