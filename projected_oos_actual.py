@@ -137,6 +137,32 @@ if supply_file and oos_file:
     df_oos_final_adjusted = pd.DataFrame(oos_final_adjustments)
 
     # Display Results
-    st.dataframe(df_oos_final_adjusted, use_container_width=True)
+    with st.expander("📌 Key Highlights of the OOS Projection"):
+        st.markdown("""
+        - **April 18-20**: KOS still has outbound on April 18 (45,000). No outbound on April 19-20.
+        - **April 25-27**: No STL outbound on these dates.
+        - **Dynamic OOS Adjustments**:
+            - OOS% dynamically adjusts based on supply and demand fluctuations.
+            - Supply higher than historical average → OOS% decreases.
+            - Supply lower than historical average → OOS% increases.
+        - **Fixed Zero Outbound Days Impact**:
+            - April 19-20 (KOS) and April 25-27 (STL) will see adjusted OOS% due to no outbound.
+        - **Demand Influence**:
+            - Higher forecasted demand results in increased OOS%.
+            - OOS% is adjusted based on total demand relative to the max forecasted demand.
+        """)
+    
+    # Define function for row highlighting
+    def highlight_special_dates(row):
+        if row["Date"] in ["18 Apr 2025", "19 Apr 2025", "20 Apr 2025", "25 Apr 2025", "26 Apr 2025", "27 Apr 2025"]:
+            return ['background-color: yellow'] * len(row)
+        return [''] * len(row)
+    
+    # Apply highlighting
+    styled_df = df_oos_final_adjusted.style.apply(highlight_special_dates, axis=1)
+    
+    # Display Results
+    st.dataframe(styled_df, use_container_width=True)
+    #st.dataframe(df_oos_final_adjusted, use_container_width=True)
     st.download_button("Download CSV", df_oos_final_adjusted.to_csv(index=False), "oos_projection.csv", "text/csv")
-
+    
