@@ -158,6 +158,7 @@ if supply_file and oos_file:
         - **Demand Influence**:
             - Higher forecasted demand results in increased OOS%.
             - OOS% will also depends on total demand trend relative to the max forecasted demand.
+        Reference: https://docs.google.com/spreadsheets/d/1xDOb4EcEey5QYa1I6OO8siIg5NqKdvI_pvIv-C2MrcY/edit?gid=1971442377#gid=1971442377 sheet result 2
         """)
     
     # Define function for row highlighting
