@@ -100,7 +100,7 @@ if supply_file and oos_file:
             # 0 outbound adjustments
             if date_str in fixed_kos_zero_outbound_days:
                 kos_stock = 0
-                projected_oos += 0.04  # Reduced impact (was +0.05)
+                projected_oos += 0.05  # Reduced impact (was +0.05)
             elif date_str in fixed_stl_zero_outbound_days:
                 stl_stock = 0
                 projected_oos += 0.03  # Reduced impact (was +0.08)
