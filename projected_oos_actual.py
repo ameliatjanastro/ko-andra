@@ -89,11 +89,11 @@ if supply_file and oos_file:
         })
     
     # Convert to DataFrame
-    df_oos_target = pd.DataFrame(oos_final_adjustments)
+    df_oos_final_adjusted = pd.DataFrame(oos_final_adjustments)
     
     # Display Results
-    #st.dataframe(df_oos_final_adjusted, use_container_width=True)
-    #st.download_button("Download CSV", df_oos_final_adjusted.to_csv(index=False), "oos_projection.csv", "text/csv")
+    st.dataframe(df_oos_final_adjusted, use_container_width=True)
+    st.download_button("Download CSV", df_oos_final_adjusted.to_csv(index=False), "oos_projection.csv", "text/csv")
     
     # Display Results
     #st.markdown("### OOS% Projection with Demand Pattern")
@@ -115,10 +115,10 @@ if supply_file and oos_file:
     def highlight_row(s):
         return ['background-color: yellow' if s["Date"] == "10 Mar 2025" else '' for _ in s]
 
-    df_oos_target["KOS Supply"] = df_oos_target["KOS Supply"].apply(lambda x: f"{x:,.0f}")  # Format as thousands
-    df_oos_target["STL Supply"] = df_oos_target["STL Supply"].apply(lambda x: f"{x:,.0f}")  # Format as thousands
-    df_oos_target["Projected OOS%"] = df_oos_target["Projected OOS%"].apply(lambda x: f"{x:.2f}%")  # Format as percentage
+    #df_oos_target["KOS Supply"] = df_oos_target["KOS Supply"].apply(lambda x: f"{x:,.0f}")  # Format as thousands
+    #df_oos_target["STL Supply"] = df_oos_target["STL Supply"].apply(lambda x: f"{x:,.0f}")  # Format as thousands
+    #df_oos_target["Projected OOS%"] = df_oos_target["Projected OOS%"].apply(lambda x: f"{x:.2f}%")  # Format as percentage
 
-    styled_df = df_oos_target.style.apply(highlight_row, axis=1)
-    st.dataframe(styled_df, use_container_width=True)
-    st.download_button("Download CSV", df_oos_target.to_csv(index=False), "oos_targetnew.csv", "text/csv")
+    #styled_df = df_oos_target.style.apply(highlight_row, axis=1)
+    #st.dataframe(styled_df, use_container_width=True)
+    #st.download_button("Download CSV", df_oos_target.to_csv(index=False), "oos_targetnew.csv", "text/csv")
