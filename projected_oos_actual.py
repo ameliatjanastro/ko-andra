@@ -97,7 +97,7 @@ if supply_file and oos_file:
 
             # Demand factor influence
             daily_demand = demand_forecast[demand_forecast["Date Key"] == date]
-            demand_factor = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 1
+            demand_factor = daily_demand["Forecast"].values[0] / demand_forecast["Forecast"].max() if not daily_demand.empty else 1
             projected_oos *= demand_factor
 
         # Append results
