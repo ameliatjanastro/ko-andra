@@ -50,7 +50,7 @@ if supply_file and oos_file:
     # OOS Projection Parameters
     projection_start = pd.to_datetime("2025-03-01")
     oos_final_adjustments = []
-    base_oos = 0.12
+    base_oos = 0.11
     daily_decrease = 0.002
     max_oos_increase = 0.02  # Limit OOS% increase to max 2%
 
