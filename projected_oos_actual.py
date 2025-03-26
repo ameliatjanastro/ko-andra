@@ -54,7 +54,7 @@ if supply_file and oos_file:
     daily_decrease = 0.003
     max_oos_increase = 0.02  # Limit OOS% increase to max 2%
 
-    for date in pd.date_range("2025-03-25", "2025-04-30"):
+    for i, date in enumerate(pd.date_range("2025-03-25", "2025-04-30"), start=1):
         date_str = date.strftime("%Y-%m-%d")
 
         # Get historical supply & OOS if available
