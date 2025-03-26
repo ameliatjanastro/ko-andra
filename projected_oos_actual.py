@@ -112,12 +112,12 @@ if supply_file and oos_file:
             # Zero outbound adjustments
             if date_str in fixed_kos_zero_outbound_days:
                 prev_kos_supply = supply_data[
-                    (supply_data["Date"] >= date - pd.Timedelta(days=5)) & 
+                    (supply_data["Date"] >= date - pd.Timedelta(days=3)) & 
                     (supply_data["Date"] < date)
                 ]["KOS"].sum()
                 
                 expected_kos_supply = (
-                    prev_kos_supply if prev_kos_supply > 0 else custom_kos_supply * 3
+                    prev_kos_supply* 3
                 )
             
                 kos_stock = 0
