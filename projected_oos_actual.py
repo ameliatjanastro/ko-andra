@@ -32,6 +32,14 @@ if supply_file and oos_file:
     inbound_data["Date"] = pd.to_datetime(inbound_data["Date"])
     outbound_data["Date"] = pd.to_datetime(outbound_data["Date"])
     demand_forecast["Date Key"] = pd.to_datetime(demand_forecast["Date Key"])
+
+    latest_supply_date = supply_data["Date"].max().strftime("%d %b %Y") if not supply_data.empty else "N/A"
+    latest_oos_date = oos_data["Date Key"].max().strftime("%d %b %Y") if not oos_data.empty else "N/A"
+
+    # Display Latest Dates
+    st.markdown(f"**📅 Latest Data Available:**")
+    st.markdown(f"- **Supply Data:** {latest_supply_date}")
+    st.markdown(f"- **OOS Data:** {latest_oos_date}")
     
     # Sort data
     supply_data = supply_data.sort_values("Date")
