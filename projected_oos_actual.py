@@ -43,7 +43,7 @@ if supply_file and oos_file:
     demand_summary["Normalized Demand"] = demand_summary["Forecast"] / max_demand
 
     # Projection Start Date
-    projection_start = pd.to_datetime("2025-03-25")
+    projection_start = pd.to_datetime("2025-03-01")
 
     # OOS Projection Adjustments
     oos_final_adjustments = []
@@ -51,7 +51,7 @@ if supply_file and oos_file:
     daily_decrease = 0.003  # Daily decrease in OOS%
     supply_factor = max(0, min(1, (custom_stl_supply - 40000) / 25000 * 0.4))
 
-    for date in pd.date_range("2025-03-25", "2025-04-30"):
+    for date in pd.date_range("2025-03-01", "2025-04-30"):
         date_str = date.strftime("%Y-%m-%d")
 
         # If historical data exists, use it
