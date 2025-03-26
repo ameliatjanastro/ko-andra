@@ -117,6 +117,7 @@ if supply_file and oos_file:
 
             # Demand factor influence
             daily_demand = demand_forecast[demand_forecast["Date Key"] == date]
+            demand_summary = demand_forecast.groupby("Date Key")["Forecast"].sum().reset_index()
             total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else demand_summary["Forecast"].mean()
             demand_mean = demand_summary["Forecast"].mean() if demand_summary["Forecast"].mean() > 0 else 1  # Prevent division by zero
             demand_factor = daily_demand["Forecast"].values[0] / demand_forecast["Forecast"].max() if not daily_demand.empty else 1
