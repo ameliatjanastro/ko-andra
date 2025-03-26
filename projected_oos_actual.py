@@ -8,8 +8,7 @@ st.title("OOS Projection STL + SO Realistic")
 # File Uploads
 supply_file = st.sidebar.file_uploader("Upload Historical Supply SO (Exc. CANCELLED)", type=["xlsx"])
 oos_file = st.sidebar.file_uploader("Upload Historical OOS% (Until Today)", type=["xlsx"])
-inbound_file = st.sidebar.file_uploader("Upload Inbound Data", type=["csv"])
-outbound_file = st.sidebar.file_uploader("Upload Outbound Data", type=["csv"])
+
 
 # Custom Supply Inputs
 custom_kos_supply = st.sidebar.number_input("KOS Supply After Mar 10", min_value=90000, value=100000, step=5000)
@@ -19,8 +18,8 @@ if supply_file and oos_file and inbound_file and outbound_file:
     # Load Data
     supply_data = pd.read_excel(supply_file)
     fixed_oos_data = pd.read_excel(oos_file)
-    inbound_data = pd.read_csv(inbound_file)
-    outbound_data = pd.read_csv(outbound_file)
+    inbound_data = pd.read_excel("inbound.xlsx")
+    outbound_data = pd.read_excel("outbound.xlsx")
     demand_forecast = pd.read_excel("forecast dates.xlsx")  # Ensure this file exists
     
     # Convert Date Columns
