@@ -124,7 +124,7 @@ if supply_file and oos_file:
 
             # Dynamic OOS% adjustment based on supply changes
             if supply_factor > 1:
-                projected_oos *= max(0.68, 1 - (supply_factor - 1) * 0.3)  # Reduce OOS% if supply is higher
+                projected_oos *= max(0.7, 1 - (supply_factor - 1) * 0.4)  # Reduce OOS% if supply is higher
             elif supply_factor < 1:
                 projected_oos *= min(1.35, 1 + (1 - supply_factor) * 0.50)  # Increase OOS% if supply is lower
 
