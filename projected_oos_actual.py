@@ -79,13 +79,13 @@ if supply_file and oos_file:
             
             # ✅ USE FILE DATA ONLY for 16-20 Apr & 22-27 Apr
             elif date_str in file_only_dates:
-                kos_stock = historical_supply["KOS"].values[0] if not historical_supply.empty else 0
-                stl_stock = historical_supply["STL"].values[0] if not historical_supply.empty else 0
+                kos_stock = historical_supply["KOS"].values[0] if not historical_supply.empty else custom_kos_supply
+                stl_stock = historical_supply["STL"].values[0] if not historical_supply.empty else custom_stl_supply
             
             # ✅ CUSTOM SUPPLY for other dates
             else:
-                kos_stock = outbound_kos if outbound_kos > 0 else custom_kos_supply
-                stl_stock = outbound_stl if outbound_stl > 0 else custom_stl_supply
+                kos_stock = custom_kos_supply
+                stl_stock = custom_stl_supply
 
             # Base OOS calculation
             oos_adjustment = -daily_decrease
@@ -109,7 +109,7 @@ if supply_file and oos_file:
             total_stock = kos_stock + stl_stock
 
             # ✅ Now based on **custom stock values**, not fixed numbers
-            stock_factor = max(0, min(1, (total_stock - stock_threshold) / stock_adjustment_range))
+            stock_factor = max(0, min(1, (total_stock) / 22000))
 
             # ✅ STRONGER IMPACT: OOS% now reduces up to **3%** based on supply
             projected_oos = max(0, projected_oos - (stock_factor * 0.03))
