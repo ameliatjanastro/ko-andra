@@ -12,7 +12,7 @@ oos_file = st.sidebar.file_uploader("Upload Historical OOS% (Until Today)", type
 
 # Custom Supply Inputs
 custom_kos_supply = st.sidebar.number_input("KOS Supply After Mar 10", min_value=90000, value=100000, step=5000, max_value=110000)
-custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 10", min_value=80000, value=40000, step=5000, max_value=110000)
+custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 10", min_value=80000, value=80000, step=5000, max_value=110000)
 
 if supply_file and oos_file:
     # Load Data
