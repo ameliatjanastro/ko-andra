@@ -54,9 +54,14 @@ if supply_file and oos_file:
     for date in pd.date_range("2025-03-01", "2025-04-30"):
         date_str = date.strftime("%Y-%m-%d")
 
-        # If historical data exists, use it
-        if date in fixed_oos_data["Date Key"].values:
-            projected_oos = fixed_oos_data.loc[fixed_oos_data["Date Key"] == date, "OOS%"].values[0]
+        # Get historical supply & OOS if available
+        historical_supply = supply_data[supply_data["Date"] == date]
+        historical_oos = oos_data[oos_data["Date Key"] == date]
+
+        if not historical_oos.empty:
+            projected_oos = historical_oos["OOS%"].values[0]
+            kos_stock = historical_supply["KOS"].values[0] if not historical_supply.empty else "N/A"
+            stl_stock = historical_supply["STL"].values[0] if not historical_supply.empty else "N/A"
         else:
             # Fetch inbound and outbound data
             inbound_kos = inbound_data.loc[inbound_data["Date"] == date, "KOS"].sum()
@@ -91,10 +96,11 @@ if supply_file and oos_file:
 
         oos_final_adjustments.append({
             "Date": date.strftime("%d %b %Y"),
-            "KOS Stock": f"{kos_stock:,.0f}" if 'kos_stock' in locals() else "N/A",
-            "STL Stock": f"{stl_stock:,.0f}" if 'stl_stock' in locals() else "N/A",
+            "KOS Stock": f"{kos_stock:,.0f}" if isinstance(kos_stock, (int, float)) else kos_stock,
+            "STL Stock": f"{stl_stock:,.0f}" if isinstance(stl_stock, (int, float)) else stl_stock,
             "Projected OOS%": f"{projected_oos:.2%}"
         })
+
 
     # Convert to DataFrame
     df_oos_final_adjusted = pd.DataFrame(oos_final_adjustments)
