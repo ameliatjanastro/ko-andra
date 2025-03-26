@@ -63,7 +63,7 @@ if supply_file and oos_file:
 
         if not historical_oos.empty:
             # Use historical OOS data
-            projected_oos = historical_oos["OOS%"].values[0]
+            projected_oos = historical_oos["OOS%"].values[0]*0.01
             kos_stock = historical_supply["KOS"].values[0] if not historical_supply.empty else custom_kos_supply
             stl_stock = historical_supply["STL"].values[0] if not historical_supply.empty else custom_stl_supply
         else:
