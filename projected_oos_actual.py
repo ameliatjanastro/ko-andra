@@ -109,22 +109,22 @@ if supply_file and oos_file:
             elif date_str in ["2025-04-23", "2025-04-24"]:
                 projected_oos *= 0.90
 
-            # Zero outbound adjustments
-            if date_str in fixed_kos_zero_outbound_days:
-                prev_kos_supply = custom_kos_supply * 3
-                kos_stock = 0
-                projected_oos += 0.025 * (1 - prev_kos_supply / (custom_kos_supply * 3))
-            
-            elif date_str in fixed_stl_zero_outbound_days:
-                prev_stl_supply = custom_stl_supply * 3  # Use custom supply instead of historical data
-                stl_stock = 0
-                projected_oos += 0.02 * (1 - prev_stl_supply / (custom_stl_supply * 3))
-
             # **🔹 DYNAMIC STOCK FACTOR ADJUSTMENT**
             total_stock = kos_stock + stl_stock
 
             # Supply Deviation Factor (compares custom supply to historical average)
             supply_factor = (total_stock / historical_avg_supply)  
+
+            # Zero outbound adjustments
+            if date_str in fixed_kos_zero_outbound_days:
+                prev_kos_supply = custom_kos_supply * 3
+                kos_stock = 0
+                projected_oos += 0.025 * supply_factor* (1 - prev_kos_supply / (custom_kos_supply * 3))
+            
+            elif date_str in fixed_stl_zero_outbound_days:
+                prev_stl_supply = custom_stl_supply * 3  # Use custom supply instead of historical data
+                stl_stock = 0
+                projected_oos += 0.02 * supply_factor* (1 - prev_stl_supply / (custom_stl_supply * 3))
 
             # Dynamic OOS% adjustment based on supply changes
             if supply_factor > 1:
