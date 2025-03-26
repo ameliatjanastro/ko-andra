@@ -50,8 +50,8 @@ if supply_file and oos_file:
     # OOS Projection Parameters
     projection_start = pd.to_datetime("2025-03-01")
     oos_final_adjustments = []
-    base_oos = 0.12
-    daily_decrease = 0.003
+    base_oos = 0.1
+    daily_decrease = 0.0027
     max_oos_increase = 0.02  # Limit OOS% increase to max 2%
 
     for i, date in enumerate(pd.date_range("2025-03-25", "2025-04-30"), start=1):
@@ -103,7 +103,7 @@ if supply_file and oos_file:
                 projected_oos += 0.04  # Reduced impact (was +0.05)
             elif date_str in fixed_stl_zero_outbound_days:
                 stl_stock = 0
-                projected_oos += 0.042  # Reduced impact (was +0.08)
+                projected_oos += 0.04  # Reduced impact (was +0.08)
 
             # **🔹 DYNAMIC STOCK FACTOR ADJUSTMENT**
             total_stock = kos_stock + stl_stock
@@ -122,7 +122,7 @@ if supply_file and oos_file:
             demand_mean = demand_summary["Forecast"].mean() if demand_summary["Forecast"].mean() > 0 else 1  # Prevent division by zero
             demand_factor = daily_demand["Forecast"].values[0] / demand_forecast["Forecast"].max() if not daily_demand.empty else 1
             projected_oos *= demand_factor
-        projected_oos = max(0, (projected_oos * (1 - i * daily_decrease * (1 + stock_factor))) * (total_demand / demand_mean))
+            projected_oos = max(0, (projected_oos * (1 - i * daily_decrease * (1 + stock_factor))) * (total_demand / demand_mean))
 
         # Append results
         oos_final_adjustments.append({
