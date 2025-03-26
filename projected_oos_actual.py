@@ -50,19 +50,7 @@ if supply_file and oos_file:
     # OOS Projection Parameters
     projection_start = pd.to_datetime("2025-03-01")
     oos_final_adjustments = []
-    if not oos_data.empty:
-        fixed_oos_data = oos_data[oos_data["Date Key"] < pd.Timestamp.today()]
-        
-        if fixed_oos_data["OOS%"].mean() == 0:
-            avg_oos = 0  # If all OOS% is 0, keep it at 0
-        else:
-            last_3_days_oos = fixed_oos_data[fixed_oos_data["Date Key"] >= (pd.Timestamp.today() - pd.Timedelta(days=3))]
-            avg_oos = last_3_days_oos["OOS%"].mean() if not last_3_days_oos.empty else fixed_oos_data["OOS%"].mean()
-    else:
-        avg_oos = 0.12  # Default fallback
-    
-    # Use avg_oos as the initial OOS%
-    base_oos = avg_oos
+    base_oos = oos_data["OOS%"].mean()
     daily_decrease = 0.003
     max_oos_increase = 0.02  # Limit OOS% increase to max 2%
 
