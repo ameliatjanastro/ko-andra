@@ -6,7 +6,7 @@ import numpy as np
 
 # st.set_page_config(layout="wide")
 # Streamlit UI
-st.title("OOS Projection STL + SO Realistic")
+st.title("OOS Projection Dry STO")
 
 # File Uploads
 supply_file = st.sidebar.file_uploader("Upload Historical Supply SO (Exc. CANCELLED)", type=["xlsx"])
