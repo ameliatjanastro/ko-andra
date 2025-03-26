@@ -89,7 +89,7 @@ if supply_file and oos_file:
 
             # Base OOS calculation
             oos_adjustment = -daily_decrease
-            projected_oos = max(0, base_oos + oos_adjustment)
+            #projected_oos = max(0, base_oos + oos_adjustment)
 
             # Stock buildup impact (April 16 +10K, April 22 +30K)
             if date_str == "2025-04-17":
