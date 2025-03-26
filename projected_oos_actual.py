@@ -118,11 +118,11 @@ if supply_file and oos_file:
             # Zero outbound adjustments
             if date_str in fixed_kos_zero_outbound_days:
                 kos_stock = 0
-                projected_oos += 0.022 * ((1 + supply_factor)*0.95)
+                projected_oos += 0.02 * ((1 + supply_factor)*0.95)
             
             elif date_str in fixed_stl_zero_outbound_days:
                 stl_stock = 0
-                projected_oos += 0.019 * ((1 + supply_factor)*0.9)
+                projected_oos += 0.017 * ((1 + supply_factor)*0.9)
 
             # Dynamic OOS% adjustment based on supply changes
             if supply_factor > 1:
@@ -136,7 +136,7 @@ if supply_file and oos_file:
             total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else demand_forecast["Forecast"].mean()
             demand_factor = total_demand / demand_forecast["Forecast"].max() if total_demand > 0 else 1
             projected_oos *= demand_factor* 1.25
-            projected_oos = max(0, projected_oos * (1 - i * daily_decrease * (1 + supply_factor)*1.1))
+            projected_oos = max(0, projected_oos * (1 - i * daily_decrease * (1 + supply_factor)*1.12))
 
         # Append results
         oos_final_adjustments.append({
