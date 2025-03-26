@@ -90,7 +90,7 @@ if supply_file and oos_file:
 
         
     # Convert to DataFrame
-    df_oos_target = pd.DataFrame(oos_data)
+    df_oos_target = pd.DataFrame(oos_final_adjustments)
     
     # Display Results
     #st.markdown("### OOS% Projection with Demand Pattern")
