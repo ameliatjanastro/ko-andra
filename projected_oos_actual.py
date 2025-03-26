@@ -119,7 +119,7 @@ if supply_file and oos_file:
 
             # Demand factor influence
             #next_day = date + pd.Timedelta(days=1)
-            daily_demand = demand_forecast[demand_forecast["Date Key"] == date]+pd.DateOffset(days=1) 
+            daily_demand = demand_forecast[demand_forecast["Date Key"] == date]
             total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else demand_forecast["Forecast"].mean()
             demand_factor = total_demand / demand_forecast["Forecast"].max() if total_demand > 0 else 1
             projected_oos *= demand_factor* 1.15
