@@ -81,12 +81,12 @@ if supply_file and oos_file:
         demand_factor = daily_demand["Normalized Demand"].values[0] if not daily_demand.empty else 1
         projected_oos *= demand_factor
         
-    oos_data.append({
+        oos_final_adjustments.append({
             "Date": date.strftime("%d %b %Y"),
             "KOS Supply": supply.get("KOS", 100000),
             "STL Supply": supply.get("STL", custom_stl_supply),
             "Projected OOS%":float(projected_oos) if projected_oos is not None else 0.0,
-    })
+        })
 
         
     # Convert to DataFrame
