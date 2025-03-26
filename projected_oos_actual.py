@@ -17,14 +17,14 @@ custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 10", min_value
 if supply_file and oos_file:
     # Load Data
     supply_data = pd.read_excel(supply_file)
-    fixed_oos_data = pd.read_excel(oos_file)
+    oos_data = pd.read_excel(oos_file)
     inbound_data = pd.read_excel("inbound.xlsx")
     outbound_data = pd.read_excel("outbound.xlsx")
     demand_forecast = pd.read_excel("forecast dates.xlsx")  # Ensure this file exists
     
     # Convert Date Columns
     supply_data["Date"] = pd.to_datetime(supply_data["Date"])
-    fixed_oos_data["Date Key"] = pd.to_datetime(fixed_oos_data["Date Key"])
+    oos_data["Date Key"] = pd.to_datetime(oos_data["Date Key"])
     inbound_data["Date"] = pd.to_datetime(inbound_data["Date"])
     outbound_data["Date"] = pd.to_datetime(outbound_data["Date"])
     demand_forecast["Date Key"] = pd.to_datetime(demand_forecast["Date Key"])
