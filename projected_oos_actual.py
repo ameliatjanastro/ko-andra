@@ -51,7 +51,7 @@ if supply_file and oos_file:
     projection_start = pd.to_datetime("2025-03-01")
     oos_final_adjustments = []
     base_oos = oos_data["OOS%"].mean()*0.01
-    daily_decrease = 0.0015
+    daily_decrease = 0.002
     max_oos_increase = 0.02  # Limit OOS% increase to max 2%
 
     for i, date in enumerate(pd.date_range("2025-03-01", "2025-04-30"), start=1):
