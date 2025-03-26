@@ -158,7 +158,7 @@ if supply_file and oos_file:
         - **April 25-27**: No STL outbound on these dates.
         - **Dynamic OOS Adjustments**:
             - OOS% dynamically adjusts based on supply and demand fluctuations using RFR (Random forest regressor).
-            - April 19-20 (KOS) and April 25-27 (STL) OOS% will be impacted due to no outbound.
+            - April 19-20 (KOS) and April 25-27 (STL) OOS% will be highly impacted due to no outbound.
         - **Demand Influence**:
             - Higher forecasted demand results in increased OOS%.
             - OOS% will also depends on total demand trend relative to the max forecasted demand.
