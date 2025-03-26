@@ -14,7 +14,7 @@ oos_file = st.sidebar.file_uploader("Upload Historical OOS% (Until Today)", type
 custom_kos_supply = st.sidebar.number_input("KOS Supply After Mar 10", min_value=90000, value=100000, step=5000)
 custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 10", min_value=40000, value=40000, step=5000, max_value=100000)
 
-if supply_file and oos_file and inbound_file and outbound_file:
+if supply_file and oos_file:
     # Load Data
     supply_data = pd.read_excel(supply_file)
     fixed_oos_data = pd.read_excel(oos_file)
