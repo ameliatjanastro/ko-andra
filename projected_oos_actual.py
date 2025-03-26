@@ -109,24 +109,57 @@ if supply_file and oos_file:
                 projected_oos *= 0.90
 
             # Zero outbound adjustments
-            if date_str in fixed_kos_zero_outbound_days:
-                kos_stock = 0
-                projected_oos += 0.025
-            elif date_str in fixed_stl_zero_outbound_days:
-                stl_stock = 0
-                projected_oos += 0.02
+            supply_factors = {}  
+
+            for i, row in df_oos_final_adjusted.iterrows():
+                date_str = row["Date"].strftime("%Y-%m-%d")
+                kos_stock = row["KOS Stock"]
+                stl_stock = row["STL Stock"]
+                
+                # Look back 3 days for supply factor impact
+                previous_date = (row["Date"] - pd.Timedelta(days=3)).strftime("%Y-%m-%d")
+                previous_supply_factor = supply_factors.get(previous_date, 1)  # Default to 1 if not found
+            
+                # Zero outbound adjustments
+                if date_str in fixed_kos_zero_outbound_days:
+                    kos_stock = 0
+                    row["Projected OOS%"] += 0.025 * previous_supply_factor  # Adjust based on past supply
+                elif date_str in fixed_stl_zero_outbound_days:
+                    stl_stock = 0
+                    row["Projected OOS%"] += 0.02 * previous_supply_factor  # Adjust based on past supply
+            
+                # **🔹 DYNAMIC STOCK FACTOR ADJUSTMENT**
+                total_stock = kos_stock + stl_stock
+                supply_factor = total_stock / historical_avg_supply if historical_avg_supply > 0 else 1
+            
+                # Store today's supply factor for future reference
+                supply_factors[date_str] = supply_factor
+            
+                # Adjust OOS% dynamically based on stock fluctuations
+                if supply_factor > 1:
+                    row["Projected OOS%"] *= max(0.75, 1 - (supply_factor - 1) * 0.3)  # Reduce OOS% if supply is higher
+                elif supply_factor < 1:
+                    row["Projected OOS%"] *= min(1.35, 1 + (1 - supply_factor) * 0.50)  # Increase OOS% if supply is lower
+                
+                df_oos_final_adjusted.loc[i] = row
+            #if date_str in fixed_kos_zero_outbound_days:
+               #kos_stock = 0
+                #projected_oos += 0.025
+            #elif date_str in fixed_stl_zero_outbound_days:
+                #stl_stock = 0
+                #projected_oos += 0.02
 
             # **🔹 DYNAMIC STOCK FACTOR ADJUSTMENT**
-            total_stock = kos_stock + stl_stock
+            #total_stock = kos_stock + stl_stock
 
             # Supply Deviation Factor (compares custom supply to historical average)
-            supply_factor = (total_stock / historical_avg_supply)  
+            #supply_factor = (total_stock / historical_avg_supply)  
 
             # Dynamic OOS% adjustment based on supply changes
-            if supply_factor > 1:
-                projected_oos *= max(0.75, 1 - (supply_factor - 1) * 0.3)  # Reduce OOS% if supply is higher
-            elif supply_factor < 1:
-                projected_oos *= min(1.35, 1 + (1 - supply_factor) * 0.50)  # Increase OOS% if supply is lower
+            #if supply_factor > 1:
+                #projected_oos *= max(0.75, 1 - (supply_factor - 1) * 0.3)  # Reduce OOS% if supply is higher
+            #elif supply_factor < 1:
+                #projected_oos *= min(1.35, 1 + (1 - supply_factor) * 0.50)  # Increase OOS% if supply is lower
 
             # Demand factor influence
             #next_day = date + pd.Timedelta(days=1)
