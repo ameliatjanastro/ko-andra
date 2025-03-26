@@ -10,7 +10,7 @@ st.title("OOS Projection Dry STO")
 
 # File Uploads
 supply_file = st.sidebar.file_uploader("Upload Historical Supply SO (Exc. CANCELLED)", type=["xlsx"])
-oos_file = st.sidebar.file_uploader("Upload Historical OOS% (Until Today)", type=["xlsx"])
+oos_file = st.sidebar.file_uploader("Upload Historical OOS% (Until yesterday)", type=["xlsx"])
 
 # Custom Supply Inputs
 custom_kos_supply = st.sidebar.number_input("KOS SO", min_value=90000, value=100000, step=5000, max_value=110000)
