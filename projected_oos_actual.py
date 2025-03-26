@@ -54,7 +54,7 @@ if supply_file and oos_file:
 
     for i, date in enumerate(pd.date_range("2025-03-01", "2025-04-30"), start=1):
         reference_date = date - pd.Timedelta(days=3)
-        recent_oos_data = oos_data[(oos_data["Date Key"] > reference_date) & (oos_data["Date Key"] != "2025-03-31")]
+        recent_oos_data = oos_data[oos_data["Date Key"] < reference_date].sort_values("Date Key", ascending=False).head(3)
         base_oos = recent_oos_data["OOS%"].mean() * 0.01
         date_str = date.strftime("%Y-%m-%d")
 
