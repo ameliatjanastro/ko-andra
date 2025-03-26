@@ -96,7 +96,7 @@ if supply_file and oos_file:
             if date_str == "2025-04-17":
                 projected_oos *= 0.95
             elif date_str == "2025-04-18":
-                projected_oos *= 0.105
+                projected_oos *= 1.05
             elif date_str in ["2025-04-23", "2025-04-24"]:
                 projected_oos *= 0.90
 
