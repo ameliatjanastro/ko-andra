@@ -51,7 +51,7 @@ if supply_file and oos_file:
     projection_start = pd.to_datetime("2025-03-01")
     oos_final_adjustments = []
     base_oos = 0.1
-    daily_decrease = 0.0027
+    daily_decrease = 0.002
     max_oos_increase = 0.02  # Limit OOS% increase to max 2%
 
     for i, date in enumerate(pd.date_range("2025-03-25", "2025-04-30"), start=1):
@@ -113,7 +113,7 @@ if supply_file and oos_file:
             
 
             # ✅ STRONGER IMPACT: OOS% now reduces up to **3%** based on supply
-            #projected_oos = max(0, projected_oos - (stock_factor * 0.03))
+            projected_oos = max(0, projected_oos - (stock_factor * 0.03))
 
             # Demand factor influence
             daily_demand = demand_forecast[demand_forecast["Date Key"] == date]
