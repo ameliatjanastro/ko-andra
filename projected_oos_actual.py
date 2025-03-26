@@ -114,7 +114,7 @@ if supply_file and oos_file:
                 projected_oos += 0.025
             elif date_str in fixed_stl_zero_outbound_days:
                 stl_stock = 0
-                projected_oos += 0.0288
+                projected_oos += 0.028
 
             # **🔹 DYNAMIC STOCK FACTOR ADJUSTMENT**
             total_stock = kos_stock + stl_stock
