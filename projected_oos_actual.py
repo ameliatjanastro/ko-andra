@@ -150,6 +150,8 @@ if supply_file and oos_file:
     # Display Results
     with st.expander("📌 Key Highlights of the OOS Projection"):
         st.markdown("""
+        Note: 31 Mar -> half day, Apr demand rather lower than March
+        Note STO: 
         - **April 18-20**: KOS still has outbound on April 18 (45,000). No outbound on April 19-20.
         - **April 25-27**: No STL outbound on these dates.
         - **Dynamic OOS Adjustments**:
