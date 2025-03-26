@@ -111,10 +111,10 @@ if supply_file and oos_file:
             # Zero outbound adjustments
             if date_str in fixed_kos_zero_outbound_days:
                 kos_stock = 0
-                projected_oos += 0.032
+                projected_oos += 0.029
             elif date_str in fixed_stl_zero_outbound_days:
                 stl_stock = 0
-                projected_oos += 0.02
+                projected_oos += 0.022
 
             # **🔹 DYNAMIC STOCK FACTOR ADJUSTMENT**
             total_stock = kos_stock + stl_stock
@@ -124,7 +124,7 @@ if supply_file and oos_file:
 
             # Dynamic OOS% adjustment based on supply changes
             if supply_factor > 1:
-                projected_oos *= max(0.7, 1 - (supply_factor - 1) * 0.3)  # Reduce OOS% if supply is higher
+                projected_oos *= max(0.68, 1 - (supply_factor - 1) * 0.3)  # Reduce OOS% if supply is higher
             elif supply_factor < 1:
                 projected_oos *= min(1.35, 1 + (1 - supply_factor) * 0.50)  # Increase OOS% if supply is lower
 
