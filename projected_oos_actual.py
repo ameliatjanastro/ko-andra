@@ -118,7 +118,7 @@ if supply_file and oos_file:
             daily_demand = demand_forecast[demand_forecast["Date Key"] == date]
             total_demand = daily_demand["Forecast"].sum() if not daily_demand.empty else demand_forecast["Forecast"].mean()
             demand_factor = total_demand / demand_forecast["Forecast"].max() if total_demand > 0 else 1
-            projected_oos *= demand_factor* 1.45
+            projected_oos *= demand_factor* 1.15
             projected_oos = max(0, projected_oos * (1 - i * daily_decrease * (1 + supply_factor)))
 
         # Append results
