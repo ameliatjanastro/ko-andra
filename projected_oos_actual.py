@@ -11,8 +11,8 @@ oos_file = st.sidebar.file_uploader("Upload Historical OOS% (Until Today)", type
 
 
 # Custom Supply Inputs
-custom_kos_supply = st.sidebar.number_input("KOS Supply After Mar 10", min_value=90000, value=100000, step=5000)
-custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 10", min_value=40000, value=40000, step=5000, max_value=100000)
+custom_kos_supply = st.sidebar.number_input("KOS Supply After Mar 10", min_value=90000, value=100000, step=5000, max_value=110000)
+custom_stl_supply = st.sidebar.number_input("STL Supply After Mar 10", min_value=80000, value=40000, step=5000, max_value=110000)
 
 if supply_file and oos_file:
     # Load Data
@@ -44,7 +44,7 @@ if supply_file and oos_file:
     oos_final_adjustments = []
     base_oos = 0.12
     daily_decrease = 0.003
-    max_oos_increase = 0.02  # Limit OOS% increase to max 2%
+    max_oos_increase = 0.03  # Limit OOS% increase to max 2%
 
     for date in pd.date_range("2025-03-01", "2025-04-30"):
         date_str = date.strftime("%Y-%m-%d")
@@ -64,6 +64,12 @@ if supply_file and oos_file:
             inbound_stl = inbound_data.loc[inbound_data["Date"] == date, "STL"].sum()
             outbound_kos = outbound_data.loc[outbound_data["Date"] == date, "KOS"].sum()
             outbound_stl = outbound_data.loc[outbound_data["Date"] == date, "STL"].sum()
+
+            if date_str == "2025-04-18":
+                kos_stock = 45000
+            else:
+                kos_stock = outbound_kos if outbound_kos > 0 else custom_kos_supply
+                stl_stock = outbound_stl if outbound_stl > 0 else custom_stl_supply
 
             # Base OOS calculation
             oos_adjustment = -daily_decrease
