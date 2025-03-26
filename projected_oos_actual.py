@@ -90,7 +90,7 @@ if supply_file and oos_file:
             if date_str == "2025-04-17":
                 projected_oos *= 0.95
             elif date_str == "2025-04-18":
-                projected_oos *= 1.25
+                projected_oos *= 1.45
             elif date_str in ["2025-04-23", "2025-04-24"]:
                 projected_oos *= 0.90
 
@@ -110,9 +110,9 @@ if supply_file and oos_file:
 
             # Dynamic OOS% adjustment based on supply changes
             if supply_factor > 1:
-                projected_oos *= max(0.85, 1 - (supply_factor - 1) * 0.25)  # Reduce OOS% if supply is higher
+                projected_oos *= max(0.85, 1 - (supply_factor - 1) * 0.15)  # Reduce OOS% if supply is higher
             elif supply_factor < 1:
-                projected_oos *= min(1.25, 1 + (1 - supply_factor) * 0.30)  # Increase OOS% if supply is lower
+                projected_oos *= min(1.25, 1 + (1 - supply_factor) * 0.20)  # Increase OOS% if supply is lower
 
             # Demand factor influence
             daily_demand = demand_forecast[demand_forecast["Date Key"] == date]
