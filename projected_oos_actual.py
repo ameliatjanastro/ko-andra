@@ -24,7 +24,7 @@ if supply_file and oos_file:
     
     # Convert Date Columns
     supply_data["Date"] = pd.to_datetime(supply_data["Date"])
-    oos_data["Date Key"] = pd.to_datetime(oos_data["Date Key"])
+    fixed_oos_data["Date Key"] = pd.to_datetime(fixed_oos_data["Date Key"])
     inbound_data["Date"] = pd.to_datetime(inbound_data["Date"])
     outbound_data["Date"] = pd.to_datetime(outbound_data["Date"])
     demand_forecast["Date Key"] = pd.to_datetime(demand_forecast["Date Key"])
