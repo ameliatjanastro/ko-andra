@@ -72,7 +72,7 @@ if supply_file and oos_file:
 
         # Get historical supply & OOS if available
         historical_supply = supply_data[supply_data["Date"] == prev_date]
-        historical_oos = oos_data[oos_data["Date Key"] == date]
+        historical_oos = oos_data[oos_data["Date Key"] == prev_date]
 
         if not historical_oos.empty:
             projected_oos = historical_oos["OOS%"].values[0] * 0.01
