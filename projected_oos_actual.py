@@ -115,7 +115,7 @@ if supply_file and oos_file:
             if supply_factor > 1:
                 projected_oos *= max(0.95, 1 - (supply_factor - 1) * 0.15)  # Reduce OOS% if supply is higher
             elif supply_factor < 1:
-                projected_oos *= min(1.25, 1 + (1 - supply_factor) * 0.20)  # Increase OOS% if supply is lower
+                projected_oos *= min(1.25, 1 + (1 - supply_factor) * 0.50)  # Increase OOS% if supply is lower
 
             # Demand factor influence
             daily_demand = demand_forecast[demand_forecast["Date Key"] == date]
