@@ -47,7 +47,7 @@ if supply_file and oos_file:
     projection_start = pd.to_datetime("2025-03-01")
     oos_final_adjustments = []
     #base_oos = recent_oos_data["OOS%"].mean() * 0.01
-    daily_decrease = 0.0015
+    daily_decrease = 0.00015
 
     # Compute Historical Average Supply
     historical_avg_supply = (supply_data["KOS"].mean() + supply_data["STL"].mean()) if not supply_data.empty else 180000
