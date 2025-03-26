@@ -46,13 +46,16 @@ if supply_file and oos_file:
 
     projection_start = pd.to_datetime("2025-03-01")
     oos_final_adjustments = []
-    base_oos = oos_data["OOS%"].mean() * 0.01
+    #base_oos = recent_oos_data["OOS%"].mean() * 0.01
     daily_decrease = 0.002
 
     # Compute Historical Average Supply
     historical_avg_supply = (supply_data["KOS"].mean() + supply_data["STL"].mean()) if not supply_data.empty else 180000
 
     for i, date in enumerate(pd.date_range("2025-03-01", "2025-04-30"), start=1):
+        reference_date = date - pd.Timedelta(days=3)
+        recent_oos_data = oos_data[oos_data["Date Key"] < reference_date].sort_values("Date Key", ascending=False).head(3)
+        base_oos = recent_oos_data["OOS%"].mean() * 0.01
         date_str = date.strftime("%Y-%m-%d")
 
         # Get historical supply & OOS if available
