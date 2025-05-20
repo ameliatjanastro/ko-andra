@@ -33,8 +33,8 @@ if forecast_file and hub_map_file and split_sku_file:
 
         # Step 5: Combine
         combined_df = pd.concat([
-            split_df[['Date', 'Product ID', 'Product', 'WH ID', 'ForecastSTEP 3']],
-            nonsplit_df[['Date', 'Product ID', 'Product', 'WH ID', 'ForecastSTEP 3']]
+            split_df[['Date', 'Product ID', 'Product', 'WH ID', 'Forecast STEP 3']],
+            nonsplit_df[['Date', 'Product ID', 'Product', 'WH ID', 'Forecast STEP 3']]
         ])
 
         # Step 6: Aggregate forecast by Date, Product ID, WH
