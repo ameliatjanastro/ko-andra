@@ -62,6 +62,22 @@ if forecast_file and hub_map_file and split_sku_file:
         st.write("Split SKUs not found in forecast:")
         st.dataframe(missing_skus)
 
+        # Step 1: Group by WH ID and Date, then sum the forecast
+        summary_df = final_df.groupby(['WH ID', 'Date'], as_index=False)['Forecast STEP 3'].sum()
+        
+        # Step 2: Rename columns (optional)
+        summary_df.columns = ['WH ID', 'Date', 'Total Forecast']
+        
+        # Step 3: Export to CSV
+        summary_df.to_csv("summary_forecast_by_WHID.csv", index=False)
+        
+        # Step 4: Display in Streamlit
+        st.write("Summary: Total Forecast by WH ID and Date")
+        st.dataframe(summary_df)
+        
+        # Step 5: Provide download button (if in Streamlit)
+        summary_df.to_csv(csv_buffer, index=False)
+        st.download_button("Download Summary CSV", csv_buffer.getvalue(), file_name="summary_forecast_by_WHID.csv", mime="text/csv")
 
         # Download output
         csv_output = final_df.to_csv(index=False).encode('utf-8')
