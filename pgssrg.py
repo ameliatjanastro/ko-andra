@@ -51,6 +51,11 @@ if forecast_file and hub_map_file and split_sku_file:
 
         st.success("Forecast conversion successful!")
         st.dataframe(final_df)
+        sku_count_df = final_df.groupby('WH ID')['Product ID'].nunique().reset_index()
+        sku_count_df.columns = ['WH ID', 'Unique SKU Count']
+        
+        st.write("Unique SKU count per WH:")
+        st.dataframe(sku_count_df)
 
         # Download output
         csv_output = final_df.to_csv(index=False).encode('utf-8')
