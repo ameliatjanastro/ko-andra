@@ -28,7 +28,7 @@ if forecast_file and hub_map_file and split_sku_file:
             hub_wh_map_df, on='Hub ID', how='left'
         )
         st.write("Columns in split_df:", split_df.columns.tolist())
-        st.write(split__df.head())
+        st.write(split_df.head())
         # Step 4: Assign WH ID = 160 for non-split SKUs
         nonsplit_df = forecast_df[~forecast_df['Split_SKU']].copy()
         nonsplit_df['WH ID'] = 160
