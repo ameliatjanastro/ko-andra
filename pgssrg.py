@@ -56,6 +56,12 @@ if forecast_file and hub_map_file and split_sku_file:
         
         st.write("Unique SKU count per WH:")
         st.dataframe(sku_count_df)
+        # Find split SKUs not in forecast
+        missing_skus = split_sku_df[~split_sku_df['product_id'].isin(forecast_df['Product ID'].unique())]
+        
+        st.write("Split SKUs not found in forecast:")
+        st.dataframe(missing_skus)
+
 
         # Download output
         csv_output = final_df.to_csv(index=False).encode('utf-8')
