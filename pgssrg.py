@@ -11,7 +11,7 @@ split_sku_file = st.file_uploader("Upload Split SKU List File (CSV)", type="csv"
 if forecast_file and hub_map_file and split_sku_file:
     # Load the files
     forecast_df = pd.read_excel(forecast_file)
-    hub_wh_map_df = pd.read_csv(hub_map_file)
+    hub_wh_map_df = pd.read_excel(hub_map_file)
     split_sku_df = pd.read_csv(split_sku_file)
 
     # Ensure column names match expected structure
