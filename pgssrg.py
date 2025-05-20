@@ -41,7 +41,7 @@ if forecast_file and hub_map_file and split_sku_file:
         final_df = combined_df.groupby(
             ['Date', 'Product ID', 'Product', 'WH ID'],
             as_index=False
-        )['ForecastSTEP 3'].sum()
+        )['Forecast STEP 3'].sum()
 
         st.success("Forecast conversion successful!")
         st.dataframe(final_df)
