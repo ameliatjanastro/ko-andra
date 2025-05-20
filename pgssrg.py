@@ -24,10 +24,10 @@ if forecast_file and hub_map_file and split_sku_file:
         forecast_df['Split_SKU'] = forecast_df['Product ID'].isin(split_sku_df['product_id'])
         st.write("Forecast Hub ID dtype:", forecast_df['Hub ID'].dtype)
         st.write("Mapping Hub ID dtype:", hub_wh_map_df['Hub ID'].dtype)
-        forecast_df['Hub ID'] = forecast_df['Hub ID'].astype(str)
-        hub_wh_map_df['Hub ID'] = hub_wh_map_df['Hub ID'].astype(str)
+        forecast_df['Hub ID'] = forecast_df['Hub ID'].astype(str).str.strip()
+        hub_wh_map_df['Hub ID'] = hub_wh_map_df['Hub ID'].astype(str).str.strip()
 
-        # Step 3: Merge split SKUs with WH mapping
+        
         split_df = forecast_df[forecast_df['Split_SKU']].merge(
             hub_wh_map_df, on='Hub ID', how='left'
         )
