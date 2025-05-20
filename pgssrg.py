@@ -20,6 +20,7 @@ if forecast_file and hub_map_file and split_sku_file:
         st.error("The split SKU list file must contain a 'product_id' column.")
     else:
         # Step 2: Mark SKUs to split
+        st.write(split_sku_df.head())
         forecast_df['Split_SKU'] = forecast_df['Product ID'].isin(split_sku_df['product_id'])
 
         # Step 3: Merge split SKUs with WH mapping
