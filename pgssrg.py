@@ -76,8 +76,8 @@ if forecast_file and hub_map_file and split_sku_file:
         st.dataframe(summary_df)
         
         # Step 5: Provide download button (if in Streamlit)
-        summary_df.to_csv(csv_buffer, index=False)
-        st.download_button("Download Summary CSV", csv_buffer.getvalue(), file_name="summary_forecast_by_WHID.csv", mime="text/csv")
+        summ = summary_df.to_csv(index=False).encode('utf-8')
+        st.download_button("Download Summary CSV", summ, "summary_forecast_by_WHID.csv", "text/csv")
 
         # Download output
         csv_output = final_df.to_csv(index=False).encode('utf-8')
