@@ -22,6 +22,8 @@ if forecast_file and hub_map_file and split_sku_file:
         # Step 2: Mark SKUs to split
         st.write(split_sku_df.head())
         forecast_df['Split_SKU'] = forecast_df['Product ID'].isin(split_sku_df['product_id'])
+        st.write("Forecast Hub ID dtype:", forecast_df['Hub ID'].dtype)
+        st.write("Mapping Hub ID dtype:", hub_wh_map_df['Hub ID'].dtype)
         forecast_df['Hub ID'] = forecast_df['Hub ID'].astype(str)
         hub_wh_map_df['Hub ID'] = hub_wh_map_df['Hub ID'].astype(str)
 
