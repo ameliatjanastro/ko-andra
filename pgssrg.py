@@ -5,7 +5,7 @@ st.title("ForecastSTEP 3 - Convert Hub Forecast to WH Forecast")
 
 # Step 1: Upload files
 forecast_file = st.file_uploader("Upload Forecast File (Excel)", type=["xlsx", "xls"])
-hub_map_file = st.file_uploader("Upload Hub-WH Mapping File (CSV)", type="csv")
+hub_map_file = st.file_uploader("Upload Hub-WH Mapping File (xlsx)", type="xlsx")
 split_sku_file = st.file_uploader("Upload Split SKU List File (CSV)", type="csv")
 
 if forecast_file and hub_map_file and split_sku_file:
