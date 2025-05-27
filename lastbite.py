@@ -19,6 +19,10 @@ if soh_file and fc_file and holding_file:
     fc_df.columns = fc_df.columns.str.strip().str.lower()
     holding_df.columns = holding_df.columns.str.strip().str.lower()
 
+    st.write("SOH columns:", soh_df.columns.tolist())
+    st.write("Forecast columns:", fc_df.columns.tolist())
+    st.write("Holding cost columns:", holding_df.columns.tolist())
+
     # Merge on SKU
     df = soh_df.merge(fc_df, on='Product ID').merge(holding_df, on='Product ID')
 
