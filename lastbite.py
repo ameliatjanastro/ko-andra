@@ -24,11 +24,14 @@ if soh_file and fc_file and holding_file:
     st.write("Holding cost columns:", holding_df.columns.tolist())
 
     # Merge using product id
-    try:
-        df = soh_df.merge(fc_df, on='product id').merge(holding_df, on='product id')
-    except KeyError as e:
-        st.error(f"❌ Merge failed: {e}")
-        st.stop()
+    df = soh_df.merge(fc_df, on='product id', how='outer').merge(holding_df, on='product id', how='outer')
+
+    # Fill missing numeric columns with zeros (or another default)
+    numeric_cols = ['sum of stock', 'forecast daily', 'holding_cost']
+    for col in numeric_cols:
+        if col in df.columns:
+            df[col] = df[col].fillna(0)
+
 
     # Rename columns for consistency
     df.rename(columns={
