@@ -20,7 +20,7 @@ if soh_file and fc_file and holding_file:
     holding_df.columns = holding_df.columns.str.strip().str.lower()
 
     # Merge on SKU
-    df = soh_df.merge(fc_df, on='sku').merge(holding_df, on='sku')
+    df = soh_df.merge(fc_df, on='Product ID').merge(holding_df, on='Product ID')
 
     # Rename
     df.rename(columns={
