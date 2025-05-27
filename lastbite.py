@@ -47,7 +47,7 @@ if soh_file and fc_file and holding_file:
     selected_sku = st.selectbox("Choose SKU to edit", df['sku'].unique())
     
     # Input extra quantity for the selected SKU only
-    extra_qty = st.number_input(f"Extra Qty for {selected_sku}", min_value=0, step=10, value=0)
+    extra_qty = st.number_input(f"Extra Qty for {selected_sku}", min_value=0, step=100, value=0)
     
     # Create a dictionary with zero extra_qty for all SKUs except the selected one
     extra_qty_dict = {sku: 0 for sku in df['sku']}
