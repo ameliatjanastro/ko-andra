@@ -24,7 +24,7 @@ if soh_file and fc_file and holding_file:
     st.write("Holding cost columns:", holding_df.columns.tolist())
 
     # Merge on SKU
-    df = soh_df.merge(fc_df, on='Product ID').merge(holding_df, on='Product ID')
+    df = soh_df.merge(fc_df, on='product id').merge(holding_df, on='product id')
 
     # Rename
     df.rename(columns={
