@@ -69,15 +69,18 @@ if soh_file and fc_file and holding_file:
     df['doi_current'] = df['soh'] / df['forecast_daily']
     df['soh_new'] = df['soh'] + df['extra_qty']
     df['doi_new'] = df['soh_new'] / df['forecast_daily']
-    df['required_sales_increase_units'] = df['extra_qty'] / df['doi_current']
+    df['required_sales_increase_units per day'] = df['extra_qty'] / df['doi_current']
     df['annual_holding_cost_increase'] = df['extra_qty'] * df['holding_cost_monthly'] * 12
 
-    # Final output
+    # Final output with filter for modified SKUs only
     result = df[['sku', 'soh', 'forecast_daily', 'holding_cost_monthly', 'extra_qty',
                  'doi_current', 'doi_new', 'required_sales_increase_units', 'annual_holding_cost_increase']].round(2)
-
-    st.subheader("📊 Output Table")
-    st.dataframe(result)
+    
+    # Show only rows where extra quantity > 0
+    modified_result = result[result['extra_qty'] > 0]
+    
+    st.subheader("📊 Output Table (Modified SKUs Only)")
+    st.dataframe(modified_result)
 
     # Download option
     csv = result.to_csv(index=False)
