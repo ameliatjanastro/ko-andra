@@ -24,9 +24,9 @@ if soh_file and fc_file and holding_file:
 
     # Rename
     df.rename(columns={
-        'soh': 'SOH',
-        'sales_forecast_daily': 'Forecast_Daily',
-        'holding_cost_per_month': 'Holding_Cost_Monthly'
+        'Sum of Stock': 'SOH',
+        'Forecast Daily': 'Forecast_Daily',
+        'holding_cost': 'Holding_Cost_Monthly'
     }, inplace=True)
 
     st.subheader("✏️ Input Extra Quantity per SKU")
