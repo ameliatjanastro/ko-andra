@@ -56,6 +56,14 @@ if soh_file and fc_file and holding_file:
     # Apply Extra Qty
     df['extra_qty'] = df['sku'].map(extra_qty_dict)
 
+    df['soh'] = pd.to_numeric(df['soh'], errors='coerce')
+    df['forecast_daily'] = pd.to_numeric(df['forecast_daily'], errors='coerce')
+    
+    # Optionally fill or drop NaNs — here we replace NaN with 0 or a small number to avoid division by zero
+    df['soh'] = df['soh'].fillna(0)
+    df['forecast_daily'] = df['forecast_daily'].fillna(0.0001)  # avoid division by zero
+
+    
 
     # Calculations
     df['doi_current'] = df['soh'] / df['forecast_daily']
