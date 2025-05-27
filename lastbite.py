@@ -73,7 +73,7 @@ if soh_file and fc_file and holding_file:
     df['annual_holding_cost_increase'] = df['extra_qty'] * df['holding_cost_monthly'] * 12
 
     # Final output with filter for modified SKUs only
-    result = df[['sku', 'soh', 'forecast_daily', 'holding_cost_monthly', 'extra_qty',
+    result = df[['sku', 'soh', 'forecast_daily', 'extra_qty',
                  'doi_current', 'doi_new', 'required_sales_increase_units', 'annual_holding_cost_increase']].round(2)
     
     # Show only rows where extra quantity > 0
