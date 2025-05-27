@@ -23,14 +23,19 @@ if soh_file and fc_file and holding_file:
     st.write("Forecast columns:", fc_df.columns.tolist())
     st.write("Holding cost columns:", holding_df.columns.tolist())
 
-    # Merge on SKU
-    df = soh_df.merge(fc_df, on='product id').merge(holding_df, on='product id')
+    # Merge using product id
+    try:
+        df = soh_df.merge(fc_df, on='product id').merge(holding_df, on='product id')
+    except KeyError as e:
+        st.error(f"❌ Merge failed: {e}")
+        st.stop()
 
-    # Rename
+    # Rename columns for consistency
     df.rename(columns={
-        'Sum of Stock': 'SOH',
-        'Forecast Daily': 'Forecast_Daily',
-        'holding_cost': 'Holding_Cost_Monthly'
+        'product id': 'sku',
+        'sum of stock': 'soh',
+        'forecast daily': 'forecast_daily',
+        'holding_cost': 'holding_cost_monthly'
     }, inplace=True)
 
     st.subheader("✏️ Input Extra Quantity per SKU")
@@ -40,18 +45,18 @@ if soh_file and fc_file and holding_file:
         extra_qty_dict[sku] = st.number_input(f"Extra Qty for {sku}", min_value=0, step=10, value=default_val)
 
     # Apply Extra Qty
-    df['Extra_Qty'] = df['sku'].map(extra_qty_dict)
+    df['extra_qty'] = df['sku'].map(extra_qty_dict)
 
     # Calculations
-    df['DOI_Current'] = df['SOH'] / df['Forecast_Daily']
-    df['SOH_New'] = df['SOH'] + df['Extra_Qty']
-    df['DOI_New'] = df['SOH_New'] / df['Forecast_Daily']
-    df['Required_Sales_Increase_Units'] = df['Extra_Qty'] / df['DOI_Current']
-    df['Annual_Holding_Cost_Increase'] = df['Extra_Qty'] * df['Holding_Cost_Monthly'] * 12
+    df['doi_current'] = df['soh'] / df['forecast_daily']
+    df['soh_new'] = df['soh'] + df['extra_qty']
+    df['doi_new'] = df['soh_new'] / df['forecast_daily']
+    df['required_sales_increase_units'] = df['extra_qty'] / df['doi_current']
+    df['annual_holding_cost_increase'] = df['extra_qty'] * df['holding_cost_monthly'] * 12
 
     # Final output
-    result = df[['sku', 'SOH', 'Forecast_Daily', 'Holding_Cost_Monthly', 'Extra_Qty',
-                 'DOI_Current', 'DOI_New', 'Required_Sales_Increase_Units', 'Annual_Holding_Cost_Increase']].round(2)
+    result = df[['sku', 'soh', 'forecast_daily', 'holding_cost_monthly', 'extra_qty',
+                 'doi_current', 'doi_new', 'required_sales_increase_units', 'annual_holding_cost_increase']].round(2)
 
     st.subheader("📊 Output Table")
     st.dataframe(result)
