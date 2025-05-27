@@ -41,14 +41,21 @@ if soh_file and fc_file and holding_file:
         'holding_cost': 'holding_cost_monthly'
     }, inplace=True)
 
-    st.subheader("✏️ Input Extra Quantity per SKU")
-    extra_qty_dict = {}
-    for sku in df['sku']:
-        default_val = 0
-        extra_qty_dict[sku] = st.number_input(f"Extra Qty for {sku}", min_value=0, step=10, value=default_val)
+    st.subheader("✏️ Select SKU to Edit Extra Quantity")
 
+    # Select one SKU from the list
+    selected_sku = st.selectbox("Choose SKU to edit", df['sku'].unique())
+    
+    # Input extra quantity for the selected SKU only
+    extra_qty = st.number_input(f"Extra Qty for {selected_sku}", min_value=0, step=10, value=0)
+    
+    # Create a dictionary with zero extra_qty for all SKUs except the selected one
+    extra_qty_dict = {sku: 0 for sku in df['sku']}
+    extra_qty_dict[selected_sku] = extra_qty
+    
     # Apply Extra Qty
     df['extra_qty'] = df['sku'].map(extra_qty_dict)
+
 
     # Calculations
     df['doi_current'] = df['soh'] / df['forecast_daily']
