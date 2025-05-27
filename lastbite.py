@@ -38,6 +38,11 @@ if soh_file and fc_file and holding_file:
         'holding_cost': 'holding_cost_monthly'
     }, inplace=True)
 
+
+    df['soh'] = pd.to_numeric(df['soh'], errors='coerce')
+    df['forecast_daily'] = pd.to_numeric(df['forecast_daily'], errors='coerce')
+    df['holding_cost_monthly'] = pd.to_numeric(df['holding_cost_monthly'], errors='coerce')
+    
     st.subheader("✏️ Select SKU and Input Extra Quantity")
     selected_sku = st.selectbox("Choose SKU to modify", df['sku'].unique())
 
