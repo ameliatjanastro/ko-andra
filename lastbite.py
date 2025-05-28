@@ -171,7 +171,7 @@ if not modified_result.empty:
             st.metric("Current Stock on Hand (SOH)", f"{int(row['soh'])}")
             st.metric("Forecast Daily Sales", f"{row['forecast_daily']:.2f}")
             st.metric("Extra Qty for COGS discount", f"{int(row['extra_qty needed for cogs dicount'])}")
-            st.metric("Required Daily Sales Increase", f"{row['required_daily_sales_increase_units']:.1f}")
+            st.metric("Required Daily Sales Increase (pcs)", f"{row['required_daily_sales_increase_units']:.0f}")
         with col2:
             st.metric("DOI - Current", f"{row['doi_current']:.1f} days")
             st.metric("DOI - New", f"{row['doi_new']:.1f} days")
