@@ -4,15 +4,24 @@ import pandas as pd
 st.title("📦 Last Bite Calculator")
 
 # Upload CSVs
-soh_file = st.file_uploader("Upload SOH CSV", type="csv")
-fc_file = st.file_uploader("Upload Daily Sales Forecast CSV", type="csv")
-holding_file = st.file_uploader("Upload Holding Cost CSV", type="csv")
+SOH_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/data/soh.csv"
+FC_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/data/forecast.csv"
+HOLDING_COST_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/data/holding_cost.csv"
 
-if soh_file and fc_file and holding_file:
+# Load CSVs from GitHub
+try:
+    soh_df = pd.read_csv(SOH_CSV_URL)
+    fc_df = pd.read_csv(FC_CSV_URL)
+    holding_df = pd.read_csv(HOLDING_COST_CSV_URL)
+except Exception as e:
+    st.error(f"❌ Failed to load CSVs from GitHub: {e}")
+    st.stop()
+
+#if soh_file and fc_file and holding_file:
     # Load data
-    soh_df = pd.read_csv(soh_file)
-    fc_df = pd.read_csv(fc_file)
-    holding_df = pd.read_csv(holding_file)
+    #soh_df = pd.read_csv(soh_file)
+    #fc_df = pd.read_csv(fc_file)
+    #holding_df = pd.read_csv(holding_file)
 
     # Standardize column names
     soh_df.columns = soh_df.columns.str.strip().str.lower()
