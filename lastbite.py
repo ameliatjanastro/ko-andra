@@ -40,8 +40,8 @@ df['soh'] = pd.to_numeric(df['soh'], errors='coerce')
 df['forecast_daily'] = pd.to_numeric(df['forecast_daily'], errors='coerce').replace(0, np.nan)
 df['holding_cost_monthly'] = pd.to_numeric(df['holding_cost_monthly'], errors='coerce')
 
-st.write("Merged DataFrame preview:", df.head())
-st.write("Available SKUs:", df['product name'].unique())
+#st.write("Merged DataFrame preview:", df.head())
+#st.write("Available SKUs:", df['product name'].unique())
 
 df['extra_qty'] = 0
 
