@@ -13,6 +13,10 @@ try:
     soh_df = pd.read_csv(SOH_CSV_URL)
     fc_df = pd.read_csv(FC_CSV_URL)
     holding_df = pd.read_csv(HOLDING_COST_CSV_URL)
+
+    soh_df.columns = soh_df.columns.str.strip()
+    fc_df.columns = fc_df.columns.str.strip()
+    holding_df.columns = holding_df.columns.str.strip()
 except Exception as e:
     st.error(f"❌ Failed to load CSVs from GitHub: {e}")
     st.stop()
