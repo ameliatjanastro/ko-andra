@@ -49,7 +49,7 @@ if soh_file and fc_file and holding_file:
     # Initialize with zeroes
     df['extra_qty'] = 0
     # Input only for selected SKU
-    extra_qty_input = st.number_input(f"Enter Extra Qty for {selected_sku}", min_value=0, step=10, value=0)
+    extra_qty_input = st.number_input(f"Enter Extra Qty for {selected_sku}", min_value=0, step=100, value=0)
     df.loc[df['sku'] == selected_sku, 'extra_qty'] = extra_qty_input
 
     # Perform calculations
@@ -57,7 +57,7 @@ if soh_file and fc_file and holding_file:
     df['soh_new'] = df['soh'] + df['extra_qty']
     df['doi_new'] = df['soh_new'] / df['forecast_daily']
     df['required_sales_increase_units'] = df['extra_qty'] / df['doi_current']
-    df['annual_holding_cost_increase'] = df['extra_qty'] * df['holding_cost_monthly'] * 12
+    df['annual_holding_cost_increase'] = (df['extra_qty'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
 
     # Show current column names to debug
     st.write("🔍 Final DataFrame Columns:", df.columns.tolist())
