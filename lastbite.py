@@ -49,7 +49,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-st.subheader("Last Bite Calculator")
+st.subheader("Last Bite Calculator (KOSAMBI TEST)")
 
 # Usage guide expander
 with st.expander("ℹ️ How to Use This Calculator"):
