@@ -77,8 +77,8 @@ if soh_file and fc_file and holding_file:
         st.json(result_dict)  # Pretty-prints each row as a dictionary
     
         # Still allow CSV download
-        csv = modified_result.to_csv(index=False)
-        st.download_button("📥 Download Result CSV", csv, "last_bite_calculator_results.csv", "text/csv")
+        #csv = modified_result.to_csv(index=False)
+        #st.download_button("📥 Download Result CSV", csv, "last_bite_calculator_results.csv", "text/csv")
     else:
         st.info("No SKUs were modified.")
 else:
