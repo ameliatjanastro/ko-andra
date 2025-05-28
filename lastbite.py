@@ -35,7 +35,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.title("Last Bite Calculator")
+st.subheader("Last Bite Calculator")
 
 # Usage guide expander
 with st.expander("ℹ️ How to Use This Calculator"):
@@ -108,7 +108,6 @@ df['holding_cost_monthly'] = pd.to_numeric(df['holding_cost_monthly'], errors='c
 df['extra_qty'] = 0
 
 # Input form
-st.subheader("🛠️ Modify Extra Quantity")
 
 with st.form("extra_qty_form"):
     col1, col2 = st.columns([2, 1])
