@@ -19,9 +19,9 @@ if soh_file and fc_file and holding_file:
     fc_df.columns = fc_df.columns.str.strip().str.lower()
     holding_df.columns = holding_df.columns.str.strip().str.lower()
 
-    st.write("🧾 SOH columns:", soh_df.columns.tolist())
-    st.write("🧾 Forecast columns:", fc_df.columns.tolist())
-    st.write("🧾 Holding cost columns:", holding_df.columns.tolist())
+    #st.write("🧾 SOH columns:", soh_df.columns.tolist())
+    #st.write("🧾 Forecast columns:", fc_df.columns.tolist())
+    #st.write("🧾 Holding cost columns:", holding_df.columns.tolist())
 
     # Merge using product id
     try:
@@ -61,7 +61,7 @@ if soh_file and fc_file and holding_file:
     df['required_sales_increase_units'] = df['extra_qty'] / df['doi_current']
     df['annual_holding_cost_increase'] = (df['extra_qty'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
 
-    st.write("🔍 Final DataFrame Columns:", df.columns.tolist())
+    #st.write("🔍 Final DataFrame Columns:", df.columns.tolist())
 
     # Final output
     result = df[['product name', 'forecast_daily', 'extra_qty',
@@ -73,12 +73,14 @@ if soh_file and fc_file and holding_file:
 
     st.subheader("📊 Output Table (Only Modified SKUs)")
     if not modified_result.empty:
-        st.dataframe(modified_result.round(2))
+        result_dict = modified_result.round(2).to_dict(orient="records")
+        st.json(result_dict)  # Pretty-prints each row as a dictionary
+    
+        # Still allow CSV download
         csv = modified_result.to_csv(index=False)
         st.download_button("📥 Download Result CSV", csv, "last_bite_calculator_results.csv", "text/csv")
     else:
         st.info("No SKUs were modified.")
-
 else:
     st.info("📂 Please upload all 3 files: SOH, Sales Forecast, and Holding Cost.")
 
