@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 
 # Zoom adjustment
+st.set_page_config(layout="wide", page_title="Last Bite Calculator", page_icon="📦")
+
+
 st.markdown(
     """
     <style>
@@ -20,7 +23,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.set_page_config(layout="wide", page_title="Last Bite Calculator", page_icon="📦")
 
 # Add usage guide
 with st.expander("ℹ️ How to Use This Calculator"):
