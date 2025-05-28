@@ -78,7 +78,7 @@ result = df[['product name', 'forecast_daily', 'extra_qty needed for cogs dicoun
              'doi_current', 'doi_new', 'required_sales_increase_units',
              'annual_holding_cost_increase']].copy()
 
-modified_result = result[result['extra_qty'] > 0]
+modified_result = result[result['extra_qty needed for cogs dicount'] > 0]
 
 st.subheader("📊 Output ")
 if not modified_result.empty:
