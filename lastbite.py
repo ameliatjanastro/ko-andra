@@ -127,7 +127,7 @@ with st.form("extra_qty_form"):
     col1, col2 = st.columns([2, 1])
 
     with col1:
-        selected_sku = st.selectbox("Select SKU", df['product name'].unique())
+        selected_sku = st.selectbox("Select SKU", df['product name'].unique(), searchable=True)
 
     with col2:
         extra_qty_input = st.number_input("Extra Qty", min_value=0, step=100, value=0)
