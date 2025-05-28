@@ -78,7 +78,7 @@ df.dropna(subset=['doi_current'], inplace=True)
 
 result = df[['product id', 'product name', 'forecast_daily', 'extra_qty needed for cogs dicount',
              'doi_current', 'doi_new', 'required_daily_sales_increase_units', '%_sales_increase',
-             'annual_holding_cost_increase']].copy()
+             'annual_holding_cost_increase','verdict']].copy()
 
 modified_result = result[result['extra_qty needed for cogs dicount'] > 0]
 
