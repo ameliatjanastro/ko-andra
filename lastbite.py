@@ -9,6 +9,12 @@ st.markdown(
     html, body, #root, .main {
         zoom: 92%;
     }
+    .small-font {
+        font-size: 13px !important;
+    }
+    .metric-label, .metric-value {
+        font-size: 16px !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -135,7 +141,7 @@ if not modified_result.empty:
         with col1:
             st.metric("Current Stock on Hand (SOH)", f"{int(row['soh'])}")
             st.metric("Forecast Daily Sales", f"{row['forecast_daily']:.2f}")
-            st.metric("Extra Qty Added", f"{int(row['extra_qty needed for cogs dicount'])}")
+            st.metric("Extra Qty fo COGS discount", f"{int(row['extra_qty needed for cogs dicount'])}")
             st.metric("Required Daily Sales Increase", f"{row['required_daily_sales_increase_units']:.1f}")
         with col2:
             st.metric("DOI - Current", f"{row['doi_current']:.1f} days")
