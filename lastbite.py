@@ -16,6 +16,37 @@ st.markdown(
 
 st.title("📦 Last Bite Calculator")
 
+with st.expander("ℹ️ How to Use This Calculator"):
+    st.markdown("""
+    **Welcome to the Last Bite Calculator!**
+
+    This tool helps you evaluate whether adding extra stock (`Extra Qty`) to a particular SKU is justifiable 
+    from a financial and operational perspective. It estimates the impact on:
+    
+    - **Days of Inventory (DOI)** before and after the additional stock.
+    - **Required sales increase** to consume the additional inventory at the same pace.
+    - **Annual holding cost** of storing the added inventory.
+    - **Feasibility Verdict**: Whether the increase in inventory is justifiable based on required sales increase.
+
+    ### 📘 How to Use:
+    1. **Select a SKU** from the dropdown.
+    2. **Input Extra Qty** you’re considering adding.
+    3. The calculator will:
+        - Recalculate inventory days (DOI).
+        - Estimate required sales increase.
+        - Calculate the added annual holding cost.
+        - Give a **Verdict** whether to proceed or not based on the projected sales effort.
+    
+    The results will be shown below only if a non-zero `Extra Qty` is entered.
+
+    ### 🔎 Verdict Logic:
+    - If the required sales increase is **more than 2x** the current forecast, it's **Not Recommended**.
+    - Otherwise, it's labeled as **Proceed**.
+
+    This helps in making **data-driven decisions** for Last Bite or final push inventory campaigns.
+    """)
+
+
 # CSV URLs
 SOH_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/soh.csv"
 FC_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/sales.csv"
