@@ -24,9 +24,7 @@ st.markdown(
     }
 
     /* Adjust page zoom and font size */
-    html, body, #root, .main {
-        zoom: 85%;
-    }
+    html, body, #root, 
     .small-font {
         font-size: 13px !important;
     }
