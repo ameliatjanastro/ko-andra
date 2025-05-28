@@ -2,13 +2,28 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# Zoom adjustment
+# Page config with wide layout
 st.set_page_config(layout="wide")
 
-
+# Custom CSS: center form inputs and disable vertical scrollbars
 st.markdown(
     """
     <style>
+    /* Center the form container with flexbox */
+    form > div[data-testid="stHorizontalBlock"] {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: nowrap;
+    }
+
+    /* Set reasonable min/max widths for the form columns */
+    form > div[data-testid="stHorizontalBlock"] > div {
+        min-width: 250px;
+        max-width: 350px;
+    }
+
+    /* Adjust page zoom and font size */
     html, body, #root, .main {
         zoom: 85%;
     }
@@ -18,15 +33,24 @@ st.markdown(
     .metric-label, .metric-value {
         font-size: 14px !important;
     }
+
+    /* Hide vertical scrollbar on main page */
+    .css-1d391kg {
+        overflow-y: hidden !important;
+    }
+
+    /* Hide scrollbar for the form */
+    form {
+        overflow-y: hidden !important;
+    }
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 st.title("Last Bite Calculator")
 
-
-# Add usage guide
+# Usage guide expander
 with st.expander("ℹ️ How to Use This Calculator"):
     st.markdown("""
     **Welcome to the Last Bite Calculator!**
@@ -135,7 +159,6 @@ result = df[['product id', 'product name', 'soh', 'forecast_daily', 'extra_qty n
 
 modified_result = result[result['extra_qty needed for cogs dicount'] > 0]
 
-
 if not modified_result.empty:
     for _, row in modified_result.iterrows():
         st.markdown(f"#### 🧾 Results for: **{row['product name']}** (Product ID: `{row['product id']}`)")
@@ -156,4 +179,3 @@ if not modified_result.empty:
         st.divider()
 else:
     st.info("No SKUs were modified. Use the form above to enter an `Extra Qty`.")
-
