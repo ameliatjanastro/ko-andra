@@ -20,7 +20,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.title("📦 Last Bite Calculator")
+st.set_page_config(layout="wide", page_title="Last Bite Calculator", page_icon="📦")
 
 # Add usage guide
 with st.expander("ℹ️ How to Use This Calculator"):
@@ -131,11 +131,10 @@ result = df[['product id', 'product name', 'soh', 'forecast_daily', 'extra_qty n
 
 modified_result = result[result['extra_qty needed for cogs dicount'] > 0]
 
-st.subheader("📊 Output")
 
 if not modified_result.empty:
     for _, row in modified_result.iterrows():
-        st.markdown(f"### 🧾 Results for: **{row['product name']}** (Product ID: `{row['product id']}`)")
+        st.markdown(f"#### 🧾 Results for: **{row['product name']}** (Product ID: `{row['product id']}`)")
 
         col1, col2 = st.columns(2)
         with col1:
@@ -149,7 +148,7 @@ if not modified_result.empty:
             st.metric("Annual Holding Cost ↑", f"{row['annual_holding_cost_increase']}")
             st.metric("Sales Increase % Needed", row['%_sales_increase'])
 
-        st.markdown(f"**Verdict**: {row['verdict']}")
+        st.markdown(f"####**Verdict**: {row['verdict']}")
         st.divider()
 else:
     st.info("No SKUs were modified. Use the form above to enter an `Extra Qty`.")
