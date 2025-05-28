@@ -72,13 +72,7 @@ if soh_file and fc_file and holding_file:
 
     st.subheader("📊 Output Table (Only Modified SKUs)")
     if not modified_result.empty:
-        # Round numeric columns (excluding already formatted strings)
-        numeric_cols = ['forecast_daily',  'extra_qty_needed_for cogs discount',
-                        'doi_current', 'doi_new', 'required_sales_increase_units']
-        modified_result[numeric_cols] = modified_result[numeric_cols].round(2)
-
-        # Convert to list of dictionaries
-        result_list = modified_result.to_dict(orient='records')
+        st.dataframe(modified_result)
     else:
         st.info("No SKUs were modified.")
 
