@@ -2,6 +2,19 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
+st.markdown(
+    """
+    <style>
+    /* Scale the whole app down to 85% */
+    html, body, #root, .main {
+        zoom: 85%;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 st.title("📦 Last Bite Calculator")
 
 SOH_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/soh.csv"
@@ -56,7 +69,7 @@ df['soh_new'] = df['soh'] + df['extra_qty']
 df['doi_new'] = df['soh_new'] / df['forecast_daily']
 df['required_sales_increase_units'] = df['extra_qty'] / df['doi_current']
 df['annual_holding_cost_increase'] = (df['extra_qty'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
-
+df['extra_qty'] = df['extra_qty needed for cogs dicount'] 
 # Remove invalid DOI rows (where division caused NaN or inf)
 df.replace([np.inf, -np.inf], np.nan, inplace=True)
 df.dropna(subset=['doi_current'], inplace=True)
@@ -67,7 +80,7 @@ result = df[['product name', 'forecast_daily', 'extra_qty',
 
 modified_result = result[result['extra_qty'] > 0]
 
-st.subheader("📊 Output Table (Only Modified SKUs)")
+st.subheader("📊 Output ")
 if not modified_result.empty:
     result_dict = modified_result.round(2).to_dict(orient="records")
     st.json(result_dict)
