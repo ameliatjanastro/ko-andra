@@ -44,7 +44,6 @@ except KeyError as e:
 
 # Rename and convert columns
 df.rename(columns={
-    'product id': 'sku',
     'sum of stock': 'soh',
     'forecast daily': 'forecast_daily',
     'holding_cost': 'holding_cost_monthly',
