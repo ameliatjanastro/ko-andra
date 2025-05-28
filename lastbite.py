@@ -34,7 +34,21 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
+st.markdown(
+    """
+    <style>
+    /* Disable vertical and horizontal scrolling */
+    body {
+        overflow: hidden !important;
+    }
+    /* Optional: Hide scrollbars (if they still appear) */
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 st.subheader("Last Bite Calculator")
 
 # Usage guide expander
@@ -148,7 +162,7 @@ modified_result = result[result['extra_qty needed for cogs dicount'] > 0]
 if not modified_result.empty:
     for _, row in modified_result.iterrows():
         st.markdown(
-            f'<div class="small-font"><h3>🧾 <b>{row["product name"]}</b> (Product ID: {row["product id"]})</h3></div>',
+            f'<div class="small-font"><h4>🧾 <b>{row["product name"]}</b> (Product ID: {row["product id"]})</h4></div>',
             unsafe_allow_html=True
         )
 
