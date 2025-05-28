@@ -5,9 +5,9 @@ import numpy as np
 st.markdown(
     """
     <style>
-    /* Scale the whole app down to 95% */
+    /* Scale the whole app down to 92% */
     html, body, #root, .main {
-        zoom: 95%;
+        zoom: 92%;
     }
     </style>
     """,
