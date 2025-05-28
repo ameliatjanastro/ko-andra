@@ -69,7 +69,7 @@ df['soh_new'] = df['soh'] + df['extra_qty']
 df['doi_new'] = df['soh_new'] / df['forecast_daily']
 df['required_sales_increase_units'] = df['extra_qty'] / df['doi_current']
 df['annual_holding_cost_increase'] = (df['extra_qty'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
-df['extra_qty'] = df['extra_qty needed for cogs dicount'] 
+df['extra_qty needed for cogs dicount'] = df['extra_qty'] 
 # Remove invalid DOI rows (where division caused NaN or inf)
 df.replace([np.inf, -np.inf], np.nan, inplace=True)
 df.dropna(subset=['doi_current'], inplace=True)
