@@ -175,7 +175,7 @@ if not modified_result.empty:
             st.metric("Annual Holding Cost ↑", f"{row['annual_holding_cost_increase']}")
             st.metric("Sales Increase % Needed", row['%_sales_increase'])
 
-        st.markdown(f"####**Verdict**: {row['verdict']}")
+        st.markdown(f"#### **Verdict**: {row['verdict']}")
         st.divider()
 else:
     st.info("No SKUs were modified. Use the form above to enter an `Extra Qty`.")
