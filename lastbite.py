@@ -35,9 +35,15 @@ except Exception as e:
     st.error(f"❌ Failed to load CSVs from GitHub: {e}")
     st.stop()
 
+
+soh_df.dropna(subset=['product id'], inplace=True)
+fc_df.dropna(subset=['product id'], inplace=True)
+holding_df.dropna(subset=['product id'], inplace=True)
+
 # Merge data
 try:
     df = soh_df.merge(fc_df, on='product id').merge(holding_df, on='product id')
+    df.drop_duplicates(subset=['product id'], inplace=True)
 except KeyError as e:
     st.error(f"❌ Merge failed: {e}")
     st.stop()
