@@ -5,9 +5,9 @@ import numpy as np
 st.markdown(
     """
     <style>
-    /* Scale the whole app down to 85% */
+    /* Scale the whole app down to 95% */
     html, body, #root, .main {
-        zoom: 85%;
+        zoom: 95%;
     }
     </style>
     """,
@@ -74,7 +74,7 @@ df['extra_qty'] = df['extra_qty needed for cogs dicount']
 df.replace([np.inf, -np.inf], np.nan, inplace=True)
 df.dropna(subset=['doi_current'], inplace=True)
 
-result = df[['product name', 'forecast_daily', 'extra_qty',
+result = df[['product name', 'forecast_daily', 'extra_qty needed for cogs dicount',
              'doi_current', 'doi_new', 'required_sales_increase_units',
              'annual_holding_cost_increase']].copy()
 
