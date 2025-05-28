@@ -13,7 +13,7 @@ st.markdown(
         font-size: 13px !important;
     }
     .metric-label, .metric-value {
-        font-size: 16px !important;
+        font-size: 14px !important;
     }
     </style>
     """,
