@@ -94,6 +94,6 @@ except Exception as e:
         #st.download_button("📥 Download Result CSV", csv, "last_bite_calculator_results.csv", "text/csv")
     else:
         st.info("No SKUs were modified.")
-else:
-    st.info("📂 Please upload all 3 files: SOH, Sales Forecast, and Holding Cost.")
+#else:
+    #st.info("📂 Please upload all 3 files: SOH, Sales Forecast, and Holding Cost.")
 
