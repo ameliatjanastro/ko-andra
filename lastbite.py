@@ -6,7 +6,7 @@ st.title("📦 Last Bite Calculator")
 # Upload CSVs
 SOH_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/data/soh.csv"
 FC_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/data/forecast.csv"
-HOLDING_COST_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/data/holding_cost.csv"
+HOLDING_COST_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/data/occupancy.csv"
 
 # Load CSVs from GitHub
 try:
