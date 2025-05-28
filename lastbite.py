@@ -47,32 +47,38 @@ if soh_file and fc_file and holding_file:
     selected_sku = st.selectbox("Choose SKU to modify", df['sku'].unique())
 
     # Initialize with zeroes
-    df['extra_qty'] = 0
+    df['extra_qty_needed_for cogs discount'] = 0
     # Input only for selected SKU
     extra_qty_input = st.number_input(f"Enter Extra Qty for {selected_sku}", min_value=0, step=100, value=0)
-    df.loc[df['sku'] == selected_sku, 'extra_qty'] = extra_qty_input
+    df.loc[df['sku'] == selected_sku, 'extra_qty_needed_for cogs discount'] = extra_qty_input
 
     # Perform calculations
     df['doi_current'] = df['soh'] / df['forecast_daily']
-    df['soh_new'] = df['soh'] + df['extra_qty']
+    df['soh_new'] = df['soh'] + df['extra_qty_needed_for cogs discount']
     df['doi_new'] = df['soh_new'] / df['forecast_daily']
-    df['required_sales_increase_units'] = df['extra_qty'] / df['doi_current']
-    df['annual_holding_cost_increase'] = (df['extra_qty'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
+    df['required_sales_increase_units'] = df['extra_qty_needed_for cogs discount'] / df['doi_current']
+    df['annual_holding_cost_increase'] = (df['extra_qty_needed_for cogs discount'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
 
     # Show current column names to debug
     st.write("🔍 Final DataFrame Columns:", df.columns.tolist())
 
     # Final output
-    result = df[['sku', 'soh', 'forecast_daily', 'holding_cost_monthly', 'extra_qty',
+    result = df[['sku', 'forecast_daily', 'extra_qty_needed_for cogs discount',
                  'doi_current', 'doi_new', 'required_sales_increase_units',
                  'annual_holding_cost_increase']].round(2)
 
     # Filter only modified SKUs
-    modified_result = result[result['extra_qty'] > 0]
+    modified_result = result[result['extra_qty_needed_for cogs discount'] > 0]
 
     st.subheader("📊 Output Table (Only Modified SKUs)")
     if not modified_result.empty:
-        st.dataframe(modified_result)
+        # Round numeric columns (excluding already formatted strings)
+        numeric_cols = ['forecast_daily',  'extra_qty_needed_for cogs discount',
+                        'doi_current', 'doi_new', 'required_sales_increase_units']
+        modified_result[numeric_cols] = modified_result[numeric_cols].round(2)
+
+        # Convert to list of dictionaries
+        result_list = modified_result.to_dict(orient='records')
     else:
         st.info("No SKUs were modified.")
 
