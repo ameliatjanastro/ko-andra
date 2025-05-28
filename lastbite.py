@@ -163,7 +163,7 @@ if not modified_result.empty:
             f"""
             <div style="font-size:13px;">
                 <h4>🧾 Results for: <b>{row['product name']}</b> (Product ID: <code>{row['product id']}</code>)</h4>
-    
+
                 <div style="display:flex; gap: 3rem;">
                     <div>
                         <p><b>Current Stock on Hand (SOH):</b> {int(row['soh'])}</p>
@@ -178,7 +178,7 @@ if not modified_result.empty:
                         <p><b>Sales Increase % Needed:</b> {row['%_sales_increase']}</p>
                     </div>
                 </div>
-    
+
                 <h4><b>Verdict:</b> {row['verdict']}</h4>
                 <hr>
             </div>
