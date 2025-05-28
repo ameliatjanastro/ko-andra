@@ -9,41 +9,15 @@ import numpy as np
 st.markdown(
     """
     <style>
-    /* Center the form container with flexbox */
-    form > div[data-testid="stHorizontalBlock"] {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        flex-wrap: nowrap;
+    html, body, #root, .main {
+        zoom: 95%;
     }
-
-    /* Set reasonable min/max widths for the form columns */
-    form > div[data-testid="stHorizontalBlock"] > div {
-        min-width: 250px;
-        max-width: 350px;
-    }
-
-    /* Adjust page zoom and font size */
-    html, body, #root, 
     .small-font {
         font-size: 13px !important;
     }
-    .metric-label, .metric-value {
-        font-size: 14px !important;
-    }
-
-    /* Hide vertical scrollbar on main page */
-    .css-1d391kg {
-        overflow-y: hidden !important;
-    }
-
-    /* Hide scrollbar for the form */
-    form {
-        overflow-y: hidden !important;
-    }
     </style>
     """,
-    unsafe_allow_html=True,
+    unsafe_allow_html=True
 )
 
 st.title("Last Bite Calculator")
