@@ -75,9 +75,13 @@ df['doi_new'] = df['soh_new'] / df['forecast_daily']
 df['required_daily_sales_increase_units'] = df['extra_qty'] / df['doi_current']
 df['annual_holding_cost_increase'] = (df['extra_qty'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
 df['extra_qty needed for cogs dicount'] = df['extra_qty']
-df['%_sales_increase'] = df['required_daily_sales_increase_units'] / df['forecast_daily']
-df['%_sales_increase'] = df['%_sales_increase'].apply(lambda x: f"{x:.1f}%" if pd.notnull(x) else "")
-df['verdict'] = df['%_sales_increase'].apply(lambda x: 'Not Recommended' if x >= 2 else 'Proceed')
+df['%_sales_increase_raw'] = df['required_daily_sales_increase_units'] / df['forecast_daily']
+
+# Now, use the raw value for logic
+df['verdict'] = df['%_sales_increase_raw'].apply(lambda x: 'Not Recommended' if x >= 2 else 'Proceed')
+
+# Then, create the formatted version for display
+df['%_sales_increase'] = (df['%_sales_increase_raw'] * 100).apply(lambda x: f"{x:.1f}%" if pd.notnull(x) else "")
 
 # Clean invalid rows
 df.replace([np.inf, -np.inf], np.nan, inplace=True)
