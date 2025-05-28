@@ -4,9 +4,9 @@ import pandas as pd
 st.title("📦 Last Bite Calculator")
 
 # Upload CSVs
-SOH_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/data/soh.csv"
-FC_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/data/sales.csv"
-HOLDING_COST_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/data/occupancy.csv"
+SOH_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/soh.csv"
+FC_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/sales.csv"
+HOLDING_COST_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/occupancy.csv"
 
 # Load CSVs from GitHub
 try:
