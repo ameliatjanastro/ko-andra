@@ -128,16 +128,23 @@ modified_result = result[result['extra_qty needed for cogs dicount'] > 0]
 st.subheader("📊 Output")
 
 if not modified_result.empty:
-    st.dataframe(modified_result.style.format({
-        'soh': '{:.0f}',
-        'forecast_daily': '{:.2f}',
-        'doi_current': '{:.1f}',
-        'doi_new': '{:.1f}',
-        'required_daily_sales_increase_units': '{:.1f}',
-        '%_sales_increase': '{}',
-        'annual_holding_cost_increase': '{}'
-    }))
+    for _, row in modified_result.iterrows():
+        st.markdown(f"### 🧾 Results for: **{row['product name']}** (Product ID: `{row['product id']}`)")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Current Stock on Hand (SOH)", f"{int(row['soh'])}")
+            st.metric("Forecast Daily Sales", f"{row['forecast_daily']:.2f}")
+            st.metric("Extra Qty Added", f"{int(row['extra_qty needed for cogs dicount'])}")
+            st.metric("Required Daily Sales Increase", f"{row['required_daily_sales_increase_units']:.1f}")
+        with col2:
+            st.metric("DOI - Current", f"{row['doi_current']:.1f} days")
+            st.metric("DOI - New", f"{row['doi_new']:.1f} days")
+            st.metric("Annual Holding Cost ↑", f"{row['annual_holding_cost_increase']}")
+            st.metric("Sales Increase % Needed", row['%_sales_increase'])
+
+        st.markdown(f"**Verdict**: {row['verdict']}")
+        st.divider()
 else:
     st.info("No SKUs were modified. Use the form above to enter an `Extra Qty`.")
-
 
