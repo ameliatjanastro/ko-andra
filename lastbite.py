@@ -44,7 +44,7 @@ if soh_file and fc_file and holding_file:
     df['holding_cost_monthly'] = pd.to_numeric(df['holding_cost_monthly'], errors='coerce')
     
     st.subheader("✏️ Select SKU and Input Extra Quantity")
-    selected_sku = st.selectbox("Choose SKU to modify", df['sku'].unique())
+    selected_sku = st.selectbox("Choose SKU to modify", df['product name'].unique())
 
     # Initialize with zeroes
     df['extra_qty_needed_for cogs discount'] = 0
@@ -63,7 +63,7 @@ if soh_file and fc_file and holding_file:
     st.write("🔍 Final DataFrame Columns:", df.columns.tolist())
 
     # Final output
-    result = df[['sku', 'forecast_daily', 'extra_qty_needed_for cogs discount',
+    result = df[['product name', 'forecast_daily', 'extra_qty_needed_for cogs discount',
                  'doi_current', 'doi_new', 'required_sales_increase_units',
                  'annual_holding_cost_increase']].round(2)
 
