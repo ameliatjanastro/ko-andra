@@ -159,21 +159,30 @@ modified_result = result[result['extra_qty needed for cogs dicount'] > 0]
 
 if not modified_result.empty:
     for _, row in modified_result.iterrows():
-        st.markdown(f"#### 🧾 Results for: **{row['product name']}** (Product ID: `{row['product id']}`)")
-
-        col1, col2 = st.columns(2)
-        with col1:
-            st.metric("Current Stock on Hand (SOH)", f"{int(row['soh'])}")
-            st.metric("Forecast Daily Sales", f"{row['forecast_daily']:.2f}")
-            st.metric("Extra Qty fo COGS discount", f"{int(row['extra_qty needed for cogs dicount'])}")
-            st.metric("Required Daily Sales Increase", f"{row['required_daily_sales_increase_units']:.1f}")
-        with col2:
-            st.metric("DOI - Current", f"{row['doi_current']:.1f} days")
-            st.metric("DOI - New", f"{row['doi_new']:.1f} days")
-            st.metric("Annual Holding Cost ↑", f"{row['annual_holding_cost_increase']}")
-            st.metric("Sales Increase % Needed", row['%_sales_increase'])
-
-        st.markdown(f"#### **Verdict**: {row['verdict']}")
-        st.divider()
+        st.markdown(
+            f"""
+            <div style="font-size:13px;">
+                <h4>🧾 Results for: <b>{row['product name']}</b> (Product ID: <code>{row['product id']}</code>)</h4>
+    
+                <div style="display:flex; gap: 3rem;">
+                    <div>
+                        <p><b>Current Stock on Hand (SOH):</b> {int(row['soh'])}</p>
+                        <p><b>Forecast Daily Sales:</b> {row['forecast_daily']:.2f}</p>
+                        <p><b>Extra Qty for COGS discount:</b> {int(row['extra_qty needed for cogs dicount'])}</p>
+                        <p><b>Required Daily Sales Increase:</b> {row['required_daily_sales_increase_units']:.1f}</p>
+                    </div>
+                    <div>
+                        <p><b>DOI - Current:</b> {row['doi_current']:.1f} days</p>
+                        <p><b>DOI - New:</b> {row['doi_new']:.1f} days</p>
+                        <p><b>Annual Holding Cost ↑:</b> {row['annual_holding_cost_increase']}</p>
+                        <p><b>Sales Increase % Needed:</b> {row['%_sales_increase']}</p>
+                    </div>
+                </div>
+    
+                <h4><b>Verdict:</b> {row['verdict']}</h4>
+                <hr>
+            </div>
+            """, unsafe_allow_html=True
+        )
 else:
     st.info("No SKUs were modified. Use the form above to enter an `Extra Qty`.")
