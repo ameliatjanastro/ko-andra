@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # Page config with wide layout
-st.set_page_config(layout="wide")
+#st.set_page_config(layout="wide")
 
 # Custom CSS: center form inputs and disable vertical scrollbars
 st.markdown(
