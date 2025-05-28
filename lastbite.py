@@ -16,6 +16,7 @@ st.markdown(
 
 st.title("📦 Last Bite Calculator")
 
+# Add usage guide
 with st.expander("ℹ️ How to Use This Calculator"):
     st.markdown("""
     **Welcome to the Last Bite Calculator!**
@@ -31,21 +32,13 @@ with st.expander("ℹ️ How to Use This Calculator"):
     ### 📘 How to Use:
     1. **Select a SKU** from the dropdown.
     2. **Input Extra Qty** you’re considering adding.
-    3. The calculator will:
-        - Recalculate inventory days (DOI).
-        - Estimate required sales increase.
-        - Calculate the added annual holding cost.
-        - Give a **Verdict** whether to proceed or not based on the projected sales effort.
-    
-    The results will be shown below only if a non-zero `Extra Qty` is entered.
+    3. Click **Apply** to calculate.
+    4. See the results in the table below.
 
     ### 🔎 Verdict Logic:
-    - If the required sales increase is **more than 2x** the current forecast, it's **Not Recommended**.
-    - Otherwise, it's labeled as **Proceed**.
-
-    This helps in making **data-driven decisions** for Last Bite or final push inventory campaigns.
+    - If the required sales increase is **more than 2x** the current forecast, it's **❌ Not Recommended**.
+    - Otherwise, it's **✅ Proceed**.
     """)
-
 
 # CSV URLs
 SOH_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/soh.csv"
@@ -66,7 +59,7 @@ except Exception as e:
     st.error(f"❌ Failed to load CSVs from GitHub: {e}")
     st.stop()
 
-
+# Clean data
 soh_df.dropna(subset=['product id'], inplace=True)
 fc_df.dropna(subset=['product id'], inplace=True)
 holding_df.dropna(subset=['product id'], inplace=True)
@@ -91,15 +84,26 @@ df['soh'] = pd.to_numeric(df['soh'], errors='coerce')
 df['forecast_daily'] = pd.to_numeric(df['forecast_daily'], errors='coerce').replace(0, np.nan)
 df['holding_cost_monthly'] = pd.to_numeric(df['holding_cost_monthly'], errors='coerce')
 
-# Initialize extra_qty
 df['extra_qty'] = 0
 
-# SKU selection
-selected_sku = st.selectbox("Choose SKU to modify", df['product name'].unique())
-extra_qty_input = st.number_input(f"Enter Extra Qty for '{selected_sku}'", min_value=0, step=100, value=0)
-df.loc[df['product name'] == selected_sku, 'extra_qty'] = extra_qty_input
+# Input form
+st.subheader("🛠️ Modify Extra Quantity")
 
-# Calculations
+with st.form("extra_qty_form"):
+    col1, col2 = st.columns([2, 1])
+
+    with col1:
+        selected_sku = st.selectbox("Select SKU", df['product name'].unique())
+
+    with col2:
+        extra_qty_input = st.number_input("Extra Qty", min_value=0, step=100, value=0)
+
+    submitted = st.form_submit_button("Apply")
+
+if submitted:
+    df.loc[df['product name'] == selected_sku, 'extra_qty'] = extra_qty_input
+
+# Recalculate based on input
 df['doi_current'] = df['soh'] / df['forecast_daily']
 df['soh_new'] = df['soh'] + df['extra_qty']
 df['doi_new'] = df['soh_new'] / df['forecast_daily']
@@ -107,36 +111,33 @@ df['required_daily_sales_increase_units'] = df['extra_qty'] / df['doi_current']
 df['annual_holding_cost_increase'] = (df['extra_qty'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
 df['extra_qty needed for cogs dicount'] = df['extra_qty']
 df['%_sales_increase_raw'] = df['required_daily_sales_increase_units'] / df['forecast_daily']
-
-# Now, use the raw value for logic
-df['verdict'] = df['%_sales_increase_raw'].apply(lambda x: 'Not Recommended' if x >= 2 else 'Proceed')
-
-# Then, create the formatted version for display
+df['verdict'] = df['%_sales_increase_raw'].apply(lambda x: '❌ Not Recommended' if x >= 2 else '✅ Proceed')
 df['%_sales_increase'] = (df['%_sales_increase_raw'] * 100).apply(lambda x: f"{x:.1f}%" if pd.notnull(x) else "")
 
-# Clean invalid rows
+# Clean and filter
 df.replace([np.inf, -np.inf], np.nan, inplace=True)
 df.dropna(subset=['doi_current'], inplace=True)
 
-# Result dataframe
+# Result table
 result = df[['product id', 'product name', 'soh', 'forecast_daily', 'extra_qty needed for cogs dicount',
              'doi_current', 'doi_new', 'required_daily_sales_increase_units', '%_sales_increase',
              'annual_holding_cost_increase', 'verdict']].copy()
 
-# Filter modified SKUs
 modified_result = result[result['extra_qty needed for cogs dicount'] > 0]
 
-# Output
 st.subheader("📊 Output")
-if not modified_result.empty:
-    result_dict = modified_result.round(2).to_dict(orient="records")
-    st.json(result_dict)
 
-    for _, row in modified_result.iterrows():
-        sku = row['product name']
-        verdict = row['verdict']
-        st.markdown(f"**{sku}**: **{verdict}**")
+if not modified_result.empty:
+    st.dataframe(modified_result.style.format({
+        'soh': '{:.0f}',
+        'forecast_daily': '{:.2f}',
+        'doi_current': '{:.1f}',
+        'doi_new': '{:.1f}',
+        'required_daily_sales_increase_units': '{:.1f}',
+        '%_sales_increase': '{}',
+        'annual_holding_cost_increase': '{}'
+    }))
 else:
-    st.info("No SKUs were modified.")
+    st.info("No SKUs were modified. Use the form above to enter an `Extra Qty`.")
 
 
