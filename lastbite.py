@@ -148,7 +148,7 @@ modified_result = result[result['extra_qty needed for cogs dicount'] > 0]
 if not modified_result.empty:
     for _, row in modified_result.iterrows():
         st.markdown(
-            f'<div class="small-font"><h4>🧾 Results for: <b>{row["product name"]}</b> (Product ID: {row["product id"]})</h4></div>',
+            f'<div class="small-font"><h3>🧾 <b>{row["product name"]}</b> (Product ID: {row["product id"]})</h3></div>',
             unsafe_allow_html=True
         )
 
