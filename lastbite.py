@@ -95,19 +95,16 @@ df['extra_qty'] = 0
 # Input form
 st.subheader("🛠️ Modify Extra Quantity")
 
-with st.form("extra_qty_form"):
-    col1, col2 = st.columns([2, 1])
+col_form, col_result = st.columns([1, 2])  # Form takes 1/3 width, result 2/3
 
-    with col1:
+with col_form:
+    with st.form("extra_qty_form"):
         selected_sku = st.selectbox("Select SKU", df['product name'].unique())
-
-    with col2:
         extra_qty_input = st.number_input("Extra Qty", min_value=0, step=100, value=0)
+        submitted = st.form_submit_button("Apply")
 
-    submitted = st.form_submit_button("Apply")
-
-if submitted:
-    df.loc[df['product name'] == selected_sku, 'extra_qty'] = extra_qty_input
+    if submitted:
+        df.loc[df['product name'] == selected_sku, 'extra_qty'] = extra_qty_input
 
 # Recalculate based on input
 df['doi_current'] = df['soh'] / df['forecast_daily']
@@ -120,26 +117,22 @@ df['%_sales_increase_raw'] = df['required_daily_sales_increase_units'] / df['for
 df['verdict'] = df['%_sales_increase_raw'].apply(lambda x: '❌ Not Recommended' if x >= 2 else '✅ Proceed')
 df['%_sales_increase'] = (df['%_sales_increase_raw'] * 100).apply(lambda x: f"{x:.1f}%" if pd.notnull(x) else "")
 
-# Clean and filter
 df.replace([np.inf, -np.inf], np.nan, inplace=True)
 df.dropna(subset=['doi_current'], inplace=True)
 
-# Result table
-result = df[['product id', 'product name', 'soh', 'forecast_daily', 'extra_qty needed for cogs dicount',
-             'doi_current', 'doi_new', 'required_daily_sales_increase_units', '%_sales_increase',
-             'annual_holding_cost_increase', 'verdict']].copy()
+# Filter to the selected SKU for display
+selected_row = df[df['product name'] == selected_sku]
 
-modified_result = result[result['extra_qty needed for cogs dicount'] > 0]
-
-if not modified_result.empty:
-    for _, row in modified_result.iterrows():
+with col_result:
+    if not selected_row.empty and selected_row['extra_qty needed for cogs dicount'].values[0] > 0:
+        row = selected_row.iloc[0]
         st.markdown(f"#### 🧾 Results for: **{row['product name']}** (Product ID: {row['product id']})")
 
         col1, col2 = st.columns(2)
         with col1:
             st.metric("Current Stock on Hand (SOH)", f"{int(row['soh'])}")
             st.metric("Forecast Daily Sales", f"{row['forecast_daily']:.2f}")
-            st.metric("Extra Qty fo COGS discount", f"{int(row['extra_qty needed for cogs dicount'])}")
+            st.metric("Extra Qty for COGS discount", f"{int(row['extra_qty needed for cogs dicount'])}")
             st.metric("Required Daily Sales Increase", f"{row['required_daily_sales_increase_units']:.1f}")
         with col2:
             st.metric("DOI - Current", f"{row['doi_current']:.1f} days")
@@ -149,5 +142,6 @@ if not modified_result.empty:
 
         st.markdown(f"#### **Verdict**: {row['verdict']}")
         st.divider()
-else:
-    st.info("No SKUs were modified. Use the form above to enter an `Extra Qty`.")
+    else:
+        st.info("Enter an Extra Qty > 0 and click Apply to see results here.")
+
