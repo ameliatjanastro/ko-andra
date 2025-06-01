@@ -49,7 +49,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-st.subheader("Last Bite Calculator (KOSAMBI TEST)")
+st.subheader("Last Bite Calculator")
 
 # Usage guide expander
 with st.expander("ℹ️ How to Use This Calculator"):
@@ -143,7 +143,7 @@ selected_location = st.selectbox("Select Location", valid_locs)
 
 # Extra Qty input inside form
 with st.form("extra_qty_form"):
-    extra_qty_input = st.number_input("Extra Qty needed for COGS discount", min_value=0, value=0)
+    extra_qty_input = st.number_input("Extra Qty needed for COGS discount", min_value=0, step= 100, value=0)
     submitted = st.form_submit_button("Calculate")
 
 # Apply input if submitted
