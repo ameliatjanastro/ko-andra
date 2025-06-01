@@ -206,58 +206,32 @@ def custom_metric(label, value):
 
 if not modified_result.empty:
 
-    # Add forecast label
     modified_result['forecast_label'] = modified_result.groupby(
         ['product id', 'location id']
     )['forecast_daily'].transform(lambda x: [' (if there\'s campaign)' if v == x.max() and len(x) > 1 else '' for v in x])
 
-    if len(modified_result) == 2:
+    for _, row in modified_result.iterrows():
+        label = row['forecast_label'] 
+        st.markdown(
+            f'<div class="small-font"><h4>🧾 <b>Product ID: {row["product id"]}</b>{label}</h4></div>',
+            unsafe_allow_html=True
+        )
+
         col1, col2 = st.columns(2)
-        for i, (_, row) in enumerate(modified_result.iterrows()):
-            target_col = col1 if i == 0 else col2
-            label = row['forecast_label']
-            with target_col:
-                st.markdown(
-                    f'<div class="small-font"><h4>🧾 <b>Product ID: {row["product id"]}</b>{label}</h4></div>',
-                    unsafe_allow_html=True
-                )
-                c1, c2 = st.columns(2)
-                with c1:
-                    custom_metric("WH ID", f"{int(row['location id'])}")
-                    custom_metric("Current Stock on Hand (SOH)", f"{int(row['soh'])}")
-                    custom_metric("Forecast Daily Sales", f"{row['forecast_daily']:.2f}")
-                    custom_metric("Extra Qty for COGS discount", f"{int(row['extra_qty'])}")
-                    custom_metric("Required Daily Sales Increase (pcs)", f"{row['required_daily_sales_increase_units']:.0f}")
-                with c2:
-                    custom_metric("DOI - Current", f"{row['doi_current']:.1f} days")
-                    custom_metric("DOI - New", f"{row['doi_new']:.1f} days")
-                    custom_metric("Annual Holding Cost ↑", f"{row['annual_holding_cost_increase']}")
-                    custom_metric("Sales Increase % Needed", row['%_sales_increase'])
-                st.markdown(f'<div class="small-font"><b>Verdict:</b> {row["verdict"]}</div>', unsafe_allow_html=True)
-                st.divider()
-    else:
-        for _, row in modified_result.iterrows():
-            label = row['forecast_label']
-            st.markdown(
-                f'<div class="small-font"><h4>🧾 <b>Product ID: {row["product id"]}</b>{label}</h4></div>',
-                unsafe_allow_html=True
-            )
-            col1, col2 = st.columns(2)
-            with col1:
-                st.metric("WH ID", f"{int(row['location id'])}")
-                st.metric("Current Stock on Hand (SOH)", f"{int(row['soh'])}")
-                st.metric("Forecast Daily Sales", f"{row['forecast_daily']:.2f}")
-                st.metric("Extra Qty for COGS discount", f"{int(row['extra_qty'])}")
-                st.metric("Required Daily Sales Increase (pcs)", f"{row['required_daily_sales_increase_units']:.0f}")
-            with col2:
-                st.metric("DOI - Current", f"{row['doi_current']:.1f} days")
-                st.metric("DOI - New", f"{row['doi_new']:.1f} days")
-                st.metric("Annual Holding Cost ↑", f"{row['annual_holding_cost_increase']}")
-                st.metric("Sales Increase % Needed", row['%_sales_increase'])
+        with col1:
+            st.metric("WH ID", f"{int(row['location id'])}")
+            st.metric("Current Stock on Hand (SOH)", f"{int(row['soh'])}")
+            st.metric("Forecast Daily Sales", f"{row['forecast_daily']:.2f}")
+            st.metric("Extra Qty for COGS discount", f"{int(row['extra_qty'])}")
+            st.metric("Required Daily Sales Increase (pcs)", f"{row['required_daily_sales_increase_units']:.0f}")
+        with col2:
+            st.metric("DOI - Current", f"{row['doi_current']:.1f} days")
+            st.metric("DOI - New", f"{row['doi_new']:.1f} days")
+            st.metric("Annual Holding Cost ↑", f"{row['annual_holding_cost_increase']}")
+            st.metric("Sales Increase % Needed", row['%_sales_increase'])
 
-            st.markdown(f'<div class="small-font"><b>Verdict:</b> {row["verdict"]}</div>', unsafe_allow_html=True)
-            st.divider()
-
+        st.markdown(f'<div class="small-font"><b>Verdict:</b> {row["verdict"]}</div>', unsafe_allow_html=True)
+        st.divider()
 else:
     st.info("No SKUs were modified. Use the form above to enter an `Extra Qty`.")
 
