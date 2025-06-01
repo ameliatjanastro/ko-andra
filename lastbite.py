@@ -101,7 +101,9 @@ holding_df.dropna(subset=['product id'], inplace=True)
 
 # Merge data
 try:
-    df = soh_df.merge(fc_df, on='product id').merge(holding_df, on='product id')
+    df = soh_df.merge(fc_df[['product id', 'forecast daily']], on='product id')
+           .merge(holding_df[['product id', 'holding_cost']], on='product id')
+
     df.drop_duplicates(subset=['product id'], inplace=True)
 except KeyError as e:
     st.error(f"❌ Merge failed: {e}")
@@ -135,7 +137,7 @@ with st.form("extra_qty_form"):
     submitted = st.form_submit_button("Apply")
 
 if submitted:
-    df.loc[df['product name'] == selected_sku, 'extra_qty'] = extra_qty_input
+    df.loc[df['product id'] == selected_sku, 'extra_qty'] = extra_qty_input
 
 # Recalculate based on input
 df['doi_current'] = df['soh'] / df['forecast_daily']
