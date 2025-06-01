@@ -101,8 +101,7 @@ holding_df.dropna(subset=['product id'], inplace=True)
 
 # Merge data
 try:
-    df = soh_df.merge(fc_df[['product id', 'forecast daily']], on='product id')
-           .merge(holding_df[['product id', 'holding_cost']], on='product id')
+    df = soh_df.merge(fc_df[['product id', 'forecast daily']], on='product id').merge(holding_df[['product id', 'holding_cost']], on='product id')
 
     df.drop_duplicates(subset=['product id'], inplace=True)
 except KeyError as e:
