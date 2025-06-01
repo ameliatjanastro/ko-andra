@@ -153,7 +153,7 @@ df.replace([np.inf, -np.inf], np.nan, inplace=True)
 df.dropna(subset=['doi_current'], inplace=True)
 
 # Result table
-result = df[['product id', 'product name', 'soh', 'forecast_daily', 'extra_qty needed for cogs dicount',
+result = df[['product id', 'product name', 'location id', 'soh', 'forecast_daily', 'extra_qty needed for cogs dicount',
              'doi_current', 'doi_new', 'required_daily_sales_increase_units', '%_sales_increase',
              'annual_holding_cost_increase', 'verdict']].copy()
 
