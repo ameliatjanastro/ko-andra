@@ -155,15 +155,36 @@ if submitted:
 
 
 # Recalculate based on input
+# Step 1: Calculate total forecast per SKU-location group
+df['total_forecast'] = df.groupby(['product id', 'location id'])['forecast_daily'].transform('sum')
+
+# Step 2: Allocate extra_qty proportionally to each row in the group
+# Avoid division by zero by filling zeros with 1 temporarily
+df['forecast_ratio'] = df['forecast_daily'] / df['total_forecast'].replace(0, 1)
+
+# Distribute extra_qty proportionally
+df['extra_qty_allocated'] = df['extra_qty'] * df['forecast_ratio']
+
+# Step 3: Recalculate doi_current, soh_new, doi_new using allocated extra_qty per row
 df['doi_current'] = df['soh'] / df['forecast_daily']
-df['soh_new'] = df['soh'] + df['extra_qty']
+df['soh_new'] = df['soh'] + df['extra_qty_allocated']
 df['doi_new'] = df['soh_new'] / df['forecast_daily']
-df['required_daily_sales_increase_units'] = df['extra_qty'] / df['doi_current']
-df['annual_holding_cost_increase'] = (df['extra_qty'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
-df['extra_qty needed for cogs dicount'] = df['extra_qty']
+
+# Step 4: Calculate required sales increase units per row based on allocated extra_qty and doi_current
+df['required_daily_sales_increase_units'] = df['extra_qty_allocated'] / df['doi_current']
+
+# Step 5: Annual holding cost increase for the allocated extra qty
+df['annual_holding_cost_increase'] = (df['extra_qty_allocated'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
+
+# Step 6: Sales increase ratio per row
 df['%_sales_increase_raw'] = df['required_daily_sales_increase_units'] / df['forecast_daily']
+
+# Step 7: Verdict per row
 df['verdict'] = df['%_sales_increase_raw'].apply(lambda x: '❌ Not Recommended' if x >= 2 else '✅ Proceed')
+
+# Step 8: Format sales increase percentage
 df['%_sales_increase'] = (df['%_sales_increase_raw'] * 100).apply(lambda x: f"{x:.1f}%" if pd.notnull(x) else "")
+
 
 # Clean and filter
 df.replace([np.inf, -np.inf], np.nan, inplace=True)
