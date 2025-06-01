@@ -195,7 +195,7 @@ result = df[['product id', 'location id', 'soh', 'forecast_daily', 'extra_qty_al
              'doi_current', 'doi_new', 'required_daily_sales_increase_units', '%_sales_increase',
              'annual_holding_cost_increase', 'verdict']].copy()
 
-modified_result = result[result['extra_qt_allocated'] > 0]
+modified_result = result[result['extra_qty_allocated'] > 0]
 
 if not modified_result.empty:
     for _, row in modified_result.iterrows():
