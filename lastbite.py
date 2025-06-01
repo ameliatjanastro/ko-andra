@@ -104,6 +104,7 @@ try:
     df = soh_df.merge(fc_df[['product id', 'forecast daily']], on='product id').merge(holding_df[['product id', 'holding_cost']], on='product id')
     st.write(df.columns)
     df.drop_duplicates(inplace=True)
+    st.dataframe(df.head())
 
 except KeyError as e:
     st.error(f"❌ Merge failed: {e}")
