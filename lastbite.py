@@ -126,33 +126,33 @@ df['extra_qty'] = 0
 
 # Input form
 
+# SKU selection outside the form
+df['sku_display'] = df['product id'].astype(str) + ' - ' + df['product name']
+sku_display_to_id = dict(zip(df['sku_display'], df['product id']))
+selected_display = st.selectbox("Select SKU", sorted(df['sku_display'].unique()))
+selected_sku = sku_display_to_id[selected_display]
+
+# Filter valid locations where stock > 0
+valid_locs = df[(df['product id'] == selected_sku) & (df['soh'] > 0)]['location id'].unique()
+if len(valid_locs) == 0:
+    st.warning("No locations with stock > 0 for this SKU.")
+    st.stop()
+
+# Location dropdown also outside the form
+selected_location = st.selectbox("Select Location", valid_locs)
+
+# Extra Qty input inside form
 with st.form("extra_qty_form"):
-    col1, col2 = st.columns([2, 1])
-
-    with col1:
-        df['sku_display'] = df['product id'].astype(str) + ' - ' + df['product name']
-        sku_display_to_id = dict(zip(df['sku_display'], df['product id']))
-    
-        selected_display = st.selectbox("Select SKU", sorted(df['sku_display'].unique()))
-        selected_sku = sku_display_to_id[selected_display]
-        available_locs = df[(df['product id'] == selected_sku) & (df['soh'] > 0)]['location id'].unique()
-
-        # Show filtered locations in the dropdown
-        if len(available_locs) > 0:
-            selected_location = st.selectbox("Select Location", available_locs)
-        else:
-            st.warning("No locations with stock available for this SKU.")
-            st.stop()
-    with col2:
-        extra_qty_input = st.number_input("Extra Qty", min_value=0, step=100, value=0)
-
+    extra_qty_input = st.number_input("Extra Qty", min_value=0, step=100, value=0)
     submitted = st.form_submit_button("Apply")
 
+# Apply input if submitted
 if submitted:
     df.loc[
         (df['product id'] == selected_sku) & (df['location id'] == selected_location),
         'extra_qty'
     ] = extra_qty_input
+
 
 # Recalculate based on input
 df['doi_current'] = df['soh'] / df['forecast_daily']
