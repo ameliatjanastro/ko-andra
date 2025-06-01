@@ -129,7 +129,7 @@ with st.form("extra_qty_form"):
 
     with col1:
         selected_sku = st.selectbox("Select SKU", df['product id'].unique())
-        selected_sku = st.selectbox("Select SKU", df['location id'].unique())
+        selected_location = st.selectbox("Select SKU", df['location id'].unique())
 
     with col2:
         extra_qty_input = st.number_input("Extra Qty", min_value=0, step=100, value=0)
@@ -137,7 +137,10 @@ with st.form("extra_qty_form"):
     submitted = st.form_submit_button("Apply")
 
 if submitted:
-    df.loc[df['product id'] == selected_sku, 'extra_qty'] = extra_qty_input
+    df.loc[
+        (df['product id'] == selected_sku) & (df['location id'] == selected_location),
+        'extra_qty'
+    ] = extra_qty_input
 
 # Recalculate based on input
 df['doi_current'] = df['soh'] / df['forecast_daily']
