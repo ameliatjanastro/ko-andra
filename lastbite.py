@@ -208,7 +208,7 @@ if not modified_result.empty:
     for _, row in modified_result.iterrows():
         label = row['forecast_label'] 
         st.markdown(
-            f'<div class="small-font"><h4>🧾 </b> (Product ID: {row["product id"]})</h4></div>',
+            f'<div class="small-font"><h4>🧾 <b>Product ID: {row["product id"]}</b>{label}</h4></div>',
             unsafe_allow_html=True
         )
 
