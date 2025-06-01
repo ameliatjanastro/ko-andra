@@ -129,17 +129,13 @@ df['extra_qty'] = 0
 with st.form("extra_qty_form"):
     col1, col2 = st.columns([2, 1])
 
-    with col1:
+   with col1:
         df['sku_display'] = df['product id'].astype(str) + ' - ' + df['product name']
-
-        # Create a mapping from display label to product ID
         sku_display_to_id = dict(zip(df['sku_display'], df['product id']))
-        
-        # Use display label in selectbox
-        with col1:
-            selected_display = st.selectbox("Select SKU", sorted(df['sku_display'].unique()))
-            selected_sku = sku_display_to_id[selected_display]
-        selected_location = st.selectbox("Select SKU", df['location id'].unique())
+    
+        selected_display = st.selectbox("Select SKU", sorted(df['sku_display'].unique()))
+        selected_sku = sku_display_to_id[selected_display]
+        selected_location = st.selectbox("Select Location", df['location id'].unique())
 
     with col2:
         extra_qty_input = st.number_input("Extra Qty", min_value=0, step=100, value=0)
