@@ -129,7 +129,7 @@ df['extra_qty'] = 0
 with st.form("extra_qty_form"):
     col1, col2 = st.columns([2, 1])
 
-   with col1:
+    with col1:
         df['sku_display'] = df['product id'].astype(str) + ' - ' + df['product name']
         sku_display_to_id = dict(zip(df['sku_display'], df['product id']))
     
