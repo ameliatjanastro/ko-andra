@@ -197,7 +197,14 @@ result = df[['product id', 'location id', 'soh', 'forecast_daily', 'extra_qty_al
 
 modified_result = result[result['extra_qty_allocated'] > 0]
 
+
+
 if not modified_result.empty:
+
+    modified_result['forecast_label'] = modified_result.groupby(
+        ['product id', 'location id']
+    )['forecast_daily'].transform(lambda x: [' (if there\'s campaign)' if v == x.max() and len(x) > 1 else '' for v in x])
+
     for _, row in modified_result.iterrows():
         st.markdown(
             f'<div class="small-font"><h4>🧾 </b> (Product ID: {row["product id"]})</h4></div>',
