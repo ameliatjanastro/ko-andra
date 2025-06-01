@@ -102,9 +102,9 @@ holding_df.dropna(subset=['product id'], inplace=True)
 # Merge data
 try:
     df = soh_df.merge(fc_df[['product id', 'forecast daily']], on='product id').merge(holding_df[['product id', 'product name', 'holding_cost']], on='product id')
-    st.write(df.columns)
+    #st.write(df.columns)
     df.drop_duplicates(inplace=True)
-    st.dataframe(df.head())
+    #st.dataframe(df.head())
 
 except KeyError as e:
     st.error(f"❌ Merge failed: {e}")
@@ -143,8 +143,8 @@ selected_location = st.selectbox("Select Location", valid_locs)
 
 # Extra Qty input inside form
 with st.form("extra_qty_form"):
-    extra_qty_input = st.number_input("Extra Qty", min_value=0, step=100, value=0)
-    submitted = st.form_submit_button("Apply")
+    extra_qty_input = st.number_input("Extra Qty needed for COGS discount", min_value=0, value=0)
+    submitted = st.form_submit_button("Calculate")
 
 # Apply input if submitted
 if submitted:
