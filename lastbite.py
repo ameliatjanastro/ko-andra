@@ -129,6 +129,7 @@ with st.form("extra_qty_form"):
 
     with col1:
         selected_sku = st.selectbox("Select SKU", df['product id'].unique())
+        selected_sku = st.selectbox("Select SKU", df['location id'].unique())
 
     with col2:
         extra_qty_input = st.number_input("Extra Qty", min_value=0, step=100, value=0)
@@ -169,6 +170,7 @@ if not modified_result.empty:
 
         col1, col2 = st.columns(2)
         with col1:
+            st.metric("WH ID", f"{int(row['location id'])}")
             st.metric("Current Stock on Hand (SOH)", f"{int(row['soh'])}")
             st.metric("Forecast Daily Sales", f"{row['forecast_daily']:.2f}")
             st.metric("Extra Qty for COGS discount", f"{int(row['extra_qty needed for cogs dicount'])}")
