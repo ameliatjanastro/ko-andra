@@ -197,7 +197,12 @@ result = df[['product id', 'location id', 'soh', 'forecast_daily', 'extra_qty',
 
 modified_result = result[result['extra_qty'] > 0]
 
-
+def custom_metric(label, value):
+    st.markdown(f"""
+        <div style='font-size:10pt; line-height:1.2; padding:6px 0;'>
+                <b>{label}:</b> {value}
+        </div>
+    """, unsafe_allow_html=True)
 
 if not modified_result.empty:
 
@@ -218,16 +223,16 @@ if not modified_result.empty:
                 )
                 c1, c2 = st.columns(2)
                 with c1:
-                    st.metric("WH ID", f"{int(row['location id'])}")
-                    st.metric("Current Stock on Hand (SOH)", f"{int(row['soh'])}")
-                    st.metric("Forecast Daily Sales", f"{row['forecast_daily']:.2f}")
-                    st.metric("Extra Qty for COGS discount", f"{int(row['extra_qty'])}")
-                    st.metric("Required Daily Sales Increase (pcs)", f"{row['required_daily_sales_increase_units']:.0f}")
+                    custom_metric("WH ID", f"{int(row['location id'])}")
+                    custom_metric("Current Stock on Hand (SOH)", f"{int(row['soh'])}")
+                    custom_metric("Forecast Daily Sales", f"{row['forecast_daily']:.2f}")
+                    custom_metric("Extra Qty for COGS discount", f"{int(row['extra_qty'])}")
+                    custom_metric("Required Daily Sales Increase (pcs)", f"{row['required_daily_sales_increase_units']:.0f}")
                 with c2:
-                    st.metric("DOI - Current", f"{row['doi_current']:.1f} days")
-                    st.metric("DOI - New", f"{row['doi_new']:.1f} days")
-                    st.metric("Annual Holding Cost ↑", f"{row['annual_holding_cost_increase']}")
-                    st.metric("Sales Increase % Needed", row['%_sales_increase'])
+                    custom_metric("DOI - Current", f"{row['doi_current']:.1f} days")
+                    custom_metric("DOI - New", f"{row['doi_new']:.1f} days")
+                    custom_metric("Annual Holding Cost ↑", f"{row['annual_holding_cost_increase']}")
+                    custom_metric("Sales Increase % Needed", row['%_sales_increase'])
                 st.markdown(f'<div class="small-font"><b>Verdict:</b> {row["verdict"]}</div>', unsafe_allow_html=True)
                 st.divider()
     else:
