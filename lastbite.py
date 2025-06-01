@@ -102,7 +102,7 @@ holding_df.dropna(subset=['product id'], inplace=True)
 # Merge data
 try:
     df = soh_df.merge(fc_df[['product id', 'forecast daily']], on='product id').merge(holding_df[['product id', 'holding_cost']], on='product id')
-
+    st.write(df.head)
     df.drop_duplicates(subset=['product id','location id'], inplace=True)
 except KeyError as e:
     st.error(f"❌ Merge failed: {e}")
