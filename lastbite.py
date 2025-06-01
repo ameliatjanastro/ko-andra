@@ -135,8 +135,14 @@ with st.form("extra_qty_form"):
     
         selected_display = st.selectbox("Select SKU", sorted(df['sku_display'].unique()))
         selected_sku = sku_display_to_id[selected_display]
-        selected_location = st.selectbox("Select Location", df['location id'].unique())
+        available_locs = df[(df['product id'] == selected_sku) & (df['soh'] > 0)]['location id'].unique()
 
+        # Show filtered locations in the dropdown
+        if len(available_locs) > 0:
+            selected_location = st.selectbox("Select Location", available_locs)
+        else:
+            st.warning("No locations with stock available for this SKU.")
+            st.stop()
     with col2:
         extra_qty_input = st.number_input("Extra Qty", min_value=0, step=100, value=0)
 
