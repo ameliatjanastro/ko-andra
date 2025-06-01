@@ -10,7 +10,7 @@ st.markdown(
     """
     <style>
     html, body, #root, .main {
-        zoom: 80%;
+        zoom: 90%;
     }
     /* Smaller fonts for results */
     .small-font h4 {
