@@ -171,10 +171,15 @@ df['soh_new'] = df['soh'] + df['extra_qty']
 df['doi_new'] = df['soh_new'] / df['forecast_daily']
 
 # Step 4: Calculate required sales increase units per row based on allocated extra_qty and doi_current
-df['required_daily_sales_increase_units'] = df['extra_qty'] / (df['doi_new']-df['doi_current'])
+df['doi_gap'] = df['doi_new'] - df['doi_current']
+df['required_daily_sales_increase_units'] = np.where(
+    df['doi_gap'] > 0,
+    df['extra_qty_allocated'] / df['doi_gap'],
+    np.nan  # or 0 or 'inf', depending on how you want to handle it
+)
 
 # Step 5: Annual holding cost increase for the allocated extra qty
-df['annual_holding_cost_increase'] = (df['extra_qty'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
+df['annual_holding_cost_increase'] = (df['extra_qty_allocated'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
 
 # Step 6: Sales increase ratio per row
 df['%_sales_increase_raw'] = df['required_daily_sales_increase_units'] / df['forecast_daily']
