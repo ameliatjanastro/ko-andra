@@ -174,7 +174,7 @@ df['doi_new'] = df['soh_new'] / df['forecast_daily']
 df['doi_gap'] = df['doi_new'] - df['doi_current']
 df['required_daily_sales_increase_units'] = np.where(
     df['doi_gap'] > 0,
-    df['extra_qty_allocated'] / df['doi_gap'],
+    df['extra_qty_allocated'] / df['doi_new'],
     np.nan  # or 0 or 'inf', depending on how you want to handle it
 )
 
