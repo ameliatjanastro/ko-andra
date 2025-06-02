@@ -153,29 +153,23 @@ if submitted:
         'extra_qty'
     ] = extra_qty_input
 
+# Step 1: Inverse allocation for extra_qty
+df['inverse_ratio'] = 1 / df['forecast_daily'].replace(0, 1)
+df['inverse_total'] = df.groupby(['product id', 'location id'])['inverse_ratio'].transform('sum')
+df['forecast_inverse_ratio'] = df['inverse_ratio'] / df['inverse_total']
+df['extra_qty_allocated'] = df['extra_qty'] * df['forecast_inverse_ratio']
+
+# Step 2: Recalculate stock and DOI
 df['doi_current'] = df['soh'] / df['forecast_daily']
-df['soh_new'] = df['soh'] + df['extra_qty']
+df['soh_new'] = df['soh'] + df['extra_qty_allocated']
 df['doi_new'] = df['soh_new'] / df['forecast_daily']
 df['doi_gap'] = df['doi_new'] - df['doi_current']
-# Recalculate based on input
-# Step 1: Calculate total forecast per SKU-location group
-df['total_forecast'] = df.groupby(['product id', 'location id'])['forecast_daily'].transform('sum')
 
-# Step 2: Allocate extra_qty proportionally to each row in the group
-# Avoid division by zero by filling zeros with 1 temporarily
-df['forecast_ratio'] = df['forecast_daily'] / df['total_forecast'].replace(0, 1)
-
-# Distribute extra_qty proportionally
-df['extra_qty_allocated'] = df['extra_qty'] * (1-df['forecast_ratio'])
-
-# Step 3: Recalculate doi_current, soh_new, doi_new using allocated extra_qty per row
-
-# Step 4: Calculate required sales increase units per row based on allocated extra_qty and doi_current
-
+# Step 3: Required daily sales increase
 df['required_daily_sales_increase_units'] = np.where(
     df['doi_gap'] > 0,
     df['extra_qty_allocated'] / df['doi_gap'],
-    np.nan  # or 0 or 'inf', depending on how you want to handle it
+    np.nan
 )
 
 # Step 5: Annual holding cost increase for the allocated extra qty
