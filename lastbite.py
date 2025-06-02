@@ -153,7 +153,10 @@ if submitted:
         'extra_qty'
     ] = extra_qty_input
 
-
+df['doi_current'] = df['soh'] / df['forecast_daily']
+df['soh_new'] = df['soh'] + df['extra_qty']
+df['doi_new'] = df['soh_new'] / df['forecast_daily']
+df['doi_gap'] = df['doi_new'] - df['doi_current']
 # Recalculate based on input
 # Step 1: Calculate total forecast per SKU-location group
 df['total_forecast'] = df.groupby(['product id', 'location id'])['forecast_daily'].transform('sum')
@@ -166,10 +169,7 @@ df['forecast_ratio'] = df['forecast_daily'] / df['total_forecast'].replace(0, 1)
 df['extra_qty_allocated'] = df['extra_qty'] * (1-df['forecast_ratio'])
 
 # Step 3: Recalculate doi_current, soh_new, doi_new using allocated extra_qty per row
-df['doi_current'] = df['soh'] / df['forecast_daily']
-df['soh_new'] = df['soh'] + df['extra_qty']
-df['doi_new'] = df['soh_new'] / df['forecast_daily']
-df['doi_gap'] = df['doi_new'] - df['doi_current']
+
 # Step 4: Calculate required sales increase units per row based on allocated extra_qty and doi_current
 
 df['required_daily_sales_increase_units'] = np.where(
