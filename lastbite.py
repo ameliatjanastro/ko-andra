@@ -228,7 +228,7 @@ if not modified_result.empty:
             st.metric("DOI - Current", f"{row['doi_current']:.1f} days")
             st.metric("DOI - New", f"{row['doi_new']:.1f} days")
             st.metric("Annual Holding Cost ↑", f"{row['annual_holding_cost_increase']}")
-            st.metric("Sales Increase % Needed", row['%_sales_increase'])
+            st.metric("Sales Increase % Needed from prev daily sales", row['%_sales_increase'])
 
         st.markdown(f'<div class="small-font"><b>Verdict:</b> {row["verdict"]}</div>', unsafe_allow_html=True)
         st.divider()
