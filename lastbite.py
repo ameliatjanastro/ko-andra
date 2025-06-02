@@ -160,10 +160,10 @@ df['total_forecast'] = df.groupby(['product id', 'location id'])['forecast_daily
 
 # Step 2: Allocate extra_qty proportionally to each row in the group
 # Avoid division by zero by filling zeros with 1 temporarily
-df['forecast_ratio'] = (1-(df['forecast_daily'] / df['total_forecast'])).replace(0, 1)
+df['forecast_ratio'] = df['forecast_daily'] / df['total_forecast'].replace(0, 1)
 
 # Distribute extra_qty proportionally
-df['extra_qty_allocated'] = df['extra_qty'] * df['forecast_ratio']
+df['extra_qty_allocated'] = (1-(df['extra_qty'] * df['forecast_ratio']))
 
 # Step 3: Recalculate doi_current, soh_new, doi_new using allocated extra_qty per row
 df['doi_current'] = df['soh'] / df['forecast_daily']
