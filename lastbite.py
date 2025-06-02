@@ -167,7 +167,7 @@ df['extra_qty_allocated'] = df['extra_qty'] * df['forecast_ratio']
 
 # Step 3: Recalculate doi_current, soh_new, doi_new using allocated extra_qty per row
 df['doi_current'] = df['soh'] / df['forecast_daily']
-df['soh_new'] = df['soh'] + df['extra_qty_allocated']
+df['soh_new'] = df['soh'] + df['extra_qty']
 df['doi_new'] = df['soh_new'] / df['forecast_daily']
 
 # Step 4: Calculate required sales increase units per row based on allocated extra_qty and doi_current
