@@ -161,7 +161,7 @@ df['total_forecast'] = df.groupby(['product id', 'location id'])['forecast_daily
 # Step 2: Allocate extra_qty proportionally to each row in the group
 # Avoid division by zero by filling zeros with 1 temporarily
 df['forecast_ratio'] = df['forecast_daily'] / df['total_forecast'].replace(0, 1)
-df['doi_gap'] = df['doi_new'] - df['doi_current']
+
 # Distribute extra_qty proportionally
 df['extra_qty_allocated'] = df['extra_qty'] * (1-df['forecast_ratio'])
 
@@ -169,7 +169,7 @@ df['extra_qty_allocated'] = df['extra_qty'] * (1-df['forecast_ratio'])
 df['doi_current'] = df['soh'] / df['forecast_daily']
 df['soh_new'] = df['soh'] + df['extra_qty']
 df['doi_new'] = df['soh_new'] / df['forecast_daily']
-
+df['doi_gap'] = df['doi_new'] - df['doi_current']
 # Step 4: Calculate required sales increase units per row based on allocated extra_qty and doi_current
 
 df['required_daily_sales_increase_units'] = np.where(
