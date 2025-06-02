@@ -118,7 +118,7 @@ df['annual_holding_cost_increase'] = (df['extra_qty_allocated'] * df['holding_co
 df['%_sales_increase_raw'] = df['required_daily_sales_increase_units'] / df['forecast_daily']
 df['verdict'] = df['%_sales_increase_raw'].apply(lambda x: '❌ Not Recommended' if x >= 2 else '✅ Proceed')
 df['%_sales_increase'] = (df['%_sales_increase_raw'] * 100).apply(lambda x: f"{x:.1f}%" if pd.notnull(x) else "")
-df['required_daily_sales_increase_units'] = np.ceiling(df['%_sales_increase']+1)*df['forecast_daily'])
+df['required_daily_sales_increase_units'] = np.ceiling((df['%_sales_increase']+1)*df['forecast_daily'])
 
 df.replace([np.inf, -np.inf], np.nan, inplace=True)
 df.dropna(subset=['doi_current'], inplace=True)
