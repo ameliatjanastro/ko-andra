@@ -163,7 +163,7 @@ df['total_forecast'] = df.groupby(['product id', 'location id'])['forecast_daily
 df['forecast_ratio'] = df['forecast_daily'] / df['total_forecast'].replace(0, 1)
 
 # Distribute extra_qty proportionally
-df['extra_qty_allocated'] = (1-(df['extra_qty'] * df['forecast_ratio']))
+df['extra_qty_allocated'] = df['extra_qty'] * df['forecast_ratio']
 
 # Step 3: Recalculate doi_current, soh_new, doi_new using allocated extra_qty per row
 df['doi_current'] = df['soh'] / df['forecast_daily']
@@ -171,7 +171,7 @@ df['soh_new'] = df['soh'] + df['extra_qty_allocated']
 df['doi_new'] = df['soh_new'] / df['forecast_daily']
 
 # Step 4: Calculate required sales increase units per row based on allocated extra_qty and doi_current
-df['required_daily_sales_increase_units'] = df['extra_qty_allocated'] / df['doi_current']
+df['required_daily_sales_increase_units'] = (1-(df['extra_qty_allocated'] / df['doi_current']))
 
 # Step 5: Annual holding cost increase for the allocated extra qty
 df['annual_holding_cost_increase'] = (df['extra_qty_allocated'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
