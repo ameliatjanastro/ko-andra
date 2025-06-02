@@ -109,9 +109,10 @@ df['doi_new'] = df['soh_new'] / df['forecast_daily']
 df['doi_gap'] = df['doi_new'] - df['doi_current']
 df['required_daily_sales_increase_units'] = np.where(
     df['doi_gap'] > 0,
-    df['extra_qty_allocated'] / df['doi_current'],
+    ((df['soh'] + df['extra_qty_allocated']) / df['doi_current']) - df['forecast_daily'],
     np.nan
 )
+
 df['annual_holding_cost_increase'] = (df['extra_qty_allocated'] * df['holding_cost_monthly'] * 12)\
                                         .apply(lambda x: f"{x:,.0f}")
 df['%_sales_increase_raw'] = df['required_daily_sales_increase_units'] / df['forecast_daily']
