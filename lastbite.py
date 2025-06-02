@@ -96,7 +96,7 @@ except Exception as e:
 
 # Clean data
 soh_df.dropna(subset=['product id'], inplace=True)
-fc_df.dropna(subset=['product id'], inplace=True)
+#fc_df.dropna(subset=['product id'], inplace=True)
 holding_df.dropna(subset=['product id'], inplace=True)
 
 # Merge data
