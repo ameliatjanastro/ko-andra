@@ -78,7 +78,7 @@ try:
         fc_df[['product id', 'forecast daily']],
         on='product id'
     ).merge(
-        holding_df[['product id', 'product name', 'holding_cost', 'brand company']],
+        holding_df[['product id', 'product name', 'holding_cost', 'brand company','cogs']],
         on='product id'
     )
     df.drop_duplicates(inplace=True)
@@ -142,6 +142,8 @@ else:
 df['total_forecast'] = df.groupby(['product id', 'location id'])['forecast_daily'].transform('sum')
 df['forecast_ratio'] = df['forecast_daily'] / df['total_forecast'].replace(0, 1)
 df['extra_qty_allocated'] = df['extra_qty'] * df['forecast_ratio']
+df['extra_qty_value'] = df['extra_qty'] * df['cogs']
+df['extra_qty_value_formatted'] = df['extra_qty_value'].apply(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 df['doi_current'] = df['soh'] / df['forecast_daily']
 df['soh_new'] = df['soh'] + df['extra_qty_allocated']
 df['doi_new'] = df['soh_new'] / df['forecast_daily']
@@ -170,6 +172,7 @@ if analysis_level == "SKU":
                 st.metric("Current Stock (SOH)", f"{int(row['soh'])}")
                 st.metric("Forecast Daily", f"{row['forecast_daily']:.2f}")
                 st.metric("Extra Qty", f"{int(row['extra_qty'])}")
+                st.metric("Extra Qty Value", f"{int(row['extra_qty_value'])}")
                 st.metric("Required Sales ↑ (pcs)", f"{row['required_daily_sales_increase_units']:.0f}")
             with col2:
                 st.metric("DOI - Current", f"{row['doi_current']:.1f} days")
@@ -189,6 +192,7 @@ else:
         total_soh = group['soh'].sum()
         total_forecast = group['forecast_daily'].sum()
         total_extra = group['extra_qty'].min()
+        total_extra_qty_value = group['extra_qty_value'].min()
 
         if total_forecast == 0 or total_soh == 0:
             st.warning("⚠️ Cannot compute results due to zero forecast or stock.")
@@ -209,6 +213,7 @@ else:
                 st.metric("Total SOH", f"{int(total_soh)}")
                 st.metric("Total Forecast Daily", f"{total_forecast:.1f}")
                 st.metric("Extra Qty", f"{int(total_extra)}")
+                st.metric("Extra Qty Value", f"{int(total_extra_qty_value)}")
                 st.metric("Required Sales ↑ (pcs)", f"{required_sales_lift:.0f}")
             with col2:
                 st.metric("DOI - Current", f"{doi_current:.1f} days")
