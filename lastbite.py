@@ -130,8 +130,7 @@ if analysis_level == "SKU":
 else:
     brand_companies = df['brand company'].dropna().unique()
     selected_brand = st.selectbox("Select Brand Company", sorted(brand_companies))
-    valid_locs2 = df[(df['brand company'] == selected_brand) & (df['soh'] > 0)]['location id'].unique()
-    selected_location = st.selectbox("Select Location", valid_locs2)
+
 
     with st.form("brand_form"):
         extra_qty_input = st.number_input("Extra Qty to test for Brand Company", min_value=0, step=100, value=0)
@@ -215,7 +214,7 @@ else:
                 st.metric("Total SOH", f"{int(total_soh)}")
                 st.metric("Total Forecast Daily", f"{total_forecast:.1f}")
                 st.metric("Extra Qty", f"{int(total_extra)}")
-                st.metric("Extra Qty Value", f"{int(total_extra_qty_value)}")
+                #st.metric("Extra Qty Value", f"{int(total_extra_qty_value)}")
                 st.metric("Required Sales ↑ (pcs)", f"{required_sales_lift:.0f}")
             with col2:
                 st.metric("DOI - Current", f"{doi_current:.1f} days")
