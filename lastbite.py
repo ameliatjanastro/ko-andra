@@ -134,14 +134,13 @@ else:
     with st.form("brand_form"):
         extra_qty_input = st.number_input("Extra Qty to test for Brand Company", min_value=0, step=100, value=0)
         submitted = st.form_submit_button("Calculate")
-
     if submitted:
         df.loc[df['brand company'] == selected_brand, 'extra_qty'] = extra_qty_input
 
 # --- Recalculate ---
 df['total_cogs'] = df.groupby(['product id', 'location id'])['cogs'].transform('sum')
 df['cogs_ratio'] = df['cogs'] / df['total_cogs']
-df['extra_qty_allocated'] = df['extra_qty'] * df['forecast_ratio']
+df['extra_qty_allocated'] = df['extra_qty'] * df['cogs_ratio']
 df['extra_qty_value'] = df['extra_qty_allocated'] * df['cogs']
 df['extra_qty_value_formatted'] = df['extra_qty_value'].apply(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
 df['doi_current'] = df['soh'] / df['forecast_daily']
