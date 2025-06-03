@@ -1,13 +1,9 @@
-import pandas as pd
-import numpy as np
-import streamlit as st
-
 import streamlit as st
 import pandas as pd
 import numpy as np
 
 # Page layout
-st.set_page_config(layout="wide")
+
 
 # Custom CSS styling
 st.markdown("""
@@ -82,17 +78,12 @@ try:
         fc_df[['product id', 'forecast daily']],
         on='product id'
     ).merge(
-        holding_df[['product id', 'product name', 'holding_cost', 'brand company', 'cogs']],
+        holding_df[['product id', 'product name', 'holding_cost', 'brand company','cogs']],
         on='product id'
     )
     df.drop_duplicates(inplace=True)
 except KeyError as e:
     st.error(f"❌ Merge failed: {e}")
-    st.stop()
-
-# Check required column
-if 'cogs' not in df.columns:
-    st.error("❌ 'cogs' column not found in data. Please ensure it's included.")
     st.stop()
 
 # Rename
@@ -102,100 +93,75 @@ df.rename(columns={
     'holding_cost': 'holding_cost_monthly',
 }, inplace=True)
 
-# Check required columns
-required_columns = ['brand company', 'product id', 'location id', 'forecast_daily', 'soh', 'cogs', 'holding_cost_monthly']
-missing_cols = [col for col in required_columns if col not in df.columns]
-if missing_cols:
-    st.error(f"❌ Missing columns in data: {missing_cols}")
+# Convert types
+df['soh'] = pd.to_numeric(df['soh'], errors='coerce')
+df['forecast_daily'] = pd.to_numeric(df['forecast_daily'], errors='coerce').replace(0, np.nan)
+df['holding_cost_monthly'] = pd.to_numeric(df['holding_cost_monthly'], errors='coerce')
+df['extra_qty'] = 0
+
+# --- User selects analysis level ---
+analysis_level = st.selectbox("Choose Analysis Level", ["SKU", "Brand Company"])
+
+# --- SKU LEVEL ---
+if analysis_level == "SKU":
+    df['sku_display'] = df['product id'].astype(str) + ' - ' + df['product name']
+    sku_display_to_id = dict(zip(df['sku_display'], df['product id']))
+    selected_display = st.selectbox("Select SKU", sorted(df['sku_display'].unique()))
+    selected_sku = sku_display_to_id[selected_display]
+
+    valid_locs = df[(df['product id'] == selected_sku) & (df['soh'] > 0)]['location id'].unique()
+    if len(valid_locs) == 0:
+        st.warning("No locations with stock > 0 for this SKU.")
+        st.stop()
+
+    selected_location = st.selectbox("Select Location", valid_locs)
+
+    with st.form("sku_form"):
+        extra_qty_input = st.number_input("Extra Qty needed for COGS discount", min_value=0, step=100, value=0)
+        submitted = st.form_submit_button("Calculate")
+
+    if submitted:
+        df.loc[
+            (df['product id'] == selected_sku) & (df['location id'] == selected_location),
+            'extra_qty'
+        ] = extra_qty_input
+
+# --- BRAND COMPANY LEVEL ---
 else:
-    # Mode selection
-    mode = st.radio("Select Mode", ["Brand Company Level", "SKU Level"])
+    brand_companies = df['brand company'].dropna().unique()
+    selected_brand = st.selectbox("Select Brand Company", sorted(brand_companies))
 
-    if mode == "Brand Company Level":
-        selected_brand = st.selectbox("Select Brand Company", sorted(df['brand company'].dropna().unique()))
+    with st.form("brand_form"):
+        extra_qty_input = st.number_input("Extra Qty to test for Brand Company", min_value=0, step=100, value=0)
+        submitted = st.form_submit_button("Calculate")
 
-        with st.form("brand_form"):
-            extra_qty_input = st.number_input("Extra Qty to test for Brand Company", min_value=0, step=100, value=0)
-            submitted = st.form_submit_button("Calculate for Brand Company")
+    if submitted:
+        df.loc[df['brand company'] == selected_brand, 'extra_qty'] = extra_qty_input
 
-        if submitted:
-            brand_df = df[df['brand company'] == selected_brand].copy()
-
-            brand_df['total_forecast'] = brand_df.groupby(['product id', 'location id'])['forecast_daily'].transform('sum')
-            brand_df['forecast_ratio'] = brand_df['forecast_daily'] / brand_df['total_forecast'].replace(0, 1)
-            brand_df['extra_qty_allocated'] = extra_qty_input * brand_df['forecast_ratio']
-            brand_df['extra_qty_value'] = brand_df['extra_qty_allocated'] * brand_df['cogs']
-            brand_df['doi_current'] = brand_df['soh'] / brand_df['forecast_daily'].replace(0, np.nan)
-            brand_df['soh_new'] = brand_df['soh'] + brand_df['extra_qty_allocated']
-            brand_df['doi_new'] = brand_df['soh_new'] / brand_df['forecast_daily'].replace(0, np.nan)
-            brand_df['required_daily_sales_increase_units'] = brand_df['extra_qty_allocated'] / brand_df['doi_current'].replace(0, np.nan)
-            brand_df['annual_holding_cost_increase'] = (brand_df['extra_qty_allocated'] * brand_df['holding_cost_monthly'] * 12)
-            brand_df['%_sales_increase_raw'] = brand_df['required_daily_sales_increase_units'] / brand_df['forecast_daily'].replace(0, np.nan)
-            brand_df['%_sales_increase'] = brand_df['%_sales_increase_raw'].apply(lambda x: f"{x*100:.1f}%" if pd.notnull(x) else "")
-            brand_df['verdict'] = brand_df['%_sales_increase_raw'].apply(lambda x: '❌ Not Recommended' if x >= 2 else '✅ Proceed')
-            brand_df.replace([np.inf, -np.inf], np.nan, inplace=True)
-            brand_df.dropna(subset=['doi_current'], inplace=True)
-
-            total_extra_value = brand_df['extra_qty_value'].sum()
-            st.markdown(f"### 💰 Total Extra Inventory Value for {selected_brand}: Rp {total_extra_value:,.0f}")
-            st.dataframe(brand_df[[
-                'product id', 'location id', 'forecast_daily', 'soh', 'cogs',
-                'extra_qty_allocated', 'extra_qty_value',
-                'doi_current', 'doi_new',
-                'required_daily_sales_increase_units',
-                'annual_holding_cost_increase',
-                '%_sales_increase', 'verdict'
-            ]])
-
-    elif mode == "SKU Level":
-        selected_sku = st.selectbox("Select Product ID", sorted(df['product id'].dropna().unique()))
-        selected_loc = st.selectbox("Select Location ID", sorted(df['location id'].dropna().unique()))
-
-        with st.form("sku_form"):
-            extra_qty_sku = st.number_input("Extra Qty to test for SKU", min_value=0, step=10, value=0)
-            submitted = st.form_submit_button("Calculate for SKU")
-
-        if submitted:
-            sku_df = df[(df['product id'] == selected_sku) & (df['location id'] == selected_loc)].copy()
-
-            if sku_df.empty:
-                st.warning("⚠️ No matching data found for selected SKU and Location.")
-            else:
-                sku_df['extra_qty_allocated'] = extra_qty_sku
-                sku_df['extra_qty_value'] = sku_df['extra_qty_allocated'] * sku_df['cogs']
-                sku_df['doi_current'] = sku_df['soh'] / sku_df['forecast_daily'].replace(0, np.nan)
-                sku_df['soh_new'] = sku_df['soh'] + sku_df['extra_qty_allocated']
-                sku_df['doi_new'] = sku_df['soh_new'] / sku_df['forecast_daily'].replace(0, np.nan)
-                sku_df['required_daily_sales_increase_units'] = sku_df['extra_qty_allocated'] / sku_df['doi_current'].replace(0, np.nan)
-                sku_df['annual_holding_cost_increase'] = (sku_df['extra_qty_allocated'] * sku_df['holding_cost_monthly'] * 12)
-                sku_df['%_sales_increase_raw'] = sku_df['required_daily_sales_increase_units'] / sku_df['forecast_daily'].replace(0, np.nan)
-                sku_df['%_sales_increase'] = sku_df['%_sales_increase_raw'].apply(lambda x: f"{x*100:.1f}%" if pd.notnull(x) else "")
-                sku_df['verdict'] = sku_df['%_sales_increase_raw'].apply(lambda x: '❌ Not Recommended' if x >= 2 else '✅ Proceed')
-                sku_df.replace([np.inf, -np.inf], np.nan, inplace=True)
-                sku_df.dropna(subset=['doi_current'], inplace=True)
-
-                total_extra_value = sku_df['extra_qty_value'].sum()
-                st.markdown(f"### 💰 Total Extra Inventory Value for SKU: Rp {total_extra_value:,.0f}")
-                st.dataframe(sku_df[[
-                    'product id', 'location id', 'forecast_daily', 'soh', 'cogs',
-                    'extra_qty_allocated', 'extra_qty_value',
-                    'doi_current', 'doi_new',
-                    'required_daily_sales_increase_units',
-                    'annual_holding_cost_increase',
-                    '%_sales_increase', 'verdict'
-                ]])
-
+# --- Recalculate ---
+df['total_forecast'] = df.groupby(['product id', 'location id'])['forecast_daily'].transform('sum')
+df['forecast_ratio'] = df['forecast_daily'] / df['total_forecast']
+df['extra_qty_allocated'] = df['extra_qty'] * df['forecast_ratio']
+df['extra_qty_value'] = df['extra_qty_allocated'] * df['cogs']
+df['extra_qty_value_formatted'] = df['extra_qty_value'].apply(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
+df['doi_current'] = df['soh'] / df['forecast_daily']
+df['soh_new'] = df['soh'] + df['extra_qty_allocated']
+df['doi_new'] = df['soh_new'] / df['forecast_daily']
+df['required_daily_sales_increase_units'] = df['extra_qty_allocated'] / df['doi_current']
+df['annual_holding_cost_increase'] = (df['extra_qty_allocated'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
+df['%_sales_increase_raw'] = df['required_daily_sales_increase_units'] / df['forecast_daily']
+df['%_sales_increase'] = (df['%_sales_increase_raw'] * 100).apply(lambda x: f"{x:.1f}%" if pd.notnull(x) else "")
+df['verdict'] = df['%_sales_increase_raw'].apply(lambda x: '❌ Not Recommended' if x >= 2 else '✅ Proceed')
+df.replace([np.inf, -np.inf], np.nan, inplace=True)
+df.dropna(subset=['doi_current'], inplace=True)
 
 # --- Show results ---
-if mode == "SKU Level":
-    modified_result = df[df['extra_qty'] > 0].copy()
+if analysis_level == "SKU":
+    modified_result = df[df['extra_qty'] > 0]
     if not modified_result.empty:
-        # Tag highest forecast only if there are duplicates
         modified_result['forecast_label'] = modified_result.groupby(
             ['product id', 'location id']
-        )['forecast_daily'].transform(
-            lambda x: [' (if there\'s campaign)' if v == x.max() and len(x) > 1 else '' for v in x]
-        )
+        )['forecast_daily'].transform(lambda x: [' (if there\'s campaign)' if v == x.max() and len(x) > 1 else '' for v in x])
 
         for _, row in modified_result.iterrows():
             label = row['forecast_label']
@@ -219,13 +185,14 @@ if mode == "SKU Level":
     else:
         st.info("No SKUs were modified. Use the form above to enter Extra Qty.")
 
-else:  # Brand Company level
-    brand_df = df[(df['brand company'] == selected_brand) & (df['extra_qty'] > 0)].copy()
+else:
+    brand_df = df[df['brand company'] == selected_brand]
     if not brand_df.empty:
-        total_soh = brand_df['soh'].sum()
-        total_forecast = brand_df['forecast_daily'].sum()
-        total_extra = brand_df['extra_qty'].min()
-        total_extra_qty_value = brand_df['extra_qty_value'].min()
+        group = brand_df.copy()
+        total_soh = group['soh'].sum()
+        total_forecast = group['forecast_daily'].sum()
+        total_extra = group['extra_qty'].min()
+        total_extra_qty_value = group['extra_qty_value'].sum()
 
         if total_forecast == 0 or total_soh == 0:
             st.warning("⚠️ Cannot compute results due to zero forecast or stock.")
@@ -235,10 +202,10 @@ else:  # Brand Company level
             doi_new = soh_new / total_forecast
             required_sales_lift = total_extra / doi_current
             pct_sales_increase = required_sales_lift / total_forecast
-            holding_cost = brand_df['holding_cost_monthly'].mean()
+            holding_cost = group['holding_cost_monthly'].mean()
             annual_cost = total_extra * holding_cost * 12
 
-            verdict = '✅ Proceed' if pct_sales_increase < 0.02 else '❌ Not Recommended'
+            verdict = '✅ Proceed' if pct_sales_increase < 2 else '❌ Not Recommended'
 
             st.markdown(f"<h4>📦 Summary for Brand Company: <b>{selected_brand}</b></h4>", unsafe_allow_html=True)
             col1, col2 = st.columns(2)
@@ -253,10 +220,14 @@ else:  # Brand Company level
                 st.metric("DOI - New", f"{doi_new:.1f} days")
                 st.metric("Annual Holding Cost ↑", f"{annual_cost:,.0f}")
                 st.metric("Sales Increase %", f"{pct_sales_increase*100:.1f}%")
-
             st.markdown(f"<div class='small-font'><b>Verdict:</b> {verdict}</div>", unsafe_allow_html=True)
     else:
         st.info("No matching Brand Company data.")
+
+
+
+
+
 
 
 
