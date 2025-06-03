@@ -188,7 +188,8 @@ if analysis_level == "SKU":
 
 else:
     brand_df = df[df['brand company'] == selected_brand]
-    if not brand_df.empty:
+    brand_result = brand_df[df['extra_qty'] > 0]
+    if not brand_result.empty:
         group = brand_df.copy()
         total_soh = group['soh'].sum()
         total_forecast = group['forecast_daily'].sum()
