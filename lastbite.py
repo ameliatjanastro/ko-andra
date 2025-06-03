@@ -138,8 +138,8 @@ else:
         df.loc[df['brand company'] == selected_brand, 'extra_qty'] = extra_qty_input
 
 # --- Recalculate ---
-df['total_cogs'] = df.groupby(['product id'])['cogs'].transform('sum')
-df['cogs_ratio'] = df['cogs'] / df['total_cogs']
+df['total_soh'] = df.groupby(['product id'])['soh'].transform('sum')
+df['cogs_ratio'] = df['soh'] / df['total_soh']
 df['extra_qty_allocated'] = df['extra_qty'] * df['cogs_ratio']
 df['extra_qty_value'] = df['extra_qty_allocated'] * df['cogs']
 df['extra_qty_value_formatted'] = df['extra_qty_value'].apply(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
