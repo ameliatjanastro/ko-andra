@@ -188,7 +188,7 @@ else:
         group = brand_df.copy()
         total_soh = group['soh'].sum()
         total_forecast = group['forecast_daily'].sum()
-        total_extra = group['extra_qty'].sum()
+        total_extra = group['extra_qty'].avg()
 
         if total_forecast == 0 or total_soh == 0:
             st.warning("⚠️ Cannot compute results due to zero forecast or stock.")
