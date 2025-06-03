@@ -131,6 +131,8 @@ else:
     brand_companies = df['brand company'].dropna().unique()
     selected_brand = st.selectbox("Select Brand Company", sorted(brand_companies))
 
+    selected_location = st.selectbox("Select Location", valid_locs)
+
     with st.form("brand_form"):
         extra_qty_input = st.number_input("Extra Qty to test for Brand Company", min_value=0, step=100, value=0)
         submitted = st.form_submit_button("Calculate")
@@ -138,7 +140,7 @@ else:
         df.loc[df['brand company'] == selected_brand, 'extra_qty'] = extra_qty_input
 
 # --- Recalculate ---
-df['total_soh'] = df.groupby('brand company')['soh'].transform('sum')
+df['total_soh'] = df.groupby(['brand company','location id'])['soh'].transform('sum')
 df['cogs_ratio'] = df['soh'] / df['total_soh']
 st.write(df['cogs_ratio'].head())
 df['extra_qty_allocated'] = extra_qty_input * df['cogs_ratio']
