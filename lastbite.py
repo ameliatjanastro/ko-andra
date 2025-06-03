@@ -139,8 +139,8 @@ else:
         df.loc[df['brand company'] == selected_brand, 'extra_qty'] = extra_qty_input
 
 # --- Recalculate ---
-df['total_forecast'] = df.groupby(['product id', 'location id'])['forecast_daily'].transform('sum')
-df['forecast_ratio'] = df['forecast_daily'] / df['total_forecast']
+df['total_cogs'] = df.groupby(['product id', 'location id'])['cogs'].transform('sum')
+df['cogs_ratio'] = df['cogs'] / df['total_cogs']
 df['extra_qty_allocated'] = df['extra_qty'] * df['forecast_ratio']
 df['extra_qty_value'] = df['extra_qty_allocated'] * df['cogs']
 df['extra_qty_value_formatted'] = df['extra_qty_value'].apply(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
@@ -192,7 +192,7 @@ else:
         total_soh = group['soh'].sum()
         total_forecast = group['forecast_daily'].sum()
         total_extra = group['extra_qty'].min()
-        total_extra_qty_value = group['extra_qty_value'].min()
+        total_extra_qty_value = group['extra_qty_value'].sum()
 
         if total_forecast == 0 or total_soh == 0:
             st.warning("⚠️ Cannot compute results due to zero forecast or stock.")
