@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # Page layout
-st.set_page_config(layout="wide")
+
 
 # Custom CSS styling
 st.markdown("""
