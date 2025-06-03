@@ -2,8 +2,105 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 
-# Load your dataframe (replace with actual loading logic)
-# df = pd.read_csv("your_data.csv")
+import streamlit as st
+import pandas as pd
+import numpy as np
+
+# Page layout
+st.set_page_config(layout="wide")
+
+# Custom CSS styling
+st.markdown("""
+    <style>
+    html, body, #root, .main {
+        zoom: 90%;
+    }
+    .small-font h4 {
+        font-size: 14px !important;
+        margin-bottom: 4px !important;
+        margin-top: 8px !important;
+    }
+    .small-font p, .small-font span, .small-font div {
+        font-size: 12px !important;
+    }
+    div[data-testid="metric-container"] > div {
+        font-size: 14px !important;
+        line-height: 1.2 !important;
+    }
+    div[data-testid="metric-container"] {
+        padding-bottom: 4px !important;
+    }
+    body { overflow: hidden !important; }
+    ::-webkit-scrollbar { display: none; }
+    </style>
+""", unsafe_allow_html=True)
+
+st.subheader("Last Bite Calculator")
+
+with st.expander("ℹ️ How to Use This Calculator"):
+    st.markdown("""
+    **Welcome to the Last Bite Calculator!**
+
+    This tool helps evaluate whether adding extra stock to a SKU or Brand Company is justifiable by:
+    - Calculating impact on DOI (Days of Inventory)
+    - Estimating required sales lift to justify extra inventory
+    - Showing added annual holding costs
+    - Giving a clear Proceed/Reject Verdict
+
+    ### 🔍 Steps:
+    1. Choose `SKU` or `Brand Company` analysis mode.
+    2. Select SKU or Brand Company from the dropdown.
+    3. Input the **Extra Qty**.
+    4. Click **Calculate**.
+    """)
+
+# --- Data Sources ---
+SOH_CSV_URL = "https://docs.google.com/spreadsheets/d/1AdgfuvN_JrKNYKL6NXe9lX_Cd86o5u_2sr71SZIiOz4/export?format=csv&gid=251919600"
+FC_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/sales.csv"
+HOLDING_COST_CSV_URL = "https://raw.githubusercontent.com/ameliatjanastro/ko-andra/main/occupancy.csv"
+
+# Load data
+try:
+    soh_df = pd.read_csv(SOH_CSV_URL)
+    fc_df = pd.read_csv(FC_CSV_URL)
+    holding_df = pd.read_csv(HOLDING_COST_CSV_URL)
+
+    soh_df.columns = soh_df.columns.str.strip().str.lower()
+    fc_df.columns = fc_df.columns.str.strip().str.lower()
+    holding_df.columns = holding_df.columns.str.strip().str.lower()
+except Exception as e:
+    st.error(f"❌ Failed to load CSVs from GitHub: {e}")
+    st.stop()
+
+# Drop missing product IDs
+soh_df.dropna(subset=['product id'], inplace=True)
+holding_df.dropna(subset=['product id'], inplace=True)
+
+# Merge
+try:
+    df = soh_df.merge(
+        fc_df[['product id', 'forecast daily']],
+        on='product id'
+    ).merge(
+        holding_df[['product id', 'product name', 'holding_cost', 'brand company', 'cogs']],
+        on='product id'
+    )
+    df.drop_duplicates(inplace=True)
+except KeyError as e:
+    st.error(f"❌ Merge failed: {e}")
+    st.stop()
+
+# Check required column
+if 'cogs' not in df.columns:
+    st.error("❌ 'cogs' column not found in data. Please ensure it's included.")
+    st.stop()
+
+# Rename
+df.rename(columns={
+    'sum of stock': 'soh',
+    'forecast daily': 'forecast_daily',
+    'holding_cost': 'holding_cost_monthly',
+}, inplace=True)
 
 # Check required columns
 required_columns = ['brand company', 'product id', 'location id', 'forecast_daily', 'soh', 'cogs', 'holding_cost_monthly']
