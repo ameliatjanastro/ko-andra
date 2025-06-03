@@ -192,7 +192,7 @@ else:
         total_soh = group['soh'].sum()
         total_forecast = group['forecast_daily'].sum()
         total_extra = group['extra_qty'].min()
-        total_extra_qty_value = group['extra_qty_value'].mean()
+        total_extra_qty_value = group['extra_qty_value'].min()
 
         if total_forecast == 0 or total_soh == 0:
             st.warning("⚠️ Cannot compute results due to zero forecast or stock.")
