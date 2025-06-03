@@ -187,7 +187,7 @@ else:
 
 
 # --- Show results ---
-if analysis_level == "SKU":
+if mode == "SKU Level":
     modified_result = df[df['extra_qty'] > 0].copy()
     if not modified_result.empty:
         # Tag highest forecast only if there are duplicates
