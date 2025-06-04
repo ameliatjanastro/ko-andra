@@ -106,7 +106,7 @@ if analysis_level == "SKU":
         working_df['additional_sales_value_reduce'] = working_df['additional_qty_pcs_reduce'] * working_df['cogs']
         working_df['additional_qty_pcs_increase'] = working_df.apply(
             lambda row: max(row['forecast_daily'] * (-row['doi_diff']), 0), axis=1)
-        working_df['additional_order_value'] = df['additional_qty_pcs_increase'] * df['cogs']
+        working_df['additional_order_value'] = working_df['additional_qty_pcs_increase'] * working_df['cogs']
         working_df['additional_annual_holding_cost'] = working_df['additional_qty_pcs_increase'] * working_df['holding_cost_monthly'] * 12
         
 
@@ -153,6 +153,7 @@ else:
         brand_df['additional_qty_pcs_increase'] = brand_df.apply(
             lambda row: max(row['forecast_daily'] * (-row['doi_diff']), 0), axis=1)
         brand_df['additional_annual_holding_cost'] = brand_df['additional_qty_pcs_increase'] * brand_df['holding_cost_monthly'] * 12
+        brand_df['additional_order_value'] = brand_df['additional_qty_pcs_increase'] * brand_df['cogs']
 
         total_soh = brand_df['soh'].sum()
         total_forecast = brand_df['forecast_daily'].sum()
