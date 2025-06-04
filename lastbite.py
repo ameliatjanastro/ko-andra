@@ -97,7 +97,7 @@ df.rename(columns={
 df['soh'] = pd.to_numeric(df['soh'], errors='coerce')
 df['forecast_daily'] = pd.to_numeric(df['forecast_daily'], errors='coerce').replace(0, np.nan)
 df['holding_cost_monthly'] = pd.to_numeric(df['holding_cost_monthly'], errors='coerce')
-df['extra_qty'] = 0
+df['doi_ideal'] = 14
 
 # --- User selects analysis level ---
 analysis_level = st.selectbox("Choose Analysis Level", ["SKU", "Brand Company"])
@@ -117,7 +117,7 @@ if analysis_level == "SKU":
     selected_location = st.selectbox("Select Location", valid_locs)
 
     with st.form("sku_form"):
-        extra_qty_input = st.number_input("Extra Qty needed for COGS discount", min_value=0, step=100, value=0)
+        doi_ideal = st.number_input("Enter Ideal DOI (days)", min_value=1.0, value=30.0, step=0.1)
         submitted = st.form_submit_button("Calculate")
 
     if submitted:
@@ -133,32 +133,41 @@ else:
 
 
     with st.form("brand_form"):
-        extra_qty_input = st.number_input("Extra Qty to test for Brand Company", min_value=0, step=100, value=0)
+        doi_ideal = st.number_input("Enter Ideal DOI (days)", min_value=1.0, value=30.0, step=0.1)
         submitted = st.form_submit_button("Calculate")
     if submitted:
         df.loc[df['brand company'] == selected_brand, 'extra_qty'] = extra_qty_input
 
-# --- Recalculate ---
-df['total_soh'] = df.groupby(['brand company','location id'])['soh'].transform('sum')
-df['cogs_ratio'] = df['soh'] / df['total_soh']
-#st.write(df['cogs_ratio'].head())
-df['extra_qty_allocated'] = extra_qty_input * df['cogs_ratio']
-df['extra_qty_value'] = df['extra_qty_allocated'] * df['cogs']
-df['extra_qty_value_formatted'] = df['extra_qty_value'].apply(lambda x: f"{x:,.0f}" if pd.notnull(x) else "")
-df['doi_current'] = df['soh'] / df['forecast_daily']
-df['soh_new'] = df['soh'] + df['extra_qty_allocated']
-df['doi_new'] = df['soh_new'] / df['forecast_daily']
-df['required_daily_sales_increase_units'] = df['extra_qty_allocated'] / df['doi_current']
-df['annual_holding_cost_increase'] = (df['extra_qty_allocated'] * df['holding_cost_monthly'] * 12).apply(lambda x: f"{x:,.0f}")
-df['%_sales_increase_raw'] = df['required_daily_sales_increase_units'] / df['forecast_daily']
-df['%_sales_increase'] = (df['%_sales_increase_raw'] * 100).apply(lambda x: f"{x:.1f}%" if pd.notnull(x) else "")
-df['verdict'] = df['%_sales_increase_raw'].apply(lambda x: '❌ Not Recommended' if x >= 2 else '✅ Proceed')
-df.replace([np.inf, -np.inf], np.nan, inplace=True)
-df.dropna(subset=['doi_current'], inplace=True)
+df['doi_diff'] = df['doi_current'] - df['doi_ideal']
 
-# --- Show results ---
+# Additional qty to reduce (pcs) if current DOI > ideal DOI
+df['additional_qty_pcs_reduce'] = df.apply(
+    lambda row: max(row['forecast_daily'] * row['doi_diff'], 0) if row['doi_diff'] > 0 else 0, axis=1)
+
+# Additional sales value (to reduce)
+df['additional_sales_value_reduce'] = df['additional_qty_pcs_reduce'] * df['cogs']
+
+# Additional qty to increase (pcs) if current DOI < ideal DOI
+df['additional_qty_pcs_increase'] = df.apply(
+    lambda row: max(row['forecast_daily'] * (-row['doi_diff']), 0) if row['doi_diff'] < 0 else 0, axis=1)
+
+# Additional annual holding cost (to increase)
+df['additional_annual_holding_cost'] = df['additional_qty_pcs_increase'] * df['holding_cost_monthly'] * 12
+
+# Formatting for display
+df['additional_qty_pcs_reduce_fmt'] = df['additional_qty_pcs_reduce'].apply(lambda x: f"{int(x):,}" if x > 0 else "-")
+df['additional_sales_value_reduce_fmt'] = df['additional_sales_value_reduce'].apply(lambda x: f"{int(x):,}" if x > 0 else "-")
+df['additional_qty_pcs_increase_fmt'] = df['additional_qty_pcs_increase'].apply(lambda x: f"{int(x):,}" if x > 0 else "-")
+df['additional_annual_holding_cost_fmt'] = df['additional_annual_holding_cost'].apply(lambda x: f"{int(x):,}" if x > 0 else "-")
+
+# Replace inf and nan values if any
+df.replace([np.inf, -np.inf], np.nan, inplace=True)
+df.dropna(subset=['doi_current', 'forecast_daily', 'soh', 'cogs', 'holding_cost_monthly', 'doi_ideal'], inplace=True)
+
+# -- Display Section --
+
 if analysis_level == "SKU":
-    modified_result = df[df['extra_qty'] > 0]
+    modified_result = df[(df['additional_qty_pcs_reduce'] > 0) | (df['additional_qty_pcs_increase'] > 0)]
     if not modified_result.empty:
         modified_result['forecast_label'] = modified_result.groupby(
             ['product id', 'location id']
@@ -172,60 +181,65 @@ if analysis_level == "SKU":
                 st.metric("WH ID", f"{int(row['location id'])}")
                 st.metric("Current Stock (SOH)", f"{int(row['soh'])}")
                 st.metric("Forecast Daily", f"{row['forecast_daily']:.2f}")
-                st.metric("Extra Qty", f"{int(row['extra_qty'])}")
-                st.metric("Extra Qty Value", f"{int(row['extra_qty_value'])}")
-                st.metric("Required Sales ↑ (pcs)", f"{row['required_daily_sales_increase_units']:.0f}")
-            with col2:
                 st.metric("DOI - Current", f"{row['doi_current']:.1f} days")
-                st.metric("DOI - New", f"{row['doi_new']:.1f} days")
-                st.metric("Annual Holding Cost ↑", f"{row['annual_holding_cost_increase']}")
-                st.metric("Sales Increase %", row['%_sales_increase'])
+                st.metric("DOI - Ideal", f"{row['doi_ideal']:.1f} days")
 
-            st.markdown(f'<div class="small-font"><b>Verdict:</b> {row["verdict"]}</div>', unsafe_allow_html=True)
+                st.metric("Additional Qty to Reduce (pcs)", row['additional_qty_pcs_reduce_fmt'])
+                st.metric("Additional Sales Value ↓", row['additional_sales_value_reduce_fmt'])
+
+            with col2:
+                st.metric("Additional Qty to Increase (pcs)", row['additional_qty_pcs_increase_fmt'])
+                st.metric("Additional Annual Holding Cost ↑", row['additional_annual_holding_cost_fmt'])
+
             st.divider()
     else:
-        st.info("No SKUs were modified. Use the form above to enter Extra Qty.")
+        st.info("No SKUs need adjustment based on the DOI ideal.")
 
 else:
     brand_df = df[df['brand company'] == selected_brand]
-    brand_result = brand_df[df['extra_qty'] > 0]
-    if not brand_result.empty:
-        group = brand_df.copy()
-        total_soh = group['soh'].sum()
-        total_forecast = group['forecast_daily'].sum()
-        total_extra = group['extra_qty'].min()
-        total_extra_qty_value = group['extra_qty_value'].sum()
 
-        if total_forecast == 0 or total_soh == 0:
-            st.warning("⚠️ Cannot compute results due to zero forecast or stock.")
-        else:
-            doi_current = total_soh / total_forecast
-            soh_new = total_soh + total_extra
-            doi_new = soh_new / total_forecast
-            required_sales_lift = total_extra / doi_current
-            pct_sales_increase = required_sales_lift / total_forecast
-            holding_cost = group['holding_cost_monthly'].mean()
-            annual_cost = total_extra * holding_cost * 12
+    total_soh = brand_df['soh'].sum()
+    total_forecast = brand_df['forecast_daily'].sum()
+    total_qty_reduce = brand_df['additional_qty_pcs_reduce'].sum()
+    total_val_reduce = (brand_df['additional_qty_pcs_reduce'] * brand_df['cogs']).sum()
 
-            verdict = '✅ Proceed' if pct_sales_increase < 2 else '❌ Not Recommended'
+    total_qty_increase = brand_df['additional_qty_pcs_increase'].sum()
+    avg_holding_cost = brand_df['holding_cost_monthly'].mean()
+    total_annual_holding_cost_increase = (total_qty_increase * avg_holding_cost * 12)
 
-            st.markdown(f"<h4>📦 Summary for Brand Company: <b>{selected_brand}</b></h4>", unsafe_allow_html=True)
-            col1, col2 = st.columns(2)
-            with col1:
-                st.metric("Total SOH", f"{int(total_soh)}")
-                st.metric("Total Forecast Daily", f"{total_forecast:.1f}")
-                st.metric("Extra Qty", f"{int(total_extra)}")
-                #st.metric("Extra Qty Value", f"{int(total_extra_qty_value)}")
-                st.metric("Required Sales ↑ (pcs)", f"{required_sales_lift:.0f}")
-            with col2:
-                st.metric("DOI - Current", f"{doi_current:.1f} days")
-                st.metric("DOI - New", f"{doi_new:.1f} days")
-                st.metric("Annual Holding Cost ↑", f"{annual_cost:,.0f}")
-                st.metric("Sales Increase %", f"{pct_sales_increase*100:.1f}%")
-            st.markdown(f"<div class='small-font'><b>Verdict:</b> {verdict}</div>", unsafe_allow_html=True)
+    if total_forecast == 0 or total_soh == 0:
+        st.warning("⚠️ Cannot compute results due to zero forecast or stock.")
     else:
-        st.info("No matching Brand Company data.")
+        doi_current = total_soh / total_forecast
+        doi_ideal_brand = doi_ideal  # adjust if needed
 
+        doi_new_reduce = (total_soh - total_qty_reduce) / total_forecast if total_qty_reduce > 0 else doi_current
+        doi_new_increase = (total_soh + total_qty_increase) / total_forecast if total_qty_increase > 0 else doi_current
+
+        required_sales_lift = total_qty_reduce / doi_current if total_qty_reduce > 0 else 0
+        pct_sales_increase = required_sales_lift / total_forecast if total_forecast > 0 else 0
+
+        verdict = '✅ Proceed'
+        if pct_sales_increase >= 2:
+            verdict = '❌ Not Recommended'
+
+        st.markdown(f"<h4>📦 Summary for Brand Company: <b>{selected_brand}</b></h4>", unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Total SOH", f"{int(total_soh)}")
+            st.metric("Total Forecast Daily", f"{total_forecast:.1f}")
+            st.metric("Additional Qty to Reduce (pcs)", f"{int(total_qty_reduce)}" if total_qty_reduce > 0 else "-")
+            st.metric("Additional Sales Value ↓", f"{int(total_val_reduce):,}" if total_val_reduce > 0 else "-")
+            st.metric("DOI - Current", f"{doi_current:.1f} days")
+            st.metric("DOI - New (Reduce)", f"{doi_new_reduce:.1f} days" if total_qty_reduce > 0 else "-")
+
+        with col2:
+            st.metric("Additional Qty to Increase (pcs)", f"{int(total_qty_increase)}" if total_qty_increase > 0 else "-")
+            st.metric("Additional Annual Holding Cost ↑", f"{int(total_annual_holding_cost_increase):,}" if total_annual_holding_cost_increase > 0 else "-")
+            st.metric("DOI - New (Increase)", f"{doi_new_increase:.1f} days" if total_qty_increase > 0 else "-")
+            st.metric("Sales Increase %", f"{pct_sales_increase*100:.1f}%" if pct_sales_increase > 0 else "-")
+
+        st.markdown(f"<div class='small-font'><b>Verdict:</b> {verdict}</div>", unsafe_allow_html=True)
 
 
 
