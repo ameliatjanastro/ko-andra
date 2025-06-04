@@ -133,6 +133,34 @@ if analysis_level == "SKU":
                 st.metric("Additional Annual Holding Cost ↑", row['additional_annual_holding_cost_fmt'])
                 
             st.divider()
+                
+            # Delta Calculation for SKU
+            qty_increase = row['additional_qty_pcs_increase']
+            qty_reduce = row['additional_qty_pcs_reduce']
+            value_increase = row['additional_order_value']
+            value_reduce = row['additional_sales_value_reduce']
+    
+            delta_qty = qty_increase - qty_reduce
+            delta_value = value_increase - value_reduce
+    
+            if delta_qty > 0:
+                verdict_qty = f"📦 Need to INCREASE stock by {int(delta_qty):,} pcs"
+            elif delta_qty < 0:
+                verdict_qty = f"📦 Need to REDUCE stock by {int(abs(delta_qty)):,} pcs"
+            else:
+                verdict_qty = "📦 No stock adjustment needed"
+    
+            if delta_value > 0:
+                verdict_value = f"💰 Net ADDITIONAL value: Rp {int(delta_value):,}"
+            elif delta_value < 0:
+                verdict_value = f"💰 Net REDUCTION in value: Rp {int(abs(delta_value)):,}"
+            else:
+                verdict_value = "💰 No value adjustment"
+    
+            st.markdown(f"### 📊 Verdicts for SKU")
+            st.success(verdict_qty)
+            st.success(verdict_value)
+
 
 else:
     brand_companies = df['brand company'].dropna().unique()
@@ -192,6 +220,29 @@ else:
                 #st.metric("Sales Increase %", f"{pct_sales_increase*100:.1f}%" if pct_sales_increase > 0 else "-")
 
             #st.markdown(f"<div class='small-font'><b>Verdict:</b> {verdict}</div>", unsafe_allow_html=True)
+            
+            # Delta Calculation for Brand
+            delta_qty = total_qty_increase - total_qty_reduce
+            delta_value = total_order_value - total_val_reduce
+    
+            if delta_qty > 0:
+                verdict_qty = f"📦 Need to INCREASE stock by {int(delta_qty):,} pcs"
+            elif delta_qty < 0:
+                verdict_qty = f"📦 Need to REDUCE stock by {int(abs(delta_qty)):,} pcs"
+            else:
+                verdict_qty = "📦 No stock adjustment needed"
+    
+            if delta_value > 0:
+                verdict_value = f"💰 Net ADDITIONAL value: Rp {int(delta_value):,}"
+            elif delta_value < 0:
+                verdict_value = f"💰 Net REDUCTION in value: Rp {int(abs(delta_value)):,}"
+            else:
+                verdict_value = "💰 No value adjustment"
+    
+            st.markdown("### 📊 Verdicts for Brand Company")
+            st.success(verdict_qty)
+            st.success(verdict_value)
+
 
             st.markdown("### 📋 Detailed SKU-Location Table")
             brand_table = brand_df[[
