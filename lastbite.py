@@ -172,7 +172,7 @@ else:
             #required_sales_lift = total_qty_reduce / doi_current if doi_current > 0 else 0
             #pct_sales_increase = required_sales_lift / total_forecast if total_forecast > 0 else 0
 
-            verdict = '✅ Proceed' if pct_sales_increase < 2 else '❌ Not Recommended'
+            #verdict = '✅ Proceed' if pct_sales_increase < 2 else '❌ Not Recommended'
 
             st.markdown(f"<h4>📦 Summary for Brand Company: <b>{selected_brand}</b></h4>", unsafe_allow_html=True)
             col1, col2 = st.columns(2)
