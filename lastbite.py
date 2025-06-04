@@ -276,6 +276,14 @@ else:
 
             st.dataframe(brand_table.reset_index(drop=True), use_container_width=True)
 
+            csv_data = brand_table.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="⬇️ Download Table as CSV",
+                data=csv_data,
+                file_name=f"{selected_brand}_SKU_DOI_Adjustment.csv",
+                mime='text/csv'
+)
+
 
 
 
