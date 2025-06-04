@@ -113,7 +113,7 @@ if analysis_level == "SKU":
         working_df['additional_qty_pcs_reduce_fmt'] = working_df['additional_qty_pcs_reduce'].apply(lambda x: f"{int(x):,}" if x > 0 else "-")
         working_df['additional_sales_value_reduce_fmt'] = working_df['additional_sales_value_reduce'].apply(lambda x: f"{int(x):,}" if x > 0 else "-")
         working_df['additional_qty_pcs_increase_fmt'] = working_df['additional_qty_pcs_increase'].apply(lambda x: f"{int(x):,}" if x > 0 else "-")
-        working_df['additional_order_value_fmt'] = df['additional_order_value'].apply(lambda x: f"{int(x):,}" if x > 0 else "-")
+        working_df['additional_order_value_fmt'] = working_df['additional_order_value'].apply(lambda x: f"{int(x):,}" if x > 0 else "-")
         working_df['additional_annual_holding_cost_fmt'] = working_df['additional_annual_holding_cost'].apply(lambda x: f"{int(x):,}" if x > 0 else "-")
 
         for _, row in working_df.iterrows():
