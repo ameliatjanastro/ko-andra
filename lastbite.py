@@ -124,8 +124,8 @@ if analysis_level == "SKU":
     if submitted:
         df.loc[
             (df['product id'] == selected_sku) & (df['location id'] == selected_location),
-            'extra_qty'
-        ] = extra_qty_input
+            'doi_ideal'
+        ] = doi_ideal
 
 # --- BRAND COMPANY LEVEL ---
 else:
@@ -137,7 +137,7 @@ else:
         doi_ideal = st.number_input("Enter Ideal DOI (days)", min_value=1.0, value=30.0, step=0.1)
         submitted = st.form_submit_button("Calculate")
     if submitted:
-        df.loc[df['brand company'] == selected_brand, 'extra_qty'] = extra_qty_input
+        df.loc[df['brand company'] == selected_brand, 'doi_ideal'] = doi_ideal
 
 df['doi_diff'] = df['doi_current'] - df['doi_ideal']
 
