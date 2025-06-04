@@ -183,14 +183,16 @@ else:
         brand_df['additional_annual_holding_cost'] = brand_df['additional_qty_pcs_increase'] * brand_df['holding_cost_monthly'] * 12
         brand_df['additional_order_value'] = brand_df['additional_qty_pcs_increase'] * brand_df['cogs']
 
-        total_soh = brand_df['soh'].sum()
-        total_forecast = brand_df['forecast_daily'].sum()
-        total_qty_reduce = brand_df['additional_qty_pcs_reduce'].sum()
-        total_val_reduce = brand_df['additional_sales_value_reduce'].sum()
-        total_qty_increase = brand_df['additional_qty_pcs_increase'].sum()
-        total_annual_holding_cost_increase = brand_df['additional_annual_holding_cost'].sum()
-        total_order_value = (brand_df['additional_order_value']).sum()
+        valid_rows = brand_df[brand_df['forecast_daily'] > 0]
 
+        total_soh = valid_rows['soh'].sum()
+        total_forecast = valid_rows['forecast_daily'].sum()
+        total_qty_reduce = valid_rows['additional_qty_pcs_reduce'].sum()
+        total_val_reduce = valid_rows['additional_sales_value_reduce'].sum()
+        total_qty_increase = valid_rows['additional_qty_pcs_increase'].sum()
+        total_annual_holding_cost_increase = valid_rows['additional_annual_holding_cost'].sum()
+        total_order_value = valid_rows['additional_order_value'].sum()
+        
         if total_forecast == 0 or total_soh == 0:
             st.warning("⚠️ Cannot compute results due to zero forecast or stock.")
         else:
