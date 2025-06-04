@@ -167,10 +167,10 @@ else:
             st.warning("⚠️ Cannot compute results due to zero forecast or stock.")
         else:
             doi_current = total_soh / total_forecast
-            doi_new_reduce = (total_soh - total_qty_reduce) / total_forecast if total_qty_reduce > 0 else doi_current
-            doi_new_increase = (total_soh + total_qty_increase) / total_forecast if total_qty_increase > 0 else doi_current
-            required_sales_lift = total_qty_reduce / doi_current if doi_current > 0 else 0
-            pct_sales_increase = required_sales_lift / total_forecast if total_forecast > 0 else 0
+            #doi_new_reduce = (total_soh - total_qty_reduce) / total_forecast if total_qty_reduce > 0 else doi_current
+            #doi_new_increase = (total_soh + total_qty_increase) / total_forecast if total_qty_increase > 0 else doi_current
+            #required_sales_lift = total_qty_reduce / doi_current if doi_current > 0 else 0
+            #pct_sales_increase = required_sales_lift / total_forecast if total_forecast > 0 else 0
 
             verdict = '✅ Proceed' if pct_sales_increase < 2 else '❌ Not Recommended'
 
@@ -182,16 +182,46 @@ else:
                 st.metric("Additional Qty to Reduce (pcs)", f"{int(total_qty_reduce):,}" if total_qty_reduce > 0 else "-")
                 st.metric("Additional Excess Qty in Value", f"{int(total_val_reduce):,}" if total_val_reduce > 0 else "-")
                 st.metric("DOI - Current", f"{doi_current:.1f} days")
-                st.metric("DOI - New (Reduce)", f"{doi_new_reduce:.1f} days" if total_qty_reduce > 0 else "-")
+                st.metric("DOI - Ideal", f"{doi_ideal:.1f} days")
             with col2:
                 st.metric("Additional Qty to Increase (pcs)", f"{int(total_qty_increase):,}" if total_qty_increase > 0 else "-")
                 st.metric("Additional Order Value", f"{int(total_order_value):,}" if total_order_value > 0 else "-")
                 st.metric("Additional Annual Holding Cost ↑", f"{int(total_annual_holding_cost_increase):,}" if total_annual_holding_cost_increase > 0 else "-")
-                st.metric("DOI - New (Increase)", f"{doi_new_increase:.1f} days" if total_qty_increase > 0 else "-")
-                st.metric("Sales Increase %", f"{pct_sales_increase*100:.1f}%" if pct_sales_increase > 0 else "-")
 
-            st.markdown(f"<div class='small-font'><b>Verdict:</b> {verdict}</div>", unsafe_allow_html=True)
+            
+                #st.metric("Sales Increase %", f"{pct_sales_increase*100:.1f}%" if pct_sales_increase > 0 else "-")
 
+            #st.markdown(f"<div class='small-font'><b>Verdict:</b> {verdict}</div>", unsafe_allow_html=True)
+
+            st.markdown("### 📋 Detailed SKU-Location Table")
+            brand_table = brand_df[[
+                'product id', 'product name', 'location id',
+                'doi_current', 'doi_ideal',
+                'additional_qty_pcs_reduce', 'additional_sales_value_reduce',
+                'additional_qty_pcs_increase', 'additional_order_value'
+            ]].copy()
+
+            brand_table.rename(columns={
+                'product id': 'Product ID',
+                'product name': 'Product Name',
+                'location id': 'WH ID',
+                'doi_current': 'DOI Current',
+                'doi_ideal': 'DOI Ideal',
+                'additional_qty_pcs_reduce': 'Qty to Reduce (pcs)',
+                'additional_sales_value_reduce': 'Value to Reduce',
+                'additional_qty_pcs_increase': 'Qty to Increase (pcs)',
+                'additional_order_value': 'Order Value Increase',
+            }, inplace=True)
+
+            # Format numeric columns for better readability
+            brand_table['DOI Current'] = brand_table['DOI Current'].round(1)
+            brand_table['DOI Ideal'] = brand_table['DOI Ideal'].round(1)
+            brand_table['Qty to Reduce (pcs)'] = brand_table['Qty to Reduce (pcs)'].apply(lambda x: f"{int(x):,}" if x > 0 else "-")
+            brand_table['Value to Reduce'] = brand_table['Value to Reduce'].apply(lambda x: f"{int(x):,}" if x > 0 else "-")
+            brand_table['Qty to Increase (pcs)'] = brand_table['Qty to Increase (pcs)'].apply(lambda x: f"{int(x):,}" if x > 0 else "-")
+            brand_table['Order Value Increase'] = brand_table['Order Value Increase'].apply(lambda x: f"{int(x):,}" if x > 0 else "-")
+
+            st.dataframe(brand_table.reset_index(drop=True), use_container_width=True)
 
 
 
