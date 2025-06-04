@@ -196,7 +196,7 @@ else:
         if total_forecast == 0 or total_soh == 0:
             st.warning("⚠️ Cannot compute results due to zero forecast or stock.")
         else:
-            doi_current = valid_rows['doi_current'].mean()
+            doi_current = total_soh/total_forecast
             #doi_new_reduce = (total_soh - total_qty_reduce) / total_forecast if total_qty_reduce > 0 else doi_current
             #doi_new_increase = (total_soh + total_qty_increase) / total_forecast if total_qty_increase > 0 else doi_current
             #required_sales_lift = total_qty_reduce / doi_current if doi_current > 0 else 0
