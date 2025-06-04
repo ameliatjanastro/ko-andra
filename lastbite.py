@@ -183,7 +183,7 @@ else:
         brand_df['additional_annual_holding_cost'] = brand_df['additional_qty_pcs_increase'] * brand_df['holding_cost_monthly'] * 12
         brand_df['additional_order_value'] = brand_df['additional_qty_pcs_increase'] * brand_df['cogs']
 
-        valid_rows = brand_df[brand_df['forecast_daily'] > 0]
+        valid_rows = brand_df[(brand_df['forecast_daily'] > 0) & (brand_df['doi_current'].notna())]
 
         total_soh = valid_rows['soh'].sum()
         total_forecast = valid_rows['forecast_daily'].sum()
@@ -196,7 +196,7 @@ else:
         if total_forecast == 0 or total_soh == 0:
             st.warning("⚠️ Cannot compute results due to zero forecast or stock.")
         else:
-            doi_current = total_soh / total_forecast
+            doi_current = valid_rows['doi_current'].mean()
             #doi_new_reduce = (total_soh - total_qty_reduce) / total_forecast if total_qty_reduce > 0 else doi_current
             #doi_new_increase = (total_soh + total_qty_increase) / total_forecast if total_qty_increase > 0 else doi_current
             #required_sales_lift = total_qty_reduce / doi_current if doi_current > 0 else 0
