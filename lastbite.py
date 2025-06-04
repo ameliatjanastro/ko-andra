@@ -97,6 +97,7 @@ df.rename(columns={
 df['soh'] = pd.to_numeric(df['soh'], errors='coerce')
 df['forecast_daily'] = pd.to_numeric(df['forecast_daily'], errors='coerce').replace(0, np.nan)
 df['holding_cost_monthly'] = pd.to_numeric(df['holding_cost_monthly'], errors='coerce')
+df['doi_current'] = df['soh'] / df['forecast_daily']
 df['doi_ideal'] = 14
 
 # --- User selects analysis level ---
