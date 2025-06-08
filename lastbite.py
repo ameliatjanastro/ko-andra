@@ -67,6 +67,21 @@ try:
         'holding_cost': 'holding_cost_monthly',
     }, inplace=True)
 
+    def adjust_forecast(row):
+        if row['location_id'] in [40, 772]:
+            if row['location_id'] == 772:
+                return row['forecast_daily'] * 0.4
+            elif row['location_id'] == 40:
+                return row['forecast_daily'] * 0.6
+        elif row['location_id'] in [160, 796]:
+            return row['forecast_daily'] * 0.5
+        elif row['location_id'] == 661:
+            return row['forecast_daily']  # no change
+        else:
+            return 0  # if unknown location_id
+
+    df['forecast_daily'] = df.apply(adjust_forecast, axis=1)
+
     df['soh'] = pd.to_numeric(df['soh'], errors='coerce')
     df['forecast_daily'] = pd.to_numeric(df['forecast_daily'], errors='coerce').replace(0, np.nan)
     df['holding_cost_monthly'] = pd.to_numeric(df['holding_cost_monthly'], errors='coerce')
