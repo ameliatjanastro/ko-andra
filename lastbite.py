@@ -85,7 +85,7 @@ try:
         else:
             return 0  # if unknown location_id
 
-    df['forecast daily'] = df.apply(adjust_forecast, axis=1)
+    df['forecast_daily'] = df.apply(adjust_forecast, axis=1)
 
     df['soh'] = pd.to_numeric(df['soh'], errors='coerce')
     df['forecast_daily'] = pd.to_numeric(df['forecast_daily'], errors='coerce').replace(0, np.nan)
