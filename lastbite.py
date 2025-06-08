@@ -20,12 +20,18 @@ st.subheader("Last Bite Calculator")
 with st.expander("ℹ️ How to Use This Calculator"):
     st.markdown("""
     **Welcome to the Last Bite Calculator!**
+    
+    This tool helps identify whether we should **add or reduce stock** for a specific SKU or Brand Company by:
+    
+    - Highlighting SKUs currently **above or below the ideal Days of Inventory (DOI)** at the warehouse
+    - Quantifying the **delta from ideal DOI** to decide on stock adjustments
+    - Analyzing items flagged for reorder by the RL engine that, in reality, already have high stock (i.e., should not be reordered)
+    - Identifying SKUs that we **should reduce** but are still being ordered — representing **risk of excess stock**
+    - Calculating potential **holding cost impact** and required sales to justify excess
+    
+    The goal is to ensure we stay aligned with our **ideal DOI targets** and avoid **unnecessary overstocking** by challenging current reorder logic.
+    """)
 
-    This tool helps evaluate whether adding extra stock to a SKU or Brand Company is justifiable by:
-    - Calculating impact on DOI (Days of Inventory)
-    - Estimating required sales lift to justify extra inventory
-    - Showing added annual holding costs
-    - Giving a clear Proceed/Reject Verdict
 
     ### 🔍 Steps:
     1. Choose `SKU` or `Brand Company` analysis mode.
