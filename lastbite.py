@@ -30,8 +30,7 @@ with st.expander("ℹ️ How to Use This Calculator"):
     - Calculating potential **holding cost impact** and required sales to justify excess
     
     The goal is to ensure we stay aligned with our **ideal DOI targets** and avoid **unnecessary overstocking** by challenging current reorder logic.
-    """)
-
+    
 
     ### 🔍 Steps:
     1. Choose `SKU` or `Brand Company` analysis mode.
