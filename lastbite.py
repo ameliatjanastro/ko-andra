@@ -62,7 +62,7 @@ try:
         fc_df[['product id', 'forecast daily']],
         on='product id'
     ).merge(
-        holding_df[['product id', 'product name', 'holding_cost', 'brand company','cogs']],
+        holding_df[['product id', 'product name', 'holding_cost', 'brand company','cogs','location id']],
         on='product id'
     )
     df.drop_duplicates(inplace=True)
