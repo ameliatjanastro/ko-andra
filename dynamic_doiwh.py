@@ -125,6 +125,12 @@ def compute_doi(row):
 # Apply Computation
 merged["final_doi"] = merged.apply(compute_doi, axis=1)
 
+# ---- Force numeric for safety calculation columns ----
+for col in ["leadtime", "std_leadtime", "avg_demand", "std_demand", "resched_count", "total_inbound", "doi_policy"]:
+    if col in merged.columns:
+        merged[col] = pd.to_numeric(merged[col], errors="coerce").fillna(0)
+
+
 # ---- Output Section ----
 st.subheader("\U0001F4CA Final DOI Table")
 preview_cols = ["location_id", "product_id", "product_type_name", "pareto", "demand_type", "doi_policy", "final_doi"]
