@@ -38,6 +38,8 @@ include_multiplier = st.sidebar.checkbox("\u2714\ufe0f Include Product Type Mult
 st.sidebar.header("Apply Logic To")
 selected_pareto = st.sidebar.multiselect("Pareto Classes", ["X", "A", "B", "C", "D"], default=["X", "A"])
 selected_demand = st.sidebar.multiselect("Demand Types", ["Stable", "Volatile", "Moderate"], default=["Volatile"])
+selected_product_types = st.sidebar.multiselect("Product Types", ["Fresh", "Frozen", "Dry"], default=["Fresh", "Frozen", "Dry"])
+
 
 # ---- Sidebar: Parameters ----
 st.sidebar.header("\U0001F4D0 Model Parameters")
@@ -92,42 +94,38 @@ def compute_doi(row):
     # Normalize pareto: default to C if not X/A/B
     raw_pareto = str(row["pareto"]).strip()
     cleaned_pareto = raw_pareto if raw_pareto in ["X", "A", "B"] else "C"
-
     demand_type = row["demand_type"]
-    apply_logic = cleaned_pareto in selected_pareto and demand_type in selected_demand
+    product_type = row["product_type_name"]
+
+    apply_logic = (
+        cleaned_pareto in selected_pareto and
+        demand_type in selected_demand and
+        product_type in selected_product_types
+    )
 
     if not apply_logic:
         return round(base_doi, 2)
 
-    # Safety
     safety = (
-        Z * np.sqrt((row["lead_time_std"] ** 2) + (row["lead_time"] ** 2) * (row["std_demand"] / row["avg_demand"]) ** 2) * ks
+        Z * np.sqrt((row["std_leadtime"] ** 2) + (row["leadtime"] ** 2) * (row["std_demand"] / row["avg_demand"]) ** 2) * ks
         if include_safety else 0
     )
-
-    # Reschedule
     resched = (
         kr * row["leadtime"] * (row["resched_count"] / row["total_inbound"])
         if include_reschedule else 0
     )
-
-    # Pareto
     pareto_val = kp * pareto_weight.get(cleaned_pareto, 0)
-
-    # Product Type Multiplier
-    product_type = row["product_type"]
     multiplier = product_type_scaler.get(product_type, 1.0)
 
     return round(0.7 * (base_doi + safety + resched + pareto_val) * multiplier, 2)
 
-# Apply computation
+# Apply Computation
 merged["final_doi"] = merged.apply(compute_doi, axis=1)
 
 # ---- Output Section ----
 st.subheader("\U0001F4CA Final DOI Table")
-preview_cols = [
-    "location_id", "product_id", "product_type", "pareto", "demand_type", "doi_policy", "final_doi"
-]
-st.dataframe(merged[preview_cols], use_container_width=True)
+preview_cols = ["location_id", "product_id", "product_type_name", "pareto", "demand_type", "doi_policy", "final_doi"]
+available_cols = [col for col in preview_cols if col in merged.columns]
+st.dataframe(merged[available_cols], use_container_width=True)
 
 st.download_button("\U0001F4C5 Download Refined DOI CSV", merged.to_csv(index=False), file_name="refined_doi_output.csv")
