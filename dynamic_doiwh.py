@@ -16,7 +16,7 @@ def load_data():
 
 # ---- App Title ----
 st.set_page_config(page_title="Dynamic DOI Calculator", layout="wide")
-st.title("\U0001F4E6 Dynamic DOI Calculator (GSheet Integrated)")
+st.title("📦 Dynamic DOI Calculator (GSheet Integrated)")
 
 # ---- Load Data ----
 with st.spinner("Loading data from Google Sheets..."):
@@ -29,10 +29,10 @@ resched_df.columns = resched_df.columns.str.strip().str.lower()
 
 # ---- Sidebar: Module Toggle ----
 st.sidebar.header("Select DOI Components to Include")
-include_safety = st.sidebar.checkbox("\u2714\ufe0f Include Safety (Demand Variability)", True)
-include_reschedule = st.sidebar.checkbox("\u2714\ufe0f Include Reschedule Adjustment", True)
-include_pareto = st.sidebar.checkbox("\u2714\ufe0f Include Pareto Buffer", True)
-include_multiplier = st.sidebar.checkbox("\u2714\ufe0f Include Product Type Multiplier", True)
+include_safety = st.sidebar.checkbox("✔️ Include Safety (Demand Variability)", True)
+include_reschedule = st.sidebar.checkbox("✔️ Include Reschedule Adjustment", True)
+include_pareto = st.sidebar.checkbox("✔️ Include Pareto Buffer", True)
+include_multiplier = st.sidebar.checkbox("✔️ Include Product Type Multiplier", True)
 
 # ---- Sidebar: Filter Scope ----
 st.sidebar.header("Apply Logic To")
@@ -40,9 +40,8 @@ selected_pareto = st.sidebar.multiselect("Pareto Classes", ["X", "A", "B", "C", 
 selected_demand = st.sidebar.multiselect("Demand Types", ["Stable", "Volatile", "Moderate"], default=["Volatile"])
 selected_product_types = st.sidebar.multiselect("Product Types", ["Fresh", "Frozen", "Dry"], default=["Fresh", "Frozen", "Dry"])
 
-
 # ---- Sidebar: Parameters ----
-st.sidebar.header("\U0001F4D0 Model Parameters")
+st.sidebar.header("📐 Model Parameters")
 Z = st.sidebar.number_input("Z-Score (for service level)", value=1.65, step=0.05)
 
 if include_safety:
@@ -80,15 +79,19 @@ else:
 resched_df = resched_df.rename(columns={"wh_id": "location_id"})
 data_df["location_id"] = data_df["location_id"].astype(str)
 data_df["product_id"] = data_df["product_id"].astype(str)
-
 resched_df["location_id"] = resched_df["location_id"].astype(str)
 resched_df["product_id"] = resched_df["product_id"].astype(str)
+
 merged = data_df.merge(resched_df, on=["location_id", "product_id"], how="left")
 merged["resched_count"] = merged["resched_count"].fillna(0)
 merged["total_inbound"] = merged["total_inbound"].fillna(1)
 
-# ---- Compute Final DOI ----
+# ---- Force numeric types BEFORE computation ----
+for col in ["lead_time", "lead_time_std", "avg_demand", "std_demand", "resched_count", "total_inbound", "doi_policy"]:
+    if col in merged.columns:
+        merged[col] = pd.to_numeric(merged[col], errors="coerce").fillna(0)
 
+# ---- Compute Final DOI ----
 def compute_doi(row):
     try:
         base_doi = row["doi_policy"]
@@ -107,11 +110,11 @@ def compute_doi(row):
             return round(base_doi, 2)
 
         safety = (
-            Z * np.sqrt((row.get("lead_time_std", 0) ** 2) + (row.get("lead_time", 0) ** 2) * (row.get("std_demand", 0) / row.get("avg_demand", 1)) ** 2) * ks
+            Z * np.sqrt((row["lead_time_std"] ** 2) + (row["lead_time"] ** 2) * (row["std_demand"] / row["avg_demand"]) ** 2) * ks
             if include_safety else 0
         )
         resched = (
-            kr * row.get("lead_time", 0) * (row.get("resched_count", 0) / row.get("total_inbound", 1))
+            kr * row["lead_time"] * (row["resched_count"] / row["total_inbound"])
             if include_reschedule else 0
         )
         pareto_val = kp * pareto_weight.get(cleaned_pareto, 0)
@@ -125,17 +128,12 @@ def compute_doi(row):
 # Apply Computation
 merged["final_doi"] = merged.apply(compute_doi, axis=1)
 
-# ---- Force numeric for safety calculation columns ----
-for col in ["lead_time", "lead_time_std", "avg_demand", "std_demand", "resched_count", "total_inbound", "doi_policy"]:
-    if col in merged.columns:
-        merged[col] = pd.to_numeric(merged[col], errors="coerce").fillna(0)
-
-
 # ---- Output Section ----
-st.subheader("\U0001F4CA Final DOI Table")
+st.subheader("📊 Final DOI Table")
 preview_cols = ["location_id", "product_id", "product_type_name", "pareto", "demand_type", "doi_policy", "final_doi"]
 available_cols = [col for col in preview_cols if col in merged.columns]
 st.dataframe(merged[available_cols], use_container_width=True)
 
-st.download_button("\U0001F4C5 Download Refined DOI CSV", merged.to_csv(index=False), file_name="refined_doi_output.csv")
+st.download_button("📥 Download Refined DOI CSV", merged.to_csv(index=False), file_name="refined_doi_output.csv")
+
 
