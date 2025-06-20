@@ -76,6 +76,11 @@ else:
 
 # ---- Merge Reschedule Data ----
 resched_df = resched_df.rename(columns={"wh_id": "location_id"})
+data_df["location_id"] = data_df["location_id"].astype(str)
+data_df["product_id"] = data_df["product_id"].astype(str)
+
+resched_df["location_id"] = resched_df["wh_id"].astype(str)
+resched_df["product_id"] = resched_df["product_id"].astype(str)
 merged = data_df.merge(resched_df, on=["location_id", "product_id"], how="left")
 merged["resched_count"] = merged["resched_count"].fillna(0)
 merged["total_inbound"] = merged["total_inbound"].fillna(1)
