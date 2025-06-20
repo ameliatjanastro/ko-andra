@@ -5,7 +5,7 @@ import numpy as np
 # ---- Google Sheet Setup ----
 SHEET_ID = "117aUCWmv8zPtypTrIk-bGdYe_FppnGXcnm5rlsIlYVU"
 BASE_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv"
-DATA_URL = f"{BASE_URL}&sheet=data base"
+DATA_URL = f"{BASE_URL}&sheet=database"
 RESCHED_URL = f"{BASE_URL}&sheet=reschedule"
 
 @st.cache_data(ttl=86400)
