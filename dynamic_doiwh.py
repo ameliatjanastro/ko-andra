@@ -88,36 +88,39 @@ merged["resched_count"] = merged["resched_count"].fillna(0)
 merged["total_inbound"] = merged["total_inbound"].fillna(1)
 
 # ---- Compute Final DOI ----
+ ---- Compute Final DOI ----
 def compute_doi(row):
-    base_doi = row["doi_policy"]
+    try:
+        base_doi = row["doi_policy"]
+        pareto = str(row.get("pareto", "")).strip()
+        cleaned_pareto = pareto if pareto in ["X", "A", "B"] else "C"
+        demand_type = row.get("demand_type", "")
+        product_type = row.get("product_type_name", "")
 
-    # Normalize pareto: default to C if not X/A/B
-    raw_pareto = str(row["pareto"]).strip()
-    cleaned_pareto = raw_pareto if raw_pareto in ["X", "A", "B"] else "C"
-    demand_type = row["demand_type"]
-    product_type = row["product_type_name"]
+        apply_logic = (
+            cleaned_pareto in selected_pareto and
+            demand_type in selected_demand and
+            product_type in selected_product_types
+        )
 
-    apply_logic = (
-        cleaned_pareto in selected_pareto and
-        demand_type in selected_demand and
-        product_type in selected_product_types
-    )
+        if not apply_logic:
+            return round(base_doi, 2)
 
-    if not apply_logic:
-        return round(base_doi, 2)
+        safety = (
+            Z * np.sqrt((row.get("std_leadtime", 0) ** 2) + (row.get("leadtime", 0) ** 2) * (row.get("std_demand", 0) / row.get("avg_demand", 1)) ** 2) * ks
+            if include_safety else 0
+        )
+        resched = (
+            kr * row.get("leadtime", 0) * (row.get("resched_count", 0) / row.get("total_inbound", 1))
+            if include_reschedule else 0
+        )
+        pareto_val = kp * pareto_weight.get(cleaned_pareto, 0)
+        multiplier = product_type_scaler.get(product_type, 1.0)
 
-    safety = (
-        Z * np.sqrt((row["std_leadtime"] ** 2) + (row["leadtime"] ** 2) * (row["std_demand"] / row["avg_demand"]) ** 2) * ks
-        if include_safety else 0
-    )
-    resched = (
-        kr * row["leadtime"] * (row["resched_count"] / row["total_inbound"])
-        if include_reschedule else 0
-    )
-    pareto_val = kp * pareto_weight.get(cleaned_pareto, 0)
-    multiplier = product_type_scaler.get(product_type, 1.0)
-
-    return round(0.7 * (base_doi + safety + resched + pareto_val) * multiplier, 2)
+        return round(0.7 * (base_doi + safety + resched + pareto_val) * multiplier, 2)
+    except Exception as e:
+        st.warning(f"Error computing DOI for row: {e}")
+        return base_doi
 
 # Apply Computation
 merged["final_doi"] = merged.apply(compute_doi, axis=1)
@@ -129,3 +132,4 @@ available_cols = [col for col in preview_cols if col in merged.columns]
 st.dataframe(merged[available_cols], use_container_width=True)
 
 st.download_button("\U0001F4C5 Download Refined DOI CSV", merged.to_csv(index=False), file_name="refined_doi_output.csv")
+
