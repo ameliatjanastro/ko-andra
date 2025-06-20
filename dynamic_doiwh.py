@@ -120,7 +120,7 @@ def compute_doi(row):
         pareto_val = kp * pareto_weight.get(cleaned_pareto, 0)
         multiplier = product_type_scaler.get(product_type, 1.0)
 
-        return round(0.7 * (base_doi + safety + resched + pareto_val) * multiplier, 2)
+        return round(1 * (base_doi + safety + resched + pareto_val) * multiplier, 2)
     except Exception as e:
         st.warning(f"Error computing DOI for row: {e}")
         return base_doi
