@@ -107,7 +107,7 @@ def compute_doi(row):
             return round(base_doi, 2)
 
         safety = (
-            Z * np.sqrt((row.get("std_leadtime", 0) ** 2) + (row.get("leadtime", 0) ** 2) * (row.get("std_demand", 0) / row.get("avg_demand", 1)) ** 2) * ks
+            Z * np.sqrt((row.get("lead_time_std", 0) ** 2) + (row.get("lead_time", 0) ** 2) * (row.get("std_demand", 0) / row.get("avg_demand", 1)) ** 2) * ks
             if include_safety else 0
         )
         resched = (
@@ -126,7 +126,7 @@ def compute_doi(row):
 merged["final_doi"] = merged.apply(compute_doi, axis=1)
 
 # ---- Force numeric for safety calculation columns ----
-for col in ["leadtime", "std_leadtime", "avg_demand", "std_demand", "resched_count", "total_inbound", "doi_policy"]:
+for col in ["lead_time", "lead_time_std", "avg_demand", "std_demand", "resched_count", "total_inbound", "doi_policy"]:
     if col in merged.columns:
         merged[col] = pd.to_numeric(merged[col], errors="coerce").fillna(0)
 
