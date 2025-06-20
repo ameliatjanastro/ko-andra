@@ -111,7 +111,7 @@ def compute_doi(row):
             if include_safety else 0
         )
         resched = (
-            kr * row.get("leadtime", 0) * (row.get("resched_count", 0) / row.get("total_inbound", 1))
+            kr * row.get("lead_time", 0) * (row.get("resched_count", 0) / row.get("total_inbound", 1))
             if include_reschedule else 0
         )
         pareto_val = kp * pareto_weight.get(cleaned_pareto, 0)
