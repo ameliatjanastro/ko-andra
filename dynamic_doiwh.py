@@ -109,8 +109,9 @@ def compute_doi(row):
         if not apply_logic:
             return round(base_doi, 2)
 
+        std_d_ratio = row["std_demand"] / row["avg_demand"] if row["avg_demand"] != 0 else 0
         safety = (
-            Z * np.sqrt((row["lead_time_std"] ** 2) + (row["lead_time"] ** 2) * (row["std_demand"] / row["avg_demand"]) ** 2) * ks
+            Z * np.sqrt((row["lead_time_std"] ** 2) + (row["lead_time"] ** 2) * (std_d_ratio ** 2)) * ks
             if include_safety else 0
         )
         resched = (
