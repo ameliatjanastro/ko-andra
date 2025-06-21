@@ -28,7 +28,7 @@ st.markdown("""
 
      }
     [data-testid="stSidebar"] * {
-        font-size: 13px !important;
+        font-size: 12px !important;
     }
     [data-testid="stSidebar"] > div {
         padding: 0.5rem 0.5rem;
@@ -63,29 +63,43 @@ selected_product_types = st.sidebar.multiselect("Product Types", ["Fresh", "Froz
 
 # Move these outside the sidebar
 with st.expander("🔧 Adjust Model Parameters", expanded=False):
-    Z = float(st.text_input("Z-Score (for service level)", "1.65"))
-    ks = float(st.text_input("ks - Demand Variability Scaling Factor", "0.5")) if include_safety else 0
-    kr = float(st.text_input("kr - Reschedule Scaling Factor", "0.5")) if include_reschedule else 0
-    kp = float(st.text_input("kp - Pareto Scaling Factor", "0.5")) if include_pareto else 0
+    # Z + ks
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        Z = st.number_input("Z-Score", value=1.65, step=0.05, label_visibility="visible")
+    with col2:
+        ks = st.number_input("ks (Demand Var)", value=0.5, step=0.1, label_visibility="visible") if include_safety else 0
+
+    # kr + kp
+    col3, col4 = st.columns([1, 1])
+    with col3:
+        kr = st.number_input("kr (Resched)", value=0.5, step=0.1, label_visibility="visible") if include_reschedule else 0
+    with col4:
+        kp = st.number_input("kp (Pareto)", value=0.5, step=0.1, label_visibility="visible") if include_pareto else 0
 
     if include_pareto:
         st.markdown("##### Pareto Weights")
-        pareto_weight = {
-            "X": float(st.text_input("Weight for Pareto X", "1.0")),
-            "A": float(st.text_input("Weight for Pareto A", "1.0")),
-            "B": float(st.text_input("Weight for Pareto B", "0.75")),
-            "C": float(st.text_input("Weight for Pareto C (and others)", "0.5"))
-        }
+        w1, w2, w3, w4 = st.columns(4)
+        with w1:
+            pareto_weight["X"] = st.number_input("X", value=1.0, step=0.1, label_visibility="visible")
+        with w2:
+            pareto_weight["A"] = st.number_input("A", value=1.0, step=0.1, label_visibility="visible")
+        with w3:
+            pareto_weight["B"] = st.number_input("B", value=0.75, step=0.1, label_visibility="visible")
+        with w4:
+            pareto_weight["C"] = st.number_input("C", value=0.5, step=0.1, label_visibility="visible")
     else:
         pareto_weight = {"X": 0, "A": 0, "B": 0, "C": 0}
 
     if include_multiplier:
         st.markdown("##### Product Type Multipliers")
-        product_type_scaler = {
-            "Fresh": float(st.text_input("Fresh Multiplier", "1.1")),
-            "Frozen": float(st.text_input("Frozen Multiplier", "1.05")),
-            "Dry": float(st.text_input("Dry Multiplier", "1.0"))
-        }
+        m1, m2, m3 = st.columns(3)
+        with m1:
+            product_type_scaler["Fresh"] = st.number_input("Fresh", value=1.1, step=0.05, label_visibility="visible")
+        with m2:
+            product_type_scaler["Frozen"] = st.number_input("Frozen", value=1.05, step=0.05, label_visibility="visible")
+        with m3:
+            product_type_scaler["Dry"] = st.number_input("Dry", value=1.0, step=0.05, label_visibility="visible")
     else:
         product_type_scaler = {"Fresh": 1.0, "Frozen": 1.0, "Dry": 1.0}
 
