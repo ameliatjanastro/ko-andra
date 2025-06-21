@@ -32,7 +32,7 @@ st.markdown("""
 
     /* Reduce top padding in sidebar */
     [data-testid="stSidebar"] > div:first-child > div {
-        padding-top: 0.5rem !important;
+        padding-top: 0.05rem !important;
     }
     /* Shrink sidebar width */
     [data-testid="stSidebar"] * {
