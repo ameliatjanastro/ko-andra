@@ -19,28 +19,33 @@ st.set_page_config(page_title="Dynamic DOI Calculator", layout="wide")
 
 st.markdown("""
     <style>
-    /* Grey theme override */
-    :root {
-        --primary-color: #888888;
-        --background-color: #ffffff;
-        --secondary-background-color: #f5f5f5;
-        --text-color: #000000;
+    /* Shrink sidebar components & text slightly */
+    section[data-testid="stSidebar"] * {
+        font-size: 12px !important;
     }
 
-    /* Streamlit native widgets (limited support) */
-    .stSlider > div[data-baseweb="slider"] > div {
-        background: #888888 !important;
-    }
-    .stCheckbox > div > label > div:first-child {
-        border-color: #888888 !important;
+    /* Shrink labels and select boxes */
+    section[data-testid="stSidebar"] .css-1cpxqw2,  /* multiselect label */
+    section[data-testid="stSidebar"] .css-1n76uvr,  /* number_input label */
+    section[data-testid="stSidebar"] .css-16idsys {  /* headers */
+        font-size: 12px !important;
     }
 
-    /* Reduce sidebar width */
+    /* Shrink input box text */
+    section[data-testid="stSidebar"] input,
+    section[data-testid="stSidebar"] select,
+    section[data-testid="stSidebar"] textarea {
+        font-size: 12px !important;
+        padding: 4px 6px !important;
+    }
+
+    /* Optional: reduce sidebar width slightly */
     [data-testid="stSidebar"] {
-        width: 240px !important;
+        width: 260px !important;
     }
     </style>
 """, unsafe_allow_html=True)
+
 
 st.markdown("<h1 style='font-size: 22px;'>📦 Dynamic DOI Calculator (GSheet Integrated)</h1>", unsafe_allow_html=True)
 
@@ -153,7 +158,9 @@ st.markdown("<h3 style='font-size:16px;'>Final DOI Table</h3>", unsafe_allow_htm
 highlight_toggle = st.checkbox("Highlight rows with DOI change", value=True)
 
 preview_cols = ["location_id", "product_id", "product_type_name", "pareto", "demand_type", "doi_policy", "final_doi"]
+preview_df["final_doi"] = preview_df["final_doi"].round(2)
 preview_df = merged[preview_cols].fillna("-")
+
 
 def highlight_changed_doi(row):
     return ["background-color: #ffe599"] * len(row) if row["final_doi"] != round(row["doi_policy"], 2) else [""] * len(row)
