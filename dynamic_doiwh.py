@@ -178,7 +178,7 @@ def compute_doi(row):
 # ---- Apply Computation ----
 merged["final_doi"] = merged.apply(compute_doi, axis=1)
 merged["location_id"] = pd.to_numeric(merged["location_id"], errors="coerce").fillna(0).astype(int)
-merged["doi_policy"] = merged["doi_policy"].astype(int)
+merged["doi_policy"] = merged["doi_policy"].round(2)
 merged["final_doi"] = merged["final_doi"].round(2)
 
 show_changed_only = st.sidebar.checkbox("Show only rows with changed DOI", value=False)
@@ -191,6 +191,7 @@ preview_cols = ["location_id", "product_id", "product_type_name", "pareto", "dem
 
 preview_df = merged[preview_cols].fillna("-")
 preview_df["final_doi"] = preview_df["final_doi"].round(2)
+preview_df["doi_policy"] = preview_df["doi_policy"].round(2)
 
 if show_changed_only:
     preview_df = preview_df[merged["final_doi"] != merged["doi_policy"]]
