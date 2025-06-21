@@ -141,8 +141,6 @@ show_changed_only = st.sidebar.checkbox("Show only rows with changed DOI", value
 st.markdown("<style>div[data-testid='stDataFrame'] table { font-size: 12px !important; }</style>", unsafe_allow_html=True)
 st.markdown("<h3 style='font-size:16px;'>Final DOI Table</h3>", unsafe_allow_html=True)
 
-highlight_toggle = st.checkbox("Highlight rows with DOI change", value=True)
-
 preview_cols = ["location_id", "product_id", "product_type_name", "pareto", "demand_type", "doi_policy", "final_doi"]
 
 preview_df = merged[preview_cols].fillna("-")
