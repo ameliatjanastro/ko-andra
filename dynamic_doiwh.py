@@ -18,15 +18,21 @@ def load_data():
 st.set_page_config(page_title="Dynamic DOI Calculator", layout="wide")
 
 st.markdown("""
-    /* Optional: reduce sidebar width slightly */
+    <style>
+    /* Zoom out the entire sidebar slightly (like scaling down) */
     [data-testid="stSidebar"] {
-        width: 260px !important;
+        transform: scale(0.90);
+        transform-origin: top left;
+    }
+
+    /* Optional: reduce spacing due to scale shift */
+    [data-testid="stSidebar"] > div {
+        padding-right: 10px;
     }
     </style>
 """, unsafe_allow_html=True)
 
-
-st.markdown("<h1 style='font-size: 22px;'>📦 Dynamic DOI Calculator (GSheet Integrated)</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='font-size: 22px;'>📦 Dynamic DOI Calculator</h1>", unsafe_allow_html=True)
 
 # ---- Load Data ----
 with st.spinner("Loading data from Google Sheets..."):
