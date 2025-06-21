@@ -21,9 +21,9 @@ st.markdown("""
     <style>
     /* Shrink sidebar width */
     [data-testid="stSidebar"] {
-        width: 230px !important;
-        min-width: 230px !important;
-        max-width: 230px !important;
+        width: 260px !important;
+        min-width: 260px !important;
+        max-width: 260px !important;
     }
 
     /* Consistent smaller font size inside the sidebar */
@@ -34,6 +34,15 @@ st.markdown("""
     /* Tweak internal padding */
     [data-testid="stSidebar"] > div {
         padding: 0.5rem 0.5rem;
+        
+    /* Hide number input steppers */
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type=number] {
+        -moz-appearance: textfield;
     }
     </style>
 """, unsafe_allow_html=True)
