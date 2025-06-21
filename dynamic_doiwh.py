@@ -135,6 +135,7 @@ merged["location_id"] = pd.to_numeric(merged["location_id"], errors="coerce").fi
 merged["doi_policy"] = merged["doi_policy"].astype(int)
 merged["final_doi"] = merged["final_doi"].round(2)
 
+show_changed_only = st.sidebar.checkbox("Show only rows with changed DOI", value=False)
 
 # ---- Output Section ----
 st.markdown("<style>div[data-testid='stDataFrame'] table { font-size: 12px !important; }</style>", unsafe_allow_html=True)
@@ -147,14 +148,11 @@ preview_cols = ["location_id", "product_id", "product_type_name", "pareto", "dem
 preview_df = merged[preview_cols].fillna("-")
 preview_df["final_doi"] = preview_df["final_doi"].round(2)
 
-def highlight_changed_doi(row):
-    return ["background-color: #ffe599"] * len(row) if row["final_doi"] != round(row["doi_policy"], 2) else [""] * len(row)
+if show_changed_only:
+    preview_df = preview_df[merged["final_doi"] != merged["doi_policy"]]
 
-if highlight_toggle:
-    styled_df = preview_df.style.apply(highlight_changed_doi, axis=1)
-    st.dataframe(styled_df, use_container_width=True)
-else:
-    st.dataframe(preview_df, use_container_width=True)
+
+st.dataframe(preview_df, use_container_width=True)
 
 st.download_button("📥 Download Refined DOI CSV", merged.to_csv(index=False), file_name="refined_doi_output.csv")
 
