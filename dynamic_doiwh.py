@@ -21,7 +21,7 @@ st.markdown("""
     <style>
     /* Zoom out the entire main page to 90% */
     .main {
-        transform: scale(0.9);
+        transform: scale(0.8);
         transform-origin: top center;
     }
     </style>
