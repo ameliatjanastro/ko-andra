@@ -19,6 +19,16 @@ st.set_page_config(page_title="Dynamic DOI Calculator")
 
 st.markdown("""
     <style>
+    /* Zoom out the entire main page to 90% */
+    .main {
+        transform: scale(0.9);
+        transform-origin: top center;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+    <style>
     /* Disable sidebar scrolling */
     [data-testid="stSidebar"] {
         overflow: hidden !important;
