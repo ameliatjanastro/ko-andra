@@ -25,24 +25,6 @@ st.markdown("""
     }
     [data-testid="stSidebar"] > div {
         padding: 0.5rem 0.5rem;
-        
-   /* Smaller font inside expander */
-    details > summary {
-        font-size: 14px;
-        font-weight: bold;
-    }
-
-    /* Inside the expanded content */
-    details[open] * {
-        font-size: 13px !important;
-    }
-
-    /* Subheaders inside expander */
-    .expander-content h5, .expander-content h4 {
-        font-weight: bold !important;
-        font-size: 13px !important;
-        margin-top: 0.5rem;
-        margin-bottom: 0.25rem;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -75,23 +57,20 @@ pareto_weight = {"X": 0, "A": 0, "B": 0, "C": 0}
 product_type_scaler = {"Fresh": 1.0, "Frozen": 1.0, "Dry": 1.0}
 
 # Move these outside the sidebar
-with st.expander("🔧 Adjust Model Parameters", expanded=False):
+with st.expander("Adjust Model Parameters", expanded=False):
     # Z + ks
-    col1, col2 = st.columns([1, 1])
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         Z = st.number_input("Z-Score", value=1.65, step=0.05, label_visibility="visible")
     with col2:
         ks = st.number_input("ks (Demand Var)", value=0.5, step=0.1, label_visibility="visible") if include_safety else 0
-
-    # kr + kp
-    col3, col4 = st.columns([1, 1])
     with col3:
         kr = st.number_input("kr (Resched)", value=0.5, step=0.1, label_visibility="visible") if include_reschedule else 0
     with col4:
         kp = st.number_input("kp (Pareto)", value=0.5, step=0.1, label_visibility="visible") if include_pareto else 0
 
     if include_pareto:
-        st.markdown("##### Pareto Weights")
+        st.markdown("<h5 class='expander-content'>##### Pareto Weights</h5>")
         w1, w2, w3, w4 = st.columns(4)
         with w1:
             pareto_weight["X"] = st.number_input("X", value=1.0, step=0.1, label_visibility="visible")
@@ -105,7 +84,7 @@ with st.expander("🔧 Adjust Model Parameters", expanded=False):
         pareto_weight = {"X": 0, "A": 0, "B": 0, "C": 0}
 
     if include_multiplier:
-        st.markdown("##### Product Type Multipliers")
+        st.markdown("<h5 class='expander-content'>##### Product Type Multipliers</h5>")
         m1, m2, m3 = st.columns(3)
         with m1:
             product_type_scaler["Fresh"] = st.number_input("Fresh", value=1.1, step=0.05, label_visibility="visible")
