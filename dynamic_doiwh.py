@@ -24,12 +24,6 @@ st.markdown("""
         overflow: hidden !important;
     }
 
-    /* Disable scrolling on the actual scrollable container inside sidebar */
-    [data-testid="stSidebar"] > div:first-child {
-        overflow: hidden !important;
-        height: 100vh !important;
-    }
-
     /* Reduce top padding in sidebar */
     [data-testid="stSidebar"] > div:first-child > div {
         padding-top: 0.05rem !important;
