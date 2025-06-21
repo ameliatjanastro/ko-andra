@@ -15,7 +15,7 @@ def load_data():
     return data_base, resched
 
 # ---- App Title ----
-st.set_page_config(page_title="Dynamic DOI Calculator", layout="wide")
+st.set_page_config(page_title="Dynamic DOI Calculator")
 st.title("📦 Dynamic DOI Calculator (GSheet Integrated)")
 
 # ---- Load Data ----
