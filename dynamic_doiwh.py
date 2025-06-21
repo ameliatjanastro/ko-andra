@@ -21,7 +21,7 @@ st.markdown("""
     <style>
     /* Shrink sidebar width */
     [data-testid="stSidebar"] * {
-        font-size: 12px !important;
+        font-size: 13px !important;
     }
     [data-testid="stSidebar"] > div {
         padding: 0.5rem 0.5rem;
@@ -36,7 +36,7 @@ st.markdown("""
     details[open] > div > div:nth-of-type(2),
     details[open] > div > div:nth-of-type(3) {
         transform: scale(0.85);
-        transform-origin: top left;
+        transform-origin: center;
     label {
         font-size: 12.5px !important;
         font-weight: 600 !important;
