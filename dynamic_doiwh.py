@@ -21,9 +21,9 @@ st.markdown("""
     <style>
     /* Shrink and reposition the sidebar */
     [data-testid="stSidebar"] {
-        transform: scale(0.9) translateX(-15px);
+        transform: scale(0.9) translateY(+15px);
         transform-origin: top left;
-        width: 210px !important;
+        width: 250px !important;
     }
 
     /* Adjust sidebar content to fit scaled width */
