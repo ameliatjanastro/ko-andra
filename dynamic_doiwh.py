@@ -16,15 +16,28 @@ def load_data():
 
 # ---- App Config and Title ----
 st.set_page_config(page_title="Dynamic DOI Calculator", layout="wide")
+
 st.markdown("""
     <style>
-    /* Sidebar headers and labels */
-    section[data-testid="stSidebar"] h1,
-    section[data-testid="stSidebar"] h2,
-    section[data-testid="stSidebar"] h3,
-    section[data-testid="stSidebar"] label,
-    section[data-testid="stSidebar"] div {
-        font-size: 12px !important;
+    /* Grey theme override */
+    :root {
+        --primary-color: #888888;
+        --background-color: #ffffff;
+        --secondary-background-color: #f5f5f5;
+        --text-color: #000000;
+    }
+
+    /* Streamlit native widgets (limited support) */
+    .stSlider > div[data-baseweb="slider"] > div {
+        background: #888888 !important;
+    }
+    .stCheckbox > div > label > div:first-child {
+        border-color: #888888 !important;
+    }
+
+    /* Reduce sidebar width */
+    [data-testid="stSidebar"] {
+        width: 240px !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -54,9 +67,9 @@ selected_demand = st.sidebar.multiselect("Demand Types", ["Stable", "Volatile", 
 selected_product_types = st.sidebar.multiselect("Product Types", ["Fresh", "Frozen", "Dry"], default=["Fresh", "Frozen", "Dry"])
 
 # ---- Sidebar: Parameters ----
-st.sidebar.header("📐 Model Parameters")
+st.sidebar.header("Model Parameters")
 Z = st.sidebar.number_input("Z-Score (for service level)", value=1.65, step=0.05)
-ks = st.sidebar.number_input("ks - Safety Scaling Factor", value=0.5, step=0.1) if include_safety else 0
+ks = st.sidebar.number_input("ks - Demand Variability Scaling Factor", value=0.5, step=0.1) if include_safety else 0
 kr = st.sidebar.number_input("kr - Reschedule Scaling Factor", value=0.5, step=0.1) if include_reschedule else 0
 kp = st.sidebar.number_input("kp - Pareto Scaling Factor", value=0.5, step=0.1) if include_pareto else 0
 
@@ -128,10 +141,14 @@ def compute_doi(row):
 
 # ---- Apply Computation ----
 merged["final_doi"] = merged.apply(compute_doi, axis=1)
+merged["location_id"] = pd.to_numeric(merged["location_id"], errors="coerce").fillna(0).astype(int)
+merged["doi_policy"] = merged["doi_policy"].astype(int)
+merged["final_doi"] = merged["final_doi"].round(2)
+
 
 # ---- Output Section ----
 st.markdown("<style>div[data-testid='stDataFrame'] table { font-size: 12px !important; }</style>", unsafe_allow_html=True)
-st.markdown("<h3 style='font-size:16px;'>📊 Final DOI Table</h3>", unsafe_allow_html=True)
+st.markdown("<h3 style='font-size:16px;'>Final DOI Table</h3>", unsafe_allow_html=True)
 
 highlight_toggle = st.checkbox("Highlight rows with DOI change", value=True)
 
