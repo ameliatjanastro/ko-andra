@@ -14,9 +14,9 @@ def load_data():
     resched = pd.read_csv(RESCHED_URL)
     return data_base, resched
 
-# ---- App Title ----
-st.set_page_config(page_title="Dynamic DOI Calculator")
-st.title("📦 Dynamic DOI Calculator (GSheet Integrated)")
+# ---- App Config and Title ----
+st.set_page_config(page_title="Dynamic DOI Calculator", layout="wide")
+st.markdown("<h1 style='font-size: 22px;'>📦 Dynamic DOI Calculator (GSheet Integrated)</h1>", unsafe_allow_html=True)
 
 # ---- Load Data ----
 with st.spinner("Loading data from Google Sheets..."):
@@ -43,37 +43,24 @@ selected_product_types = st.sidebar.multiselect("Product Types", ["Fresh", "Froz
 # ---- Sidebar: Parameters ----
 st.sidebar.header("📐 Model Parameters")
 Z = st.sidebar.number_input("Z-Score (for service level)", value=1.65, step=0.05)
+ks = st.sidebar.number_input("ks - Safety Scaling Factor", value=0.5, step=0.1) if include_safety else 0
+kr = st.sidebar.number_input("kr - Reschedule Scaling Factor", value=0.5, step=0.1) if include_reschedule else 0
+kp = st.sidebar.number_input("kp - Pareto Scaling Factor", value=0.5, step=0.1) if include_pareto else 0
 
-if include_safety:
-    ks = st.sidebar.number_input("ks - Safety Scaling Factor", value=0.5, step=0.1)
-else:
-    ks = 0
-
-if include_reschedule:
-    kr = st.sidebar.number_input("kr - Reschedule Scaling Factor", value=0.5, step=0.1)
-else:
-    kr = 0
-
+pareto_weight = {"X": 0, "A": 0, "B": 0, "C": 0}
 if include_pareto:
-    kp = st.sidebar.number_input("kp - Pareto Scaling Factor", value=0.5, step=0.1)
     st.sidebar.markdown("#### Pareto Weights")
-    weight_x = st.sidebar.number_input("Weight for Pareto X", value=1.0)
-    weight_a = st.sidebar.number_input("Weight for Pareto A", value=1.0)
-    weight_b = st.sidebar.number_input("Weight for Pareto B", value=0.75)
-    weight_c = st.sidebar.number_input("Weight for Pareto C (and others)", value=0.5)
-    pareto_weight = {"X": weight_x, "A": weight_a, "B": weight_b, "C": weight_c}
-else:
-    kp = 0
-    pareto_weight = {"X": 0, "A": 0, "B": 0, "C": 0}
+    pareto_weight["X"] = st.sidebar.number_input("Weight for Pareto X", value=1.0)
+    pareto_weight["A"] = st.sidebar.number_input("Weight for Pareto A", value=1.0)
+    pareto_weight["B"] = st.sidebar.number_input("Weight for Pareto B", value=0.75)
+    pareto_weight["C"] = st.sidebar.number_input("Weight for Pareto C (and others)", value=0.5)
 
+product_type_scaler = {"Fresh": 1.0, "Frozen": 1.0, "Dry": 1.0}
 if include_multiplier:
     st.sidebar.markdown("#### Product Type Multipliers")
-    fresh_mult = st.sidebar.number_input("Fresh Multiplier", value=1.1)
-    frozen_mult = st.sidebar.number_input("Frozen Multiplier", value=1.05)
-    dry_mult = st.sidebar.number_input("Dry Multiplier", value=1.0)
-    product_type_scaler = {"Fresh": fresh_mult, "Frozen": frozen_mult, "Dry": dry_mult}
-else:
-    product_type_scaler = {"Fresh": 1.0, "Frozen": 1.0, "Dry": 1.0}
+    product_type_scaler["Fresh"] = st.sidebar.number_input("Fresh Multiplier", value=1.1)
+    product_type_scaler["Frozen"] = st.sidebar.number_input("Frozen Multiplier", value=1.05)
+    product_type_scaler["Dry"] = st.sidebar.number_input("Dry Multiplier", value=1.0)
 
 # ---- Merge Reschedule Data ----
 resched_df = resched_df.rename(columns={"wh_id": "location_id"})
@@ -86,7 +73,7 @@ merged = data_df.merge(resched_df, on=["location_id", "product_id"], how="left")
 merged["resched_count"] = merged["resched_count"].fillna(0)
 merged["total_inbound"] = merged["total_inbound"].fillna(1)
 
-# ---- Force numeric types BEFORE computation ----
+# ---- Convert numeric columns safely ----
 for col in ["lead_time", "lead_time_std", "avg_demand", "std_demand", "resched_count", "total_inbound", "doi_policy"]:
     if col in merged.columns:
         merged[col] = pd.to_numeric(merged[col], errors="coerce").fillna(0)
@@ -126,15 +113,39 @@ def compute_doi(row):
         st.warning(f"Error computing DOI for row: {e}")
         return base_doi
 
-# Apply Computation
+# ---- Apply Computation ----
 merged["final_doi"] = merged.apply(compute_doi, axis=1)
+merged["doi_delta"] = merged["final_doi"] - merged["doi_policy"]
+merged["doi_changed"] = merged["doi_delta"].round(2) != 0
 
 # ---- Output Section ----
+st.markdown("<style>div[data-testid='stDataFrame'] table { font-size: 12px !important; }</style>", unsafe_allow_html=True)
 st.subheader("📊 Final DOI Table")
-preview_cols = ["location_id", "product_id", "product_type_name", "pareto", "demand_type", "doi_policy", "final_doi"]
-available_cols = [col for col in preview_cols if col in merged.columns]
-st.dataframe(merged[available_cols], use_container_width=True)
+
+# Toggle options
+highlight_toggle = st.checkbox("Highlight rows with DOI change", value=True)
+filter_toggle = st.checkbox("Only show rows with DOI change", value=False)
+
+preview_cols = ["location_id", "product_id", "product_type_name", "pareto", "demand_type", "doi_policy", "final_doi", "doi_delta"]
+preview_df = merged[preview_cols]
+
+if filter_toggle:
+    preview_df = preview_df[merged["doi_changed"] == True]
+
+# Highlight function
+def highlight_changed_doi(row):
+    if row["doi_delta"] != 0:
+        return ["background-color: #ffe599"] * len(row)
+    else:
+        return [""] * len(row)
+
+if highlight_toggle:
+    styled_df = preview_df.style.apply(highlight_changed_doi, axis=1)
+    st.dataframe(styled_df, use_container_width=True)
+else:
+    st.dataframe(preview_df, use_container_width=True)
 
 st.download_button("📥 Download Refined DOI CSV", merged.to_csv(index=False), file_name="refined_doi_output.csv")
+
 
 
