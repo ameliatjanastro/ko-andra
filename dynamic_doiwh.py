@@ -35,13 +35,20 @@ st.markdown("""
     [data-testid="stSidebar"] > div {
         padding: 0.5rem 0.5rem;
         
-    /* Hide number input steppers */
-    input[type=number]::-webkit-outer-spin-button,
-    input[type=number]::-webkit-inner-spin-button {
+    /* Remove number steppers across browsers */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
         -webkit-appearance: none;
         margin: 0;
     }
     input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    /* Specifically target Streamlit number inputs */
+    div[data-baseweb="input"] input[type="number"] {
+        appearance: textfield;
+        -webkit-appearance: none;
         -moz-appearance: textfield;
     }
     </style>
