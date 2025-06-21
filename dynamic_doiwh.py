@@ -24,7 +24,7 @@ st.markdown("""
     section[data-testid="stSidebar"] h3,
     section[data-testid="stSidebar"] label,
     section[data-testid="stSidebar"] div {
-        font-size: 10px !important;
+        font-size: 12px !important;
     }
     </style>
 """, unsafe_allow_html=True)
