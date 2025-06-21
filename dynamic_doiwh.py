@@ -16,6 +16,19 @@ def load_data():
 
 # ---- App Config and Title ----
 st.set_page_config(page_title="Dynamic DOI Calculator", layout="wide")
+st.markdown("""
+    <style>
+    /* Sidebar headers and labels */
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3,
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] div {
+        font-size: 10px !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 st.markdown("<h1 style='font-size: 22px;'>📦 Dynamic DOI Calculator (GSheet Integrated)</h1>", unsafe_allow_html=True)
 
 # ---- Load Data ----
@@ -29,10 +42,10 @@ resched_df.columns = resched_df.columns.str.strip().str.lower()
 
 # ---- Sidebar: Module Toggle ----
 st.sidebar.header("Select DOI Components to Include")
-include_safety = st.sidebar.checkbox("✔️ Include Safety (Demand Variability)", True)
-include_reschedule = st.sidebar.checkbox("✔️ Include Reschedule Adjustment", True)
-include_pareto = st.sidebar.checkbox("✔️ Include Pareto Buffer", True)
-include_multiplier = st.sidebar.checkbox("✔️ Include Product Type Multiplier", True)
+include_safety = st.sidebar.checkbox("Demand Variability", True)
+include_reschedule = st.sidebar.checkbox("Reschedule Adjustment", True)
+include_pareto = st.sidebar.checkbox("Pareto Buffer", True)
+include_multiplier = st.sidebar.checkbox("Product Type Buffer", True)
 
 # ---- Sidebar: Filter Scope ----
 st.sidebar.header("Apply Logic To")
@@ -118,7 +131,7 @@ merged["final_doi"] = merged.apply(compute_doi, axis=1)
 
 # ---- Output Section ----
 st.markdown("<style>div[data-testid='stDataFrame'] table { font-size: 12px !important; }</style>", unsafe_allow_html=True)
-st.subheader("📊 Final DOI Table")
+st.markdown("<h3 style='font-size:16px;'>📊 Final DOI Table</h3>", unsafe_allow_html=True)
 
 highlight_toggle = st.checkbox("Highlight rows with DOI change", value=True)
 
