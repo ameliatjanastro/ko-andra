@@ -23,7 +23,15 @@ st.markdown("""
     [data-testid="stSidebar"] {
         width: 280px !important;
         min-width: 280px !important;
-        max-width: 300px !important;
+        max-width: 280px !important;
+    }
+
+     }
+    [data-testid="stSidebar"] * {
+        font-size: 13px !important;
+    }
+    [data-testid="stSidebar"] > div {
+        padding: 0.5rem 0.5rem;
     }
 
     </style>
@@ -53,27 +61,33 @@ selected_pareto = st.sidebar.multiselect("Pareto Classes", ["X", "A", "B", "C", 
 selected_demand = st.sidebar.multiselect("Demand Types", ["Stable", "Volatile", "Moderate"], default=["Volatile"])
 selected_product_types = st.sidebar.multiselect("Product Types", ["Fresh", "Frozen", "Dry"], default=["Fresh", "Frozen", "Dry"])
 
-# ---- Sidebar: Parameters ----
-st.sidebar.header("Model Parameters")
-Z = st.sidebar.number_input("Z-Score (for service level)", value=1.65, step=0.05)
-ks = st.sidebar.number_input("ks - Demand Variability Scaling Factor", value=0.5, step=0.1) if include_safety else 0
-kr = st.sidebar.number_input("kr - Reschedule Scaling Factor", value=0.5, step=0.1) if include_reschedule else 0
-kp = st.sidebar.number_input("kp - Pareto Scaling Factor", value=0.5, step=0.1) if include_pareto else 0
+# Move these outside the sidebar
+with st.expander("🔧 Adjust Model Parameters", expanded=False):
+    Z = float(st.text_input("Z-Score (for service level)", "1.65"))
+    ks = float(st.text_input("ks - Demand Variability Scaling Factor", "0.5")) if include_safety else 0
+    kr = float(st.text_input("kr - Reschedule Scaling Factor", "0.5")) if include_reschedule else 0
+    kp = float(st.text_input("kp - Pareto Scaling Factor", "0.5")) if include_pareto else 0
 
-pareto_weight = {"X": 0, "A": 0, "B": 0, "C": 0}
-if include_pareto:
-    st.sidebar.markdown("#### Pareto Weights")
-    pareto_weight["X"] = st.sidebar.number_input("Weight for Pareto X", value=1.0)
-    pareto_weight["A"] = st.sidebar.number_input("Weight for Pareto A", value=1.0)
-    pareto_weight["B"] = st.sidebar.number_input("Weight for Pareto B", value=0.75)
-    pareto_weight["C"] = st.sidebar.number_input("Weight for Pareto C (and others)", value=0.5)
+    if include_pareto:
+        st.markdown("##### Pareto Weights")
+        pareto_weight = {
+            "X": float(st.text_input("Weight for Pareto X", "1.0")),
+            "A": float(st.text_input("Weight for Pareto A", "1.0")),
+            "B": float(st.text_input("Weight for Pareto B", "0.75")),
+            "C": float(st.text_input("Weight for Pareto C (and others)", "0.5"))
+        }
+    else:
+        pareto_weight = {"X": 0, "A": 0, "B": 0, "C": 0}
 
-product_type_scaler = {"Fresh": 1.0, "Frozen": 1.0, "Dry": 1.0}
-if include_multiplier:
-    st.sidebar.markdown("#### Product Type Multipliers")
-    product_type_scaler["Fresh"] = st.sidebar.number_input("Fresh Multiplier", value=1.1)
-    product_type_scaler["Frozen"] = st.sidebar.number_input("Frozen Multiplier", value=1.05)
-    product_type_scaler["Dry"] = st.sidebar.number_input("Dry Multiplier", value=1.0)
+    if include_multiplier:
+        st.markdown("##### Product Type Multipliers")
+        product_type_scaler = {
+            "Fresh": float(st.text_input("Fresh Multiplier", "1.1")),
+            "Frozen": float(st.text_input("Frozen Multiplier", "1.05")),
+            "Dry": float(st.text_input("Dry Multiplier", "1.0"))
+        }
+    else:
+        product_type_scaler = {"Fresh": 1.0, "Frozen": 1.0, "Dry": 1.0}
 
 # ---- Merge Reschedule Data ----
 resched_df = resched_df.rename(columns={"wh_id": "location_id"})
