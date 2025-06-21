@@ -31,9 +31,11 @@ st.markdown("""
 
 st.markdown("""
     <style>
-    /* Scale down everything inside the expander */
-    details[open] {
-        transform: scale(0.92);
+    /* Target column blocks only inside open expanders */
+    details[open] > div > div:nth-of-type(1),
+    details[open] > div > div:nth-of-type(2),
+    details[open] > div > div:nth-of-type(3) {
+        transform: scale(0.9);
         transform-origin: top left;
     label {
         font-size: 12.5px !important;
@@ -79,7 +81,7 @@ with st.expander("⚙️ Adjust Model Parameters", expanded=False):
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        Z = st.number_input("Z-Score", value=1.65, step=0.05, label_visibility="visible")
+        Z = st.number_input("**Z-Score**", value=1.65, step=0.05, label_visibility="visible")
     with col2:
         ks = st.number_input("ks (Demand Var)", value=0.5, step=0.1, label_visibility="visible") if include_safety else 0
     with col3:
