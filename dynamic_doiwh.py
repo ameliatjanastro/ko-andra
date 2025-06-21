@@ -21,12 +21,29 @@ st.markdown("""
     <style>
     /* Shrink sidebar width */
     [data-testid="stSidebar"] * {
-        font-size: 11px !important;
+        font-size: 12px !important;
     }
     [data-testid="stSidebar"] > div {
         padding: 0.5rem 0.5rem;
+        
+   /* Smaller font inside expander */
+    details > summary {
+        font-size: 14px;
+        font-weight: bold;
     }
 
+    /* Inside the expanded content */
+    details[open] * {
+        font-size: 13px !important;
+    }
+
+    /* Subheaders inside expander */
+    .expander-content h5, .expander-content h4 {
+        font-weight: bold !important;
+        font-size: 13px !important;
+        margin-top: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
     </style>
 """, unsafe_allow_html=True)
 
