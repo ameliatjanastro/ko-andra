@@ -57,8 +57,12 @@ pareto_weight = {"X": 0, "A": 0, "B": 0, "C": 0}
 product_type_scaler = {"Fresh": 1.0, "Frozen": 1.0, "Dry": 1.0}
 
 # Move these outside the sidebar
-with st.expander("Adjust Model Parameters", expanded=False):
-    # Z + ks
+pareto_weight = {"X": 0, "A": 0, "B": 0, "C": 0}
+product_type_scaler = {"Fresh": 1.0, "Frozen": 1.0, "Dry": 1.0}
+
+with st.expander("⚙️ Adjust Model Parameters", expanded=False):
+    st.markdown("**Main Parameters**", help=None)
+
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         Z = st.number_input("Z-Score", value=1.65, step=0.05, label_visibility="visible")
@@ -70,7 +74,7 @@ with st.expander("Adjust Model Parameters", expanded=False):
         kp = st.number_input("kp (Pareto)", value=0.5, step=0.1, label_visibility="visible") if include_pareto else 0
 
     if include_pareto:
-        st.markdown("<h5 class='expander-content'>Pareto Weights</h5>")
+        st.markdown("**Pareto Weights**")
         w1, w2, w3, w4 = st.columns(4)
         with w1:
             pareto_weight["X"] = st.number_input("X", value=1.0, step=0.1, label_visibility="visible")
@@ -84,7 +88,7 @@ with st.expander("Adjust Model Parameters", expanded=False):
         pareto_weight = {"X": 0, "A": 0, "B": 0, "C": 0}
 
     if include_multiplier:
-        st.markdown("<h5 class='expander-content'>Product Type Multipliers</h5>")
+        st.markdown("**Product Type Multipliers**")
         m1, m2, m3 = st.columns(3)
         with m1:
             product_type_scaler["Fresh"] = st.number_input("Fresh", value=1.1, step=0.05, label_visibility="visible")
@@ -94,6 +98,7 @@ with st.expander("Adjust Model Parameters", expanded=False):
             product_type_scaler["Dry"] = st.number_input("Dry", value=1.0, step=0.05, label_visibility="visible")
     else:
         product_type_scaler = {"Fresh": 1.0, "Frozen": 1.0, "Dry": 1.0}
+
 
 # ---- Merge Reschedule Data ----
 resched_df = resched_df.rename(columns={"wh_id": "location_id"})
