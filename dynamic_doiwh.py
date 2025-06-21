@@ -35,7 +35,7 @@ st.markdown("""
     details[open] > div > div:nth-of-type(1),
     details[open] > div > div:nth-of-type(2),
     details[open] > div > div:nth-of-type(3) {
-        transform: scale(0.9);
+        transform: scale(0.85);
         transform-origin: top left;
     label {
         font-size: 12.5px !important;
@@ -83,11 +83,11 @@ with st.expander("⚙️ Adjust Model Parameters", expanded=False):
     with col1:
         Z = st.number_input("**Z-Score**", value=1.65, step=0.05, label_visibility="visible")
     with col2:
-        ks = st.number_input("ks (Demand Var)", value=0.5, step=0.1, label_visibility="visible") if include_safety else 0
+        ks = st.number_input("**ks (Demand Var)**", value=0.5, step=0.1, label_visibility="visible") if include_safety else 0
     with col3:
-        kr = st.number_input("kr (Resched)", value=0.5, step=0.1, label_visibility="visible") if include_reschedule else 0
+        kr = st.number_input("**kr (Resched)**", value=0.5, step=0.1, label_visibility="visible") if include_reschedule else 0
     with col4:
-        kp = st.number_input("kp (Pareto)", value=0.5, step=0.1, label_visibility="visible") if include_pareto else 0
+        kp = st.number_input("**kp (Pareto)**", value=0.5, step=0.1, label_visibility="visible") if include_pareto else 0
 
     if include_pareto:
         st.markdown("**Pareto Weights**")
@@ -99,7 +99,7 @@ with st.expander("⚙️ Adjust Model Parameters", expanded=False):
         with w3:
             pareto_weight["B"] = st.number_input("B", value=0.75, step=0.1, label_visibility="visible")
         with w4:
-            pareto_weight["C"] = st.number_input("C", value=0.5, step=0.1, label_visibility="visible")
+            pareto_weight["C and Others"] = st.number_input("C", value=0.5, step=0.1, label_visibility="visible")
     else:
         pareto_weight = {"X": 0, "A": 0, "B": 0, "C": 0}
 
