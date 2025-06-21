@@ -115,35 +115,27 @@ def compute_doi(row):
 
 # ---- Apply Computation ----
 merged["final_doi"] = merged.apply(compute_doi, axis=1)
-merged["doi_delta"] = merged["final_doi"] - merged["doi_policy"]
-merged["doi_changed"] = merged["doi_delta"].round(2) != 0
 
 # ---- Output Section ----
 st.markdown("<style>div[data-testid='stDataFrame'] table { font-size: 12px !important; }</style>", unsafe_allow_html=True)
 st.subheader("📊 Final DOI Table")
 
-# Toggle options
 highlight_toggle = st.checkbox("Highlight rows with DOI change", value=True)
-filter_toggle = st.checkbox("Only show rows with DOI change", value=False)
 
-preview_cols = ["location_id", "product_id", "product_type_name", "pareto", "demand_type", "doi_policy", "final_doi", "doi_delta"]
-preview_df = merged[preview_cols]
+preview_cols = ["location_id", "product_id", "product_type_name", "pareto", "demand_type", "doi_policy", "final_doi"]
+preview_df = merged[preview_cols].fillna("-")
 
-if filter_toggle:
-    preview_df = preview_df[merged["doi_changed"] == True]
-
-# Highlight function
 def highlight_changed_doi(row):
-    if row["doi_delta"] != 0:
-        return ["background-color: #ffe599"] * len(row)
-    else:
-        return [""] * len(row)
+    return ["background-color: #ffe599"] * len(row) if row["final_doi"] != round(row["doi_policy"], 2) else [""] * len(row)
 
 if highlight_toggle:
     styled_df = preview_df.style.apply(highlight_changed_doi, axis=1)
     st.dataframe(styled_df, use_container_width=True)
 else:
     st.dataframe(preview_df, use_container_width=True)
+
+st.download_button("📥 Download Refined DOI CSV", merged.to_csv(index=False), file_name="refined_doi_output.csv")
+
 
 st.download_button("📥 Download Refined DOI CSV", merged.to_csv(index=False), file_name="refined_doi_output.csv")
 
