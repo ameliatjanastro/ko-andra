@@ -31,29 +31,6 @@ st.markdown("""
 
 st.markdown("""
     <style>
-    /* 1. Style input text and placeholder */
-    input[type="number"] {
-        font-size: 13px !important;
-        font-weight: 500 !important;
-        padding: 4px 6px !important;
-        height: 32px !important;
-    }
-    input[type="number"]::placeholder {
-        color: #999 !important;
-        font-style: italic;
-    }
-
-    /* 2. Hide + / - steppers */
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-    input[type="number"] {
-        -moz-appearance: textfield;
-    }
-
-    /* 3. Style the labels above number inputs */
     label {
         font-size: 12.5px !important;
         font-weight: 600 !important;
