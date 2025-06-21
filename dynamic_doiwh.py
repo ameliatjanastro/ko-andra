@@ -20,15 +20,8 @@ st.set_page_config(page_title="Dynamic DOI Calculator")
 st.markdown("""
     <style>
     /* Shrink sidebar width */
-    [data-testid="stSidebar"] {
-        width: 280px !important;
-        min-width: 280px !important;
-        max-width: 280px !important;
-    }
-
-     }
     [data-testid="stSidebar"] * {
-        font-size: 12px !important;
+        font-size: 11px !important;
     }
     [data-testid="stSidebar"] > div {
         padding: 0.5rem 0.5rem;
@@ -60,6 +53,9 @@ st.sidebar.header("Apply Logic To")
 selected_pareto = st.sidebar.multiselect("Pareto Classes", ["X", "A", "B", "C", "D"], default=["X", "A"])
 selected_demand = st.sidebar.multiselect("Demand Types", ["Stable", "Volatile", "Moderate"], default=["Volatile"])
 selected_product_types = st.sidebar.multiselect("Product Types", ["Fresh", "Frozen", "Dry"], default=["Fresh", "Frozen", "Dry"])
+
+pareto_weight = {"X": 0, "A": 0, "B": 0, "C": 0}
+product_type_scaler = {"Fresh": 1.0, "Frozen": 1.0, "Dry": 1.0}
 
 # Move these outside the sidebar
 with st.expander("🔧 Adjust Model Parameters", expanded=False):
