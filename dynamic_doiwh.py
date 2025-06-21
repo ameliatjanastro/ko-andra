@@ -19,6 +19,14 @@ st.set_page_config(page_title="Dynamic DOI Calculator")
 
 st.markdown("""
     <style>
+    /* 1. Disable scrolling in the sidebar */
+    [data-testid="stSidebar"] {
+        overflow: hidden !important;
+    }
+    /* 2. Reduce top padding in sidebar content */
+    [data-testid="stSidebar"] > div:first-child {
+        padding-top: 0.5rem !important;
+    }
     /* Shrink sidebar width */
     [data-testid="stSidebar"] * {
         font-size: 13px !important;
