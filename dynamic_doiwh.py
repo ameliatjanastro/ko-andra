@@ -31,6 +31,10 @@ st.markdown("""
 
 st.markdown("""
     <style>
+    /* Scale down everything inside the expander */
+    details[open] {
+        transform: scale(0.92);
+        transform-origin: top left;
     label {
         font-size: 12.5px !important;
         font-weight: 600 !important;
