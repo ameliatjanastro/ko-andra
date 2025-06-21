@@ -70,7 +70,7 @@ with st.expander("Adjust Model Parameters", expanded=False):
         kp = st.number_input("kp (Pareto)", value=0.5, step=0.1, label_visibility="visible") if include_pareto else 0
 
     if include_pareto:
-        st.markdown("<h5 class='expander-content'>##### Pareto Weights</h5>")
+        st.markdown("<h5 class='expander-content'>Pareto Weights</h5>")
         w1, w2, w3, w4 = st.columns(4)
         with w1:
             pareto_weight["X"] = st.number_input("X", value=1.0, step=0.1, label_visibility="visible")
@@ -84,7 +84,7 @@ with st.expander("Adjust Model Parameters", expanded=False):
         pareto_weight = {"X": 0, "A": 0, "B": 0, "C": 0}
 
     if include_multiplier:
-        st.markdown("<h5 class='expander-content'>##### Product Type Multipliers</h5>")
+        st.markdown("<h5 class='expander-content'>Product Type Multipliers</h5>")
         m1, m2, m3 = st.columns(3)
         with m1:
             product_type_scaler["Fresh"] = st.number_input("Fresh", value=1.1, step=0.05, label_visibility="visible")
