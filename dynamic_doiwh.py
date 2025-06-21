@@ -19,15 +19,21 @@ st.set_page_config(page_title="Dynamic DOI Calculator")
 
 st.markdown("""
     <style>
-    /* Shrink and reposition the sidebar */
+    /* Shrink sidebar width */
     [data-testid="stSidebar"] {
-        transform: scale(0.9) translateY(+55px);
-        transform-origin: top left;
+        width: 230px !important;
+        min-width: 230px !important;
+        max-width: 230px !important;
     }
 
-    /* Adjust sidebar content to fit scaled width */
+    /* Consistent smaller font size inside the sidebar */
+    [data-testid="stSidebar"] * {
+        font-size: 13px !important;
+    }
+
+    /* Tweak internal padding */
     [data-testid="stSidebar"] > div {
-        padding-right: 5px;
+        padding: 0.5rem 0.5rem;
     }
     </style>
 """, unsafe_allow_html=True)
