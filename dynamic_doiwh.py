@@ -222,7 +222,7 @@ if show_changed_only:
 
 st.dataframe(preview_df, use_container_width=True)
 
-st.download_button("📥 Download Refined DOI CSV", merged.to_csv(index=False), file_name="refined_doi_output.csv")
+st.download_button("📥 Download Refined DOI CSV", preview_df.to_csv(index=False), file_name="refined_doi_output.csv")
 
 
 
