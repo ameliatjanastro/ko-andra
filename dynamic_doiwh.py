@@ -182,6 +182,8 @@ def compute_doi(row):
         multiplier = product_type_scaler.get(product_type, 1.0)
 
         return round(0.7 * (base_doi + safety + resched + pareto_val) * multiplier, 2)
+        if row["xdock"] = "TRUE"
+            return 0
     except Exception as e:
         st.warning(f"Error computing DOI for row: {e}")
         return base_doi
