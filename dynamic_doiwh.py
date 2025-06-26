@@ -217,7 +217,10 @@ preview_df["final_doi"] = preview_df["final_doi"].round(2)
 preview_df["doi_policy"] = preview_df["doi_policy"].round(2)
 
 if show_changed_only:
-    preview_df = preview_df[merged["final_doi"] != merged["doi_policy"]]
+    preview_df = preview_df[
+        (merged["final_doi"] != merged["doi_policy"]) &
+        (~merged["xdock"].astype(str).str.upper().eq("TRUE"))
+    ]
 
 
 st.dataframe(preview_df, use_container_width=True)
