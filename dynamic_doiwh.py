@@ -227,7 +227,7 @@ if not include_xdock:
     filtered_df = filtered_df[~merged["xdock"].astype(str).str.upper().eq("TRUE")]
 
 
-st.dataframe(preview_df, use_container_width=True)
+st.dataframe(filtered_df, use_container_width=True)
 
 st.download_button("📥 Download Refined DOI CSV", preview_df.to_csv(index=False), file_name="refined_doi_output.csv")
 
