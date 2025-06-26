@@ -205,6 +205,8 @@ merged["doi_policy"] = merged["doi_policy"].round(2)
 merged["final_doi"] = merged["final_doi"].round(2)
 
 show_changed_only = st.sidebar.checkbox("Show only rows with changed DOI", value=False)
+include_xdock = st.sidebar.checkbox("Include xdock items", value=False)
+
 
 # ---- Output Section ----
 st.markdown("<style>div[data-testid='stDataFrame'] table { font-size: 12px !important; }</style>", unsafe_allow_html=True)
@@ -216,16 +218,18 @@ preview_df = merged[preview_cols].fillna("-")
 preview_df["final_doi"] = preview_df["final_doi"].round(2)
 preview_df["doi_policy"] = preview_df["doi_policy"].round(2)
 
+filtered_df = preview_df.copy()
+
 if show_changed_only:
-    preview_df = preview_df[
-        (merged["final_doi"] != merged["doi_policy"]) &
-        (~merged["xdock"].astype(str).str.upper().eq("TRUE"))
-    ]
+    filtered_df = filtered_df[merged["final_doi"] != merged["doi_policy"]]
+
+if not include_xdock:
+    filtered_df = filtered_df[~merged["xdock"].astype(str).str.upper().eq("TRUE")]
 
 
 st.dataframe(preview_df, use_container_width=True)
 
-st.download_button("📥 Download Refined DOI CSV", preview_df.to_csv(index=False), file_name="refined_doi_output.csv")
+st.download_button("📥 Download Refined DOI CSV", filtered_df.to_csv(index=False), file_name="refined_doi_output.csv")
 
 
 
