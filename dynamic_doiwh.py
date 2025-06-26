@@ -160,10 +160,6 @@ def compute_doi(row):
         demand_type = row.get("demand_type", "")
         product_type = row.get("product_type_name", "")
 
-        # Early return for xdock
-        if str(row.get("xdock", "")).strip().upper() == "TRUE":
-            return 0
-
         apply_logic = (
             cleaned_pareto in selected_pareto and
             demand_type in selected_demand and
@@ -171,29 +167,35 @@ def compute_doi(row):
         )
 
         if not apply_logic:
-            return round(base_doi, 2)
+            final_doi = base_doi
+        else:
+            std_d_ratio = row["std_demand"] / row["avg_demand"] if row["avg_demand"] != 0 else 0
 
-        std_d_ratio = row["std_demand"] / row["avg_demand"] if row["avg_demand"] != 0 else 0
+            safety = (
+                Z * np.sqrt((row["lead_time_std"] ** 2) + (row["lead_time"] ** 2) * (std_d_ratio ** 2)) * ks
+                if include_safety else 0
+            )
 
-        safety = (
-            Z * np.sqrt((row["lead_time_std"] ** 2) + (row["lead_time"] ** 2) * (std_d_ratio ** 2)) * ks
-            if include_safety else 0
-        )
+            resched = (
+                kr * row["lead_time"] * (row["resched_count"] / row["total_inbound"])
+                if include_reschedule else 0
+            )
 
-        resched = (
-            kr * row["lead_time"] * (row["resched_count"] / row["total_inbound"])
-            if include_reschedule else 0
-        )
+            pareto_val = kp * pareto_weight.get(cleaned_pareto, 0)
+            multiplier = product_type_scaler.get(product_type, 1.0)
 
-        pareto_val = kp * pareto_weight.get(cleaned_pareto, 0)
-        multiplier = product_type_scaler.get(product_type, 1.0)
+            final_doi = 0.7 * (base_doi + safety + resched + pareto_val) * multiplier
 
-        final_doi = 0.7 * (base_doi + safety + resched + pareto_val) * multiplier
+        # If xdock = TRUE, override final DOI
+        if str(row.get("xdock", "")).strip().upper() == "TRUE":
+            final_doi = 0
+
         return round(final_doi, 2)
 
     except Exception as e:
         print(f"Error computing DOI for row: {e}")
         return None
+
 
 
 # ---- Apply Computation ----
