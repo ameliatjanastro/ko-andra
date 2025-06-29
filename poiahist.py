@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Sales Scenario Histogram", layout="wide")
-st.title("📊 SKU Sales Scenario Histogram (Pre-order Planning)")
+st.set_page_config(page_title="POIA Avg Sales Histogram")
+st.title("📊 POIA Avg Sales Histogram")
 
 uploaded_file = st.file_uploader("Upload your Excel or CSV file", type=["csv", "xlsx"])
 
@@ -23,8 +23,8 @@ if uploaded_file:
     col_conservative = "Option 2 - Conservatives"
 
     # Preview
-    st.subheader("📋 Data Preview")
-    st.dataframe(df.head())
+    #st.subheader("📋 Data Preview")
+    #st.dataframe(df.head())
 
     # Optional filters
     if "L1" in df.columns and "product_type_name" in df.columns:
@@ -44,11 +44,16 @@ if uploaded_file:
     df[col_conservative] = pd.to_numeric(df[col_conservative], errors="coerce")
     df = df.dropna(subset=[col_aggressive, col_moderate, col_conservative], how='all')
 
-    # Bin setup
     st.subheader("🎯 Configure Histogram Bins")
-    bin_start = st.number_input("Bin Start", value=0)
-    bin_end = st.number_input("Bin End", value=100)
-    bin_step = st.number_input("Bin Step", value=10)
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        bin_start = st.number_input("Bin Start", value=0)
+    with col2:
+        bin_end = st.number_input("Bin End", value=100)
+    with col3:
+        bin_step = st.number_input("Bin Step", value=10)
+    
     bins = np.arange(bin_start, bin_end + bin_step, bin_step)
 
     chart_type = st.radio(
