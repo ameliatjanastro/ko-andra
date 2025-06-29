@@ -34,6 +34,14 @@ if uploaded_file:
         df["L1"].isin(selected_l1) & df["product_type_name"].isin(selected_type)
     ]
 
+    # Convert scenario columns to numeric (safe parsing)
+    df[col_aggressive] = pd.to_numeric(df[col_aggressive], errors="coerce")
+    df[col_moderate] = pd.to_numeric(df[col_moderate], errors="coerce")
+    df[col_conservative] = pd.to_numeric(df[col_conservative], errors="coerce")
+    
+    # Drop rows where all 3 are NaN
+    df = df.dropna(subset=[col_aggressive, col_moderate, col_conservative], how='all')
+
     # Binning logic
     bin_edges = st.slider("Select Bin Edges", 0, 200, (0, 100), step=10)
     bins = np.arange(bin_edges[0], bin_edges[1] + 10, 10)
