@@ -2,3 +2,4 @@ plotly
 numpy
 pandas
 openpyxl
+matplotlib
