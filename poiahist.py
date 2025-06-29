@@ -51,19 +51,41 @@ if uploaded_file:
     bin_step = st.number_input("Bin Step", value=10)
     bins = np.arange(bin_start, bin_end + bin_step, bin_step)
 
+    chart_type = st.radio(
+    "Choose chart style:",
+    ["Overlayed Histogram", "Grouped Bar Chart"],
+    index=0,
+    horizontal=True
+    )
+
     st.subheader("📈 Histogram Comparison")
     fig, ax = plt.subplots(figsize=(12, 5))
 
-    ax.hist(df[col_aggressive], bins=bins, alpha=0.6, label="Aggressive", color="orange")
-    ax.hist(df[col_moderate], bins=bins, alpha=0.6, label="Moderate", color="blue")
-    ax.hist(df[col_conservative], bins=bins, alpha=0.6, label="Conservative", color="green")
-
+    if chart_type == "Overlayed Histogram":
+        # Transparent histograms
+        ax.hist(df[col_aggressive], bins=bins, alpha=0.3, label="Aggressive", color="orange")
+        ax.hist(df[col_moderate], bins=bins, alpha=0.3, label="Moderate", color="blue")
+        ax.hist(df[col_conservative], bins=bins, alpha=0.3, label="Conservative", color="green")
+    else:
+        # Calculate histogram frequencies
+        aggr_hist, _ = np.histogram(df[col_aggressive], bins=bins)
+        mod_hist, _ = np.histogram(df[col_moderate], bins=bins)
+        cons_hist, _ = np.histogram(df[col_conservative], bins=bins)
+    
+        bin_centers = (bins[:-1] + bins[1:]) / 2
+        width = (bins[1] - bins[0]) / 4
+    
+        ax.bar(bin_centers - width, aggr_hist, width=width, label="Aggressive", color="orange")
+        ax.bar(bin_centers,         mod_hist, width=width, label="Moderate", color="blue")
+        ax.bar(bin_centers + width, cons_hist, width=width, label="Conservative", color="green")
+    
+    # Common chart formatting
     ax.set_xlabel("Average Sales")
     ax.set_ylabel("SKU Count")
     ax.set_title("SKU Distribution by Sales Scenario")
     ax.legend()
     ax.grid(True)
-
+    
     st.pyplot(fig)
 
 else:
