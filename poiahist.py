@@ -65,7 +65,7 @@ if uploaded_file:
         # Transparent histograms
         ax.hist(df[col_aggressive], bins=bins, alpha=0.6, label="Aggressive", color="red")
         ax.hist(df[col_moderate], bins=bins, alpha=0.6, label="Moderate", color="yellow")
-        ax.hist(df[col_conservative], bins=bins, alpha=0.6, label="Conservative", color="green")
+        ax.hist(df[col_conservative], bins=bins, alpha=0.6, label="Conservative", color="blue")
     else:
         # Calculate histogram frequencies
         aggr_hist, _ = np.histogram(df[col_aggressive], bins=bins)
@@ -75,9 +75,9 @@ if uploaded_file:
         bin_centers = (bins[:-1] + bins[1:]) / 2
         width = (bins[1] - bins[0]) / 4
     
-        ax.bar(bin_centers - width, aggr_hist, width=width, label="Aggressive", color="orange")
-        ax.bar(bin_centers,         mod_hist, width=width, label="Moderate", color="blue")
-        ax.bar(bin_centers + width, cons_hist, width=width, label="Conservative", color="green")
+        ax.bar(bin_centers - width, aggr_hist, width=width, label="Aggressive", color="red")
+        ax.bar(bin_centers,         mod_hist, width=width, label="Moderate", color="yellow")
+        ax.bar(bin_centers + width, cons_hist, width=width, label="Conservative", color="blue")
     
     # Common chart formatting
     ax.set_xlabel("Average Sales")
