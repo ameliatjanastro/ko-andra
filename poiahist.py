@@ -52,7 +52,7 @@ if uploaded_file:
     with col2:
         bin_end = st.number_input("Bin End", value=100)
     with col3:
-        bin_step = st.number_input("Bin Step", value=10)
+        bin_step = st.number_input("Bin Step", value=10, step =10 )
     
     bins = np.arange(bin_start, bin_end + bin_step, bin_step)
 
