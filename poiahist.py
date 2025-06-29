@@ -63,9 +63,9 @@ if uploaded_file:
 
     if chart_type == "Overlayed Histogram":
         # Transparent histograms
-        ax.hist(df[col_aggressive], bins=bins, alpha=0.3, label="Aggressive", color="orange")
-        ax.hist(df[col_moderate], bins=bins, alpha=0.3, label="Moderate", color="blue")
-        ax.hist(df[col_conservative], bins=bins, alpha=0.3, label="Conservative", color="green")
+        ax.hist(df[col_aggressive], bins=bins, alpha=0.6, label="Aggressive", color="red")
+        ax.hist(df[col_moderate], bins=bins, alpha=0.6, label="Moderate", color="yellow")
+        ax.hist(df[col_conservative], bins=bins, alpha=0.6, label="Conservative", color="green")
     else:
         # Calculate histogram frequencies
         aggr_hist, _ = np.histogram(df[col_aggressive], bins=bins)
