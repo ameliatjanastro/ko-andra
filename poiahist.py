@@ -4,6 +4,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="POIA Avg Sales Histogram")
+
+st.markdown(
+    """
+    <style>
+        body {
+            zoom: 80%;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 st.title("📊 POIA Avg Sales Histogram")
 
 uploaded_file = st.file_uploader("Upload your Excel or CSV file", type=["csv", "xlsx"])
@@ -48,9 +59,9 @@ if uploaded_file:
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        bin_start = st.number_input("Bin Start", value=0)
+        bin_start = st.number_input("Bin Start", value=0, step =10 )
     with col2:
-        bin_end = st.number_input("Bin End", value=100)
+        bin_end = st.number_input("Bin End", value=100, step =10 )
     with col3:
         bin_step = st.number_input("Bin Step", value=10, step =10 )
     
