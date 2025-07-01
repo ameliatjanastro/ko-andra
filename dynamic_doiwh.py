@@ -102,14 +102,14 @@ with st.expander("⚙️ Adjust Model Parameters", expanded=False):
     "- Pareto **X** and **A** → **95% service level** (Z = 1.65)\n"
     "- Pareto **B** and below → **90% service level** (Z = 1.5)"
     )
-    col1, col2, col3, col4 = st.columns(4)
-    with col1: 
-        Z = st.number_input("**Z-Score**", value=1.65, step=0.05, label_visibility="visible")
-    with col2:
+    col1, col2, col3 = st.columns(3)
+    #with col1: 
+        #Z = st.number_input("**Z-Score**", value=1.65, step=0.05, label_visibility="visible")
+    with col1:
         ks = st.number_input("**ks (Demand Var)**", value=0.5, step=0.1, label_visibility="visible") if include_safety else 0
-    with col3:
+    with col2:
         kr = st.number_input("**kr (Resched)**", value=0.5, step=0.1, label_visibility="visible") if include_reschedule else 0
-    with col4:
+    with col3:
         kp = st.number_input("**kp (Pareto)**", value=0.5, step=0.1, label_visibility="visible") if include_pareto else 0
 
     if include_pareto:
@@ -176,7 +176,7 @@ def compute_doi(row):
         else:
             
             std_d_ratio = row["std_demand"] / row["avg_demand"] if row["avg_demand"] != 0 else 0
-            #Z = 1.65 if cleaned_pareto in ["X", "A"] else 1.5
+            Z = 1.65 if cleaned_pareto in ["X", "A"] else 1.5
             
             safety = (
                 Z * np.sqrt((row["lead_time_std"] ** 2) + (row["lead_time"] ** 2) * (std_d_ratio ** 2)) * ks
