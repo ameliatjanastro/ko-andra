@@ -226,12 +226,17 @@ preview_df["final_doi"] = preview_df["final_doi"].round(2)
 preview_df["doi_policy"] = preview_df["doi_policy"].round(2)
 
 filtered_df = preview_df.copy()
+initial_rows = len(filtered_df)
 
 if show_changed_only:
-    filtered_df = filtered_df[merged["final_doi"] != merged["doi_policy"]]
+    changed_mask = merged["final_doi"] != merged["doi_policy"]
+    filtered_df = filtered_df[changed_mask]
+    st.write(f"Rows after applying 'changed only' filter: {len(filtered_df)} of {initial_rows}")
 
 if not include_xdock:
-    filtered_df = filtered_df[~merged["xdock"].astype(str).str.upper().eq("TRUE")]
+    non_xdock_mask = ~merged["xdock"].astype(str).str.upper().eq("TRUE")
+    filtered_df = filtered_df[non_xdock_mask]
+    st.write(f"Rows after excluding xdock: {len(filtered_df)}")
 
 
 st.dataframe(filtered_df, use_container_width=True)
