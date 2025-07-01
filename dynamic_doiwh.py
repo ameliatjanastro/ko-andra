@@ -164,16 +164,6 @@ def compute_doi(row):
         demand_type = row.get("demand_type", "")
         product_type = row.get("product_type_name", "")
 
-        triggered_count = sum(
-            (str(r.get("pareto", "")).strip() if str(r.get("pareto", "")).strip() in ["X", "A", "B"] else "C") in selected_pareto
-            and r.get("demand_type", "") in selected_demand
-            and r.get("product_type_name", "") in selected_product_types
-            for _, r in data_df.iterrows()
-        )
-        st.write(f"Rows triggering DOI formula: {triggered_count} / {len(data_df)}")
-
-        
-
         apply_logic = (
             cleaned_pareto in selected_pareto and
             demand_type in selected_demand and
