@@ -75,9 +75,9 @@ try:
     def adjust_forecast(row):
         if row['location id'] in [40, 772]:
             if row['location id'] == 772:
-                return row['forecast_daily'] * 1
-            elif row['location id'] == 40:
                 return row['forecast_daily'] * 0.6
+            elif row['location id'] == 40:
+                return row['forecast_daily'] * 0.4
         elif row['location id'] in [160, 796]:
             return row['forecast_daily'] * 0.5
         elif row['location id'] == 661:
