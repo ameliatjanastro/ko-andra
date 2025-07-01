@@ -163,7 +163,7 @@ def compute_doi(row):
         cleaned_pareto = pareto if pareto in ["X", "A", "B"] else "C"
         demand_type = row.get("demand_type", "")
         product_type = row.get("product_type_name", "")
-        Z = 1.65 if cleaned_pareto in ["X", "A"] else 1.5
+        
 
         apply_logic = (
             cleaned_pareto in selected_pareto and
@@ -176,7 +176,8 @@ def compute_doi(row):
         else:
             
             std_d_ratio = row["std_demand"] / row["avg_demand"] if row["avg_demand"] != 0 else 0
-
+            Z = 1.65 if cleaned_pareto in ["X", "A"] else 1.5
+            
             safety = (
                 Z * np.sqrt((row["lead_time_std"] ** 2) + (row["lead_time"] ** 2) * (std_d_ratio ** 2)) * ks
                 if include_safety else 0
