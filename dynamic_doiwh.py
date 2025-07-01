@@ -102,7 +102,7 @@ with st.expander("⚙️ Adjust Model Parameters", expanded=False):
     "- Pareto **X** and **A** → **95% service level** (Z = 1.65)\n"
     "- Pareto **B** and below → **90% service level** (Z = 1.5)"
     )
-    col1, col2, col3, col4 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     with col1: 
         Z = st.number_input("**Z-Score**", value=1.65, step=0.05, label_visibility="visible")
     with col2:
