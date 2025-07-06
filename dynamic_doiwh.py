@@ -193,8 +193,8 @@ def compute_doi(row):
             final_doi = 0.7 * (base_doi + safety + resched + pareto_val) * multiplier
 
         # If xdock = TRUE, override final DOI
-        if str(row.get("xdock", "")).strip().upper() == "TRUE":
-            final_doi = 0
+        #if str(row.get("xdock", "")).strip().upper() == "TRUE":
+            #final_doi = 0
 
         return round(final_doi, 2)
 
@@ -211,7 +211,7 @@ merged["doi_policy"] = merged["doi_policy"].round(2)
 merged["final_doi"] = merged["final_doi"].round(2)
 
 show_changed_only = st.sidebar.checkbox("Show only rows with changed DOI", value=False)
-include_xdock = st.sidebar.checkbox("Include xdock items", value=False)
+#include_xdock = st.sidebar.checkbox("Include xdock items", value=False)
 
 
 # ---- Output Section ----
