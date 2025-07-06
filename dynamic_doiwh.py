@@ -232,10 +232,10 @@ if show_changed_only:
     filtered_df = filtered_df[changed_mask]
     st.write(f"Rows after applying 'changed only' filter: {len(filtered_df)} of {initial_rows}")
 
-if not include_xdock:
-    non_xdock_mask = ~merged["xdock"].astype(str).str.upper().eq("TRUE")
-    filtered_df = filtered_df[non_xdock_mask]
-    st.write(f"Rows after excluding xdock: {len(filtered_df)}")
+#if not include_xdock:
+    #non_xdock_mask = ~merged["xdock"].astype(str).str.upper().eq("TRUE")
+    #filtered_df = filtered_df[non_xdock_mask]
+    #st.write(f"Rows after excluding xdock: {len(filtered_df)}")
 
 
 st.dataframe(filtered_df, use_container_width=True)
